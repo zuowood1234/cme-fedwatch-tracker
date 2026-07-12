@@ -22,6 +22,7 @@ import json
 import os
 import re
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -104,9 +105,10 @@ def extract_effr(page):
 
 # ── Core scraper ────────────────────────────────────────────────────────────
 
-def scrape_cme_fedwatch():
+def scrape_cme_fedwatch(max_retries=3):
     """
     Launch Playwright, navigate to CME FedWatch, extract probability data.
+    Includes retry logic for transient network errors.
 
     Returns dict with keys:
         meetings: list of {date, probabilities: {range: pct}}
@@ -116,17 +118,23 @@ def scrape_cme_fedwatch():
         raw_html: str (snapshot of table HTML for debugging)
     """
     captured_apis = []
+    last_error = None
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
-            args=["--no-sandbox", "--disable-setuid-sandbox"],
+            args=[
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-features=Http2",
+                "--force-http1",
+            ],
         )
         context = browser.new_context(
             user_agent=(
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/120.0.0.0 Safari/537.36"
+                "Chrome/131.0.0.0 Safari/537.36"
             ),
             viewport={"width": 1920, "height": 1080},
             locale="en-US",
@@ -149,8 +157,31 @@ def scrape_cme_fedwatch():
 
         page.on("response", handle_response)
 
-        print(f"Navigating to {CME_FEDWATCH_URL} ...")
-        page.goto(CME_FEDWATCH_URL, wait_until="networkidle", timeout=90000)
+        # ── Retry loop ─────────────────────────────────────────────────
+        for attempt in range(1, max_retries + 1):
+            try:
+                print(f"Navigating to {CME_FEDWATCH_URL} ... (attempt {attempt}/{max_retries})")
+                page.goto(CME_FEDWATCH_URL, wait_until="domcontentloaded", timeout=120000)
+                print("  Page loaded, waiting for content...")
+
+                # Extra wait for JS rendering
+                page.wait_for_timeout(5000)
+                last_error = None
+                break
+
+            except Exception as e:
+                err_msg = str(e).lower()
+                last_error = e
+                if attempt < max_retries:
+                    wait_sec = attempt * 5
+                    print(f"  Attempt failed ({type(e).__name__}: {e})")
+                    print(f"  Retrying in {wait_sec}s...")
+                    time.sleep(wait_sec)
+                else:
+                    raise
+
+        if last_error:
+            raise last_error
 
         # Wait for the probability table to render
         # The CME FedWatch page typically embeds a QuikStrike iframe
@@ -507,8 +538,8 @@ def main():
     print(f"[{now.isoformat()}] Starting CME FedWatch data scrape...")
     print(f"  Snapshot date: {snapshot_date}")
 
-    # Scrape
-    data = scrape_cme_fedwatch()
+    # Scrape (with retries)
+    data = scrape_cme_fedwatch(max_retries=3)
 
     if not data["meetings"]:
         print("\nERROR: No meeting data extracted!")
