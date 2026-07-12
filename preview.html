@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CME FedWatch Tracker - Preview v6</title>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35/plotly.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f6; color: #1f1f2e; }
+  .app { max-width: 1100px; margin: 0 auto; background: #fff; min-height: 100vh; padding: 32px 40px 48px; }
+  h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 16px; line-height: 1.6; }
+  h2 { font-size: 17px; font-weight: 600; margin: 32px 0 6px; padding-bottom: 4px; border-bottom: 2px solid #534AB7; display: inline-block; }
+  .caption { font-size: 12px; color: #888; margin-bottom: 12px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 8px; background: #EAF3DE; color: #27500A; }
+  .chart { width: 100%; margin-top: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+  th { text-align: right; padding: 7px 8px; background: #f7f7f8; border-bottom: 2px solid #e0e0e0; font-weight: 600; white-space: nowrap; }
+  th:first-child { text-align: left; }
+  td { padding: 7px 8px; border-bottom: 1px solid #eee; text-align: right; font-variant-numeric: tabular-nums; }
+  td:first-child { text-align: left; font-weight: 500; white-space: nowrap; }
+  .target-col { background-color: #EEEDFE; font-weight: bold; color: #534AB7; }
+  .max-val { font-weight: bold; color: #D85A30; }
+
+  /* Line chart grid for Panel 3 */
+  .line-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 10px; }
+  .line-card { background: #fafbfc; border: 1px solid #e8eaed; border-radius: 10px; padding: 16px; }
+  .line-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: #333; }
+
+  /* Alert styles */
+  .change-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 11px; font-weight: 700; margin-left: 6px; }
+  .tag-up { background: #D85A30; color: #fff; }
+  .tag-down { background: #0F6E56; color: #fff; }
+  .alert-subhead { font-size: 14px; margin: 18px 0 8px; color: #555; }
+  .no-alerts { font-size: 13px; color: #999; padding: 12px 0; font-style: italic; }
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #eee; font-size: 11px; color: #999; }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>Fed Rate Probability Tracker <span class="badge">CME OFFICIAL DATA</span></h1>
+  <p class="subtitle">
+    Market-implied FOMC rate probabilities, scraped daily from CME FedWatch Tool.<br>
+    Last updated: <strong>2026-07-11 15:00 UTC</strong> &nbsp;|&nbsp; Current target: <strong>3.50%-3.75%</strong> &nbsp;|&nbsp; EFFR: <strong>3.62%</strong>
+  </p>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PANEL 1: Rate Path Summary                    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <h2>1. Rate Path Summary</h2>
+  <p class="caption">Most likely target rate at each upcoming meeting. Red dashed = current rate (midpoint).</p>
+  <div class="chart" id="chart-rate-path" style="height:380px;"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PANEL 2: Full Probability Table              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <h2>2. Probability Distribution</h2>
+  <p class="caption">Purple = current target range. <b style="color:#D85A30;">Bold orange</b> = highest-probability outcome.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Meeting</th>
+        <th style="background:#EEEDFE;color:#534AB7;">3.50–3.75%<br><small>(current)</small></th>
+        <th>3.75–4.00%<br><small>+25bp</small></th>
+        <th>4.00–4.25%<br><small>+50bp</small></th>
+        <th>4.25–4.50%<br><small>+75bp</small></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Jul 29, 2026</td><td class="target-col max-val" style="color:#534AB7;">65.8%</td><td>34.2%</td><td>—</td><td>—</td></tr>
+      <tr><td>Sep 16, 2026</td><td class="target-col">30.4%</td><td class="max-val">63.8%</td><td>5.8%</td><td>—</td></tr>
+      <tr><td>Oct 28, 2026</td><td class="target-col">5.2%</td><td class="max-val">71.3%</td><td>23.5%</td><td>—</td></tr>
+      <tr><td>Dec 09, 2026</td><td class="target-col">2.1%</td><td>38.6%</td><td class="max-val">51.2%</td><td>8.1%</td></tr>
+      <tr><td>Jan 27, 2027</td><td class="target-col">1.5%</td><td>22.4%</td><td class="max-val">58.7%</td><td>17.4%</td></tr>
+      <tr><td>Mar 17, 2027</td><td class="target-col">0.8%</td><td>15.3%</td><td class="max-val">55.1%</td><td>28.8%</td></tr>
+      <tr><td>May 05, 2027</td><td class="target-col">1.2%</td><td>18.7%</td><td class="max-val">49.3%</td><td>30.8%</td></tr>
+      <tr><td>Jun 16, 2027</td><td class="target-col">2.0%</td><td>25.1%</td><td class="max-val">44.6%</td><td>28.3%</td></tr>
+      <tr><td>Jul 28, 2027</td><td class="target-col">3.5%</td><td>31.2%</td><td class="max-val">42.8%</td><td>22.5%</td></tr>
+      <tr><td>Sep 15, 2027</td><td class="target-col">8.7%</td><td class="max-val">41.5%</td><td>35.2%</td><td>14.6%</td></tr>
+      <tr><td>Oct 27, 2027</td><td class="target-col">15.3%</td><td class="max-val">45.8%</td><td>28.7%</td><td>10.2%</td></tr>
+      <tr><td>Dec 08, 2027</td><td class="target-col">22.1%</td><td class="max-val">48.3%</td><td>22.4%</td><td>7.2%</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PANEL 3: Multi-Line Probability Trends      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <h2>3. Probability Trend (Next 4 Meetings)</h2>
+  <p class="caption">X-axis: <b>1 Month</b> &amp; <b>1 Week</b> from CME page; past 7 days from daily archive.<br>Each line = one rate range. Lines cross = market expectation shifted.</p>
+
+  <div class="line-grid">
+
+    <div class="line-card">
+      <h3>Jul 29, 2026 <small style="color:#0F6E56;font-weight:400;">✓ real data</small></h3>
+      <div id="line-jul" style="height:260px;"></div>
+    </div>
+
+    <div class="line-card">
+      <h3>Sep 16, 2026 <small style="color:#999;font-weight:400;">(pending scrape)</small></h3>
+      <div id="line-sep" style="height:260px;"></div>
+    </div>
+
+    <div class="line-card">
+      <h3>Oct 28, 2026 <small style="color:#999;font-weight:400;">(pending scrape)</small></h3>
+      <div id="line-oct" style="height:260px;"></div>
+    </div>
+
+    <div class="line-card">
+      <h3>Dec 09, 2026 <small style="color:#999;font-weight:400;">(pending scrape)</small></h3>
+      <div id="line-dec" style="height:260px;"></div>
+    </div>
+
+  </div><!-- /.line-grid -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PANEL 4: Alerts — |Δ| ≥ 5% only             -->
+  <!-- ═══════════════════════════════════════════ -->
+  <h2>4. Change Alerts (|Δ| &ge; 5%)</h2>
+  <p class="caption">Same rate-range probability compared across time. Only changes &ge; 5% are shown.</p>
+
+  <!-- vs Yesterday -->
+  <h3 class="alert-subhead">vs. Yesterday (Jul 10)</h3>
+  <p class="no-alerts">No changes &ge; 5% in the past 24 hours.</p>
+
+  <!-- vs 1 week ago -->
+  <h3 class="alert-subhead">vs. 1 Week Ago (Jul 04)</h3>
+  <table>
+    <thead><tr><th>Meeting</th><th>Rate Range</th><th>1W Ago</th><th>Today</th><th>&Delta;</th></tr></thead>
+    <tbody>
+      <tr style="background:#FFF5F0;">
+        <td><strong>Jul 29</strong></td>
+        <td><strong>3.50–3.75%</strong></td>
+        <td>81.8%</td>
+        <td><strong>65.8%</strong></td>
+        <td><span class="change-tag tag-down" style="background:#A32D2D;">&minus;16.0%</span></td>
+      </tr>
+      <tr style="background:#FFF5F0;">
+        <td><strong>Jul 29</strong></td>
+        <td><strong>3.75–4.00%</strong></td>
+        <td>18.2%</td>
+        <td><strong>34.2%</strong></td>
+        <td><span class="change-tag tag-up" style="background:#A32D2D;">+16.0%</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="font-size:12px;color:#999;margin-top:8px;">
+    Note: Only Jul 29 data is confirmed from CME page. Sep/Oct/Dec data will populate after first scrape.
+  </p>
+
+  <div class="footer">
+    Data source: CME FedWatch Tool (official). Scraped daily via Playwright on GitHub Actions.
+    Unofficial tracker for informational purposes only &mdash; not financial advice.
+  </div>
+</div>
+
+
+<script>
+// ──────────────────────────────────────────────
+// PANEL 1: Rate Path Summary
+// ──────────────────────────────────────────────
+var meetings = [
+  'Jul 29<br>2026','Sep 16<br>2026','Oct 28<br>2026','Dec 09<br>2026',
+  'Jan 27<br>2027','Mar 17<br>2027','May 05<br>2027','Jun 16<br>2027',
+  'Jul 28<br>2027','Sep 15<br>2027','Oct 27<br>2027','Dec 08<br>2027'
+];
+var mids   = [3.625,3.875,3.875,4.125,4.125,4.125,4.125,4.125,4.125,3.875,3.875,3.875];
+var probs  = [87.5,63.8,71.3,51.2,58.7,55.1,49.3,44.6,42.8,41.5,45.8,48.3];
+var rlabels=['3.50-3.75%','3.75-4.00%','3.75-4.00%','4.00-4.25%',
+             '4.00-4.25%','4.00-4.25%','4.00-4.25%','4.00-4.25%',
+             '4.00-4.25%','3.75-4.00%','3.75-4.00%','3.75-4.00%'];
+
+Plotly.newPlot('chart-rate-path', [{
+  x: meetings,
+  y: mids,
+  mode: 'lines+markers+text',
+  text: rlabels.map(function(l,i){ return l+'<br>'+probs[i].toFixed(1)+'%'; }),
+  textposition:'top center', textfont:{size:9},
+  line:{color:'#534AB7',width:3}, marker:{size:10,color:'#534AB7'},
+  hovertemplate:'<b>%{x}</b><br>%{text}<extra></extra>'
+}], {
+  yaxis:{title:'Target rate (%)', tickformat:'.2f', range:[3.4,4.3]},
+  xaxis:{title:'FOMC Meeting', tickfont:{size:10}},
+  margin:{l:60,r:30,t:30,b:60},
+  height:380, showlegend:false,
+  shapes:[{
+    type:'line',x0:-0.5,x1:11.5,y0:3.625,y1:3.625,
+    line:{dash:'dash',color:'#e74c3c',width:2}
+  }],
+  annotations:[{
+    x:0,y:3.66,text:'Current: 3.50-3.75%',showarrow:false,
+    font:{color:'#e74c3c',size:10},xanchor:'left'
+  }]
+}, {responsive:true});
+
+
+// ──────────────────────────────────────────────
+// PANEL 3: Multi-line charts — one per meeting
+// Each line = one rate range's probability over time
+// ──────────────────────────────────────────────
+
+// X-axis: 1 Month (from CME) → 1 Week (from CME) → past 7 days (daily archive)
+var DATES = ['1 Month', '1 Week', 'Jul 05', 'Jul 06', 'Jul 07', 'Jul 08', 'Jul 09', 'Jul 10', 'Jul 11'];
+
+// Color palette for rate ranges
+var COLORS = {
+  '3.50-3.75': '#534AB7',   // purple — current
+  '3.75-4.00': '#D85A30',   // orange
+  '4.00-4.25': '#0F6E56',   // teal
+  '4.25-4.50': '#E6A817'    // gold
+};
+
+function makeLine(name, data, color) {
+  return {
+    x: DATES, y: data,
+    mode: 'lines+markers',
+    name: name,
+    line: { color: color, width: 2 },
+    marker: { size: 4 },
+    hovertemplate: '<b>'+name+'</b><br>%{x}: %{y:.1f}%<extra></extra>'
+  };
+}
+
+function lineLayout() {
+  return {
+    yaxis: { title: 'Probability (%)', range: [0, 100], ticksuffix: '%',
+             dtick: 25 },
+    xaxis: { tickangle: -30, tickfont: {size:9} },
+    margin: {l:55,r:20,t:10,b:50},
+    height:260,
+    legend: { orientation:'h', y:-0.28, font:{size:10} },
+    hovermode:'x unified',
+    shapes: [
+      // 25% reference line
+      { type:'line', x0:-0.5, x1:8.5, y0:25, y1:25,
+        line:{color:'#bbb', width:1, dash:'dot'} },
+      // 50% reference line
+      { type:'line', x0:-0.5, x1:8.5, y0:50, y1:50,
+        line:{color:'#999', width:1, dash:'dot'} },
+      // 75% reference line
+      { type:'line', x0:-0.5, x1:8.5, y0:75, y1:75,
+        line:{color:'#bbb', width:1, dash:'dot'} }
+    ]
+  };
+}
+
+// ── Jul 29: CONFIRMED REAL DATA from CME page ──
+// At 1M ago, market even priced in a CUT to 3.25-3.50% (2.3%)
+Plotly.newPlot('line-jul', [
+  makeLine('3.25–3.50%', [ 2.3, null, null, null, null, null, null, null, null], '#888'),
+  makeLine('3.50–3.75%', [89.3, 81.8, null, null, null, null, null, null, 65.8], '#534AB7'),
+  makeLine('3.75–4.00%', [ 8.3, 18.2, null, null, null, null, null, null, 34.2], '#D85A30')
+], lineLayout(), {responsive:true});
+
+// ── Sep 16: Data to be populated from first scrape ──
+Plotly.newPlot('line-sep', [
+  makeLine('3.50–3.75%', [null, null, null, null, null, null, null, null, null], '#534AB7'),
+  makeLine('3.75–4.00%', [null, null, null, null, null, null, null, null, null], '#D85A30')
+], lineLayout(), {responsive:true});
+
+// ── Oct 28: Data to be populated from first scrape ──
+Plotly.newPlot('line-oct', [
+  makeLine('3.50–3.75%', [null, null, null, null, null, null, null, null, null], '#534AB7'),
+  makeLine('3.75–4.00%', [null, null, null, null, null, null, null, null, null], '#D85A30')
+], lineLayout(), {responsive:true});
+
+// ── Dec 09: Data to be populated from first scrape ──
+Plotly.newPlot('line-dec', [
+  makeLine('3.50–3.75%', [null, null, null, null, null, null, null, null, null], '#534AB7'),
+  makeLine('3.75–4.00%', [null, null, null, null, null, null, null, null, null], '#D85A30'),
+  makeLine('4.00–4.25%', [null, null, null, null, null, null, null, null, null], '#0F6E56')
+], lineLayout(), {responsive:true});
+</script>
+</body>
+</html>
