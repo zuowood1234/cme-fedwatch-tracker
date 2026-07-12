@@ -423,18 +423,98 @@ def parse_orientation_b(rows, headers, date_pattern):
 
 def extract_div_based(frame):
     """
-    Fallback: some CME pages use div-based layouts instead of tables.
-    Try to find probability data in div elements.
+    Extract probability data from text-based rendering.
+    CME FedWatch page renders probabilities as labeled text sections,
+    not standard HTML tables. Parse the full page text to extract data.
     """
     meetings = []
     try:
-        # Look for divs that contain both dates and percentages
         all_text = frame.inner_text("body")
         print(f"  Page text length: {len(all_text)} chars")
-        print(f"  First 500 chars: {all_text[:500]}")
-    except Exception:
-        pass
+        print(f"  First 800 chars:\n{all_text[:800]}")
+        print(f"  ...")
+
+        # ── Strategy: parse meeting dates and their probability rows ──
+        # Pattern: dates like "29 Jul26" or "16 Sep 2026" followed by prob lines
+        lines = all_text.split("\n")
+
+        current_meeting = None
+        for i, line in enumerate(lines):
+            line = line.strip()
+            if not line:
+                continue
+
+            # Detect meeting date lines: "29 Jul26", "16 Sep26", "28 Oct26", etc.
+            date_match = re.match(
+                r"^(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s*(\d{2})?\s*$",
+                line,
+                re.IGNORECASE,
+            )
+            if date_match:
+                day = int(date_match.group(1))
+                month_str = date_match.group(2)
+                year = date_match.group(3) if date_match.group(3) else "26"
+                year_full = f"20{year}" if len(year) == 2 else year
+
+                # Build date string
+                try:
+                    dt = datetime.strptime(f"{month_str} {day} {year_full}", "%b %d %Y")
+                    meeting_date = dt.strftime("%Y-%m-%d")
+                    current_meeting = {"date": meeting_date, "raw_date": line}
+                except ValueError:
+                    continue
+                continue
+
+            # Detect probability header line: "EASE    NO CHANGE    HIKE"
+            if re.match(r"EASE\s+NO\s*CHANGE\s+HIKE", line, re.IGNORECASE):
+                # Next line should be percentages like "0.0 %   65.8 %   34.2 %"
+                if i + 1 < len(lines) and current_meeting:
+                    pct_line = lines[i + 1].strip()
+                    probs = parse_probability_line(pct_line)
+                    if probs:
+                        current_meeting["probabilities"] = probs
+                        meetings.append(current_meeting)
+                        top_range = max(probs, key=probs.get)
+                        print(f"  {current_meeting['date']}: most likely {top_range} at {probs[top_range]:.1f}%")
+                    current_meeting = None
+
+    except Exception as e:
+        print(f"  Error in div-based extraction: {e}")
+
     return meetings
+
+
+def parse_probability_line(line):
+    """Parse '0.0 %   65.8 %   34.2 %' into rate-range dict."""
+    # Find all percentage values in order: EASE, NO CHANGE, HIKE
+    pcts = re.findall(r"(\d+\.?\d*)\s*%", line)
+
+    if len(pcts) >= 3:
+        ease_pct = float(pcts[0])
+        no_change_pct = float(pcts[1])
+        hike_pct = float(pcts[2])
+
+        probs = {}
+
+        # Map EASE/NO CHANGE/HIKE to rate ranges based on current target
+        # Current target is ~3.50-3.75%. We'll label generically:
+        # EASE = lower range, NO CHANGE = current, HIKE = higher range
+        # But we need the actual ranges from the page context...
+        # Use generic labels that will be refined later
+        if ease_pct > 0:
+            probs["EASE"] = ease_pct
+        if no_change_pct > 0:
+            probs["NO CHANGE"] = no_change_pct
+        if hike_pct > 0:
+            probs["HIKE"] = hike_pct
+
+        return probs
+
+    # Also try format: single values like "65.8%" on separate lines
+    if len(pcts) == 1:
+        return {"probability": float(pcts[0])}
+
+    return {}
 
 
 # ── Data persistence ────────────────────────────────────────────────────────
