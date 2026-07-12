@@ -431,55 +431,75 @@ def extract_div_based(frame):
     try:
         all_text = frame.inner_text("body")
         print(f"  Page text length: {len(all_text)} chars")
-        print(f"  First 800 chars:\n{all_text[:800]}")
-        print(f"  ...")
+        # Save full text for debugging
+        print(f"  --- FULL PAGE TEXT START ---")
+        print(all_text[:3000])
+        if len(all_text) > 3000:
+            print(f"  ... ({len(all_text) - 3000} more chars)")
+            print(all_text[-1000:])
+        print(f"  --- FULL PAGE TEXT END ---")
 
         # ── Strategy: parse meeting dates and their probability rows ──
-        # Pattern: dates like "29 Jul26" or "16 Sep 2026" followed by prob lines
         lines = all_text.split("\n")
 
         current_meeting = None
+        prob_header_found = False
+
         for i, line in enumerate(lines):
             line = line.strip()
             if not line:
                 continue
 
             # Detect meeting date lines: "29 Jul26", "16 Sep26", "28 Oct26", etc.
+            # Also handles formats: "29-Jul-26", "Jul 29, 2026", "29 July"
             date_match = re.match(
-                r"^(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s*(\d{2})?\s*$",
+                r"^(\d{1,2})[\s\-]*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[\s\-]*(\d{2,4})?\s*$",
                 line,
                 re.IGNORECASE,
             )
             if date_match:
                 day = int(date_match.group(1))
                 month_str = date_match.group(2)
-                year = date_match.group(3) if date_match.group(3) else "26"
-                year_full = f"20{year}" if len(year) == 2 else year
+                year_raw = date_match.group(3)
+                if year_raw:
+                    year_full = int(year_raw) if int(year_raw) > 99 else 2000 + int(year_raw)
+                else:
+                    year_full = 2026  # default
 
-                # Build date string
                 try:
                     dt = datetime.strptime(f"{month_str} {day} {year_full}", "%b %d %Y")
                     meeting_date = dt.strftime("%Y-%m-%d")
                     current_meeting = {"date": meeting_date, "raw_date": line}
-                except ValueError:
+                    print(f"  [PARSE] Found meeting date: {line} -> {meeting_date}")
                     continue
+                except ValueError:
+                    pass
+
+            # Detect probability header lines
+            if re.match(r"EASE\s+NO?\s*CHANGE\s+HIKE", line, re.IGNORECASE) or \
+               re.match(r"PROBABILITIES", line, re.IGNORECASE):
+                prob_header_found = True
+                print(f"  [PARSE] Found prob header: '{line}'")
                 continue
 
-            # Detect probability header line: "EASE    NO CHANGE    HIKE"
-            if re.match(r"EASE\s+NO\s*CHANGE\s+HIKE", line, re.IGNORECASE):
-                # Next line should be percentages like "0.0 %   65.8 %   34.2 %"
-                if i + 1 < len(lines) and current_meeting:
-                    pct_line = lines[i + 1].strip()
-                    probs = parse_probability_line(pct_line)
-                    if probs:
-                        current_meeting["probabilities"] = probs
-                        meetings.append(current_meeting)
-                        top_range = max(probs, key=probs.get)
-                        print(f"  {current_meeting['date']}: most likely {top_range} at {probs[top_range]:.1f}%")
+            # After PROBABILITIES header, next non-empty line should be percentages
+            if prob_header_found and current_meeting and re.search(r"\d+\s*%", line):
+                probs = parse_probability_line(line)
+                if probs:
+                    current_meeting["probabilities"] = probs
+                    meetings.append(current_meeting)
+                    top_key = max(probs, key=probs.get)
+                    print(f"  [PARSE] Saved meeting {current_meeting['date']}: most likely {top_key}={probs[top_key]:.1f}%")
                     current_meeting = None
+                    prob_header_found = False
+                continue
+
+        print(f"  Total meetings extracted: {len(meetings)}")
 
     except Exception as e:
         print(f"  Error in div-based extraction: {e}")
+        import traceback
+        traceback.print_exc()
 
     return meetings
 
