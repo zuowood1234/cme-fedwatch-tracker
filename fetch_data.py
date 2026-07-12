@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """
-CME FedWatch Data Scraper v2
+CME FedWatch Data Scraper v3
 
-Scrapes OFFICIAL probability data directly from the CME FedWatch tool page.
-Uses Playwright (headless Firefox) because the page renders via ASP.NET QuikStrike widget.
+Strategy: Use Playwright to load the CME FedWatch page, wait for full JS rendering,
+then extract probability data by clicking through each meeting tab.
 
-KEY INSIGHT: The CME page is TAB-BASED — it shows all meeting dates but only displays
-probability data for the currently SELECTED meeting. We must click each meeting tab
-sequentially to extract all meetings' data.
-
-Data output:
-  - data/daily/YYYY-MM-DD.json   (full snapshot)
-  - data/fedwatch_history.csv     (long-format for dashboard)
+Key improvements over v2:
+- Wait for network idle (not just fixed timeout)
+- Handle QuikStrike iframe properly
+- More robust element detection
+- Better error handling for headless environments
 """
 
 import csv
@@ -26,12 +24,11 @@ from pathlib import Path
 try:
     from playwright.sync_api import sync_playwright
 except ImportError:
-    print("ERROR: playwright not installed. Run: pip install playwright && playwright install firefox")
+    print("ERROR: playwright not installed.")
     sys.exit(1)
 
 # ── Config ──────────────────────────────────────────────────────────────────
 CME_FEDWATCH_URL = "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html"
-
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
 DAILY_DIR = DATA_DIR / "daily"
@@ -43,192 +40,181 @@ CSV_HEADER = [
 ]
 
 
-# ── Helpers ─────────────────────────────────────────────────────────────────
-
-def parse_percentage(text):
-    """Parse '87.5%' or '87.5' or '<0.1%' into float."""
-    text = text.strip().replace("%", "").replace("<", "").replace("≈", "").replace(">","")
+def parse_pct(text):
+    """Parse percentage string to float."""
     try:
-        return float(text)
+        return float(text.strip().replace("%","").replace("<","").replace(">","").replace("≈",""))
     except ValueError:
         return 0.0
 
 
 def parse_meeting_date(text):
-    """Parse various date formats into YYYY-MM-DD."""
+    """Parse meeting date string to YYYY-MM-DD."""
     text = text.strip()
-    # Try common formats
-    formats = [
-        "%b %d, %Y", "%b %d %Y",       # Jul 29, 2026
-        "%d-%b-%y", "%d-%b-%Y",        # 29-Jul-26
-        "%B %d, %Y", "%B %d %Y",       # July 29, 2026
-        "%m/%d/%Y",                     # 07/29/2026
-        "%Y-%m-%d",                     # 2026-07-29
-    ]
-    for fmt in formats:
+    formats = ["%b %d, %Y", "%b %d %Y", "%d-%b-%y", "%d-%b-%Y",
+               "%B %d, %Y", "%B %d %Y", "%m/%d/%Y", "%Y-%m-%d"]
+    for f in formats:
         try:
-            return datetime.strptime(text, fmt).strftime("%Y-%m-%d")
+            return datetime.strptime(text, f).strftime("%Y-%m-%d")
         except ValueError:
             continue
-
-    # Fallback: match "29 Jul26" or "29 Jul 26" pattern
     m = re.match(r"(\d{1,2})\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s*(\d{2,4})?", text, re.IGNORECASE)
     if m:
-        day = int(m.group(1))
-        month_str = m.group(2)
-        year_raw = m.group(3)
-        year = int(year_raw) if year_raw and int(year_raw) > 99 else 2026
+        day, mon, yr = int(m.group(1)), m.group(2), m.group(3)
+        yr = int(yr) if yr and int(yr) > 99 else 2026
         try:
-            dt = datetime.strptime(f"{month_str} {day} {year}", "%b %d %Y")
-            return dt.strftime("%Y-%m-%d")
+            return datetime.strptime(f"{mon} {day} {yr}", "%b %d %Y").strftime("%Y-%m-%d")
         except ValueError:
             pass
-
     return text
 
 
-def normalize_rate_range(text):
-    """Normalize rate range like '3.50-3.75%' or '3.50% - 3.75%' into consistent format."""
-    text = text.strip()
-    m = re.search(r"(\d+\.\d+)\s*%?\s*[-–—\s]+\s*(\d+\.\d+)\s*%", text)
+def norm_rate_range(text):
+    """Normalize '3.50-3.75%' -> '3.50%-3.75%'."""
+    m = re.search(r"(\d+\.\d+)\s*%?\s*[-–—]\s*(\d+\.\d+)\s*%", text)
     if m:
         return f"{float(m.group(1)):.2f}%-{float(m.group(2)):.2f}%"
     return text.strip()
 
 
-# ── Core scraper ────────────────────────────────────────────────────────────
+# ── Main scraper ────────────────────────────────────────────────────────────
 
 def scrape_cme_fedwatch(max_retries=3):
-    """
-    Main scraper function.
-    Clicks through each meeting tab and extracts probability data.
-    """
     captured_apis = []
     last_error = None
 
     with sync_playwright() as p:
-        browser = p.firefox.launch(headless=True)
+        browser = p.firefox.launch(
+            headless=True,
+            firefox_args=["--width=1920", "--height=1080"],
+        )
         context = browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/131.0.0.0 Safari/537.36"
-            ),
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
             viewport={"width": 1920, "height": 1080},
             locale="en-US",
         )
         page = context.new_page()
 
-        # Capture API responses for debugging
-        def handle_response(response):
-            url = response.url
-            ct = response.headers.get("content-type", "")
-            if ("json" in ct or "ajax" in url.lower()) and len(captured_apis) < 20:
-                try:
-                    cl = int(response.headers.get("content-length", 0))
-                    if cl < 500000:
-                        if "json" in ct:
-                            data = response.json()
-                        else:
-                            data = "(non-json)"
-                        captured_apis.append({"url": url[:200], "data": str(data)[:500]})
-                        if any(k in url.lower() for k in ["fedwatch", "probability", "ratepath"]):
-                            print(f"  [API] Captured: {url[:100]}...")
-                except Exception:
-                    pass
+        # Capture interesting API responses
+        def on_response(resp):
+            url = resp.url
+            try:
+                ct = resp.headers.get("content-type","")
+                if len(captured_apis) < 30:
+                    info = {"url": url[:200]}
+                    if "json" in ct:
+                        try: info["data"] = str(resp.json())[:500]
+                        except: pass
+                    captured_apis.append(info)
+            except: pass
+        page.on("response", on_response)
 
-        page.on("response", handle_response)
-
-        # ── Navigate with retry ─────────────────────────────────────────
+        # ── Navigate ─────────────────────────────────────────────────────
         for attempt in range(1, max_retries + 1):
             try:
-                print(f"[attempt {attempt}/{max_retries}] Navigating to CME FedWatch...")
-                page.goto(CME_FEDWATCH_URL, wait_until="domcontentloaded", timeout=120000)
-                print("  Page loaded. Waiting for JS rendering...")
-                page.wait_for_timeout(15000)  # QuikStrike can be very slow
-                last_error = None
+                print(f"[attempt {attempt}/{max_retries}] Loading CME FedWatch...")
+                # Use networkidle for proper JS rendering
+                page.goto(CME_FEDWATCH_URL, wait_until="networkidle", timeout=180000)
+                print("  Page loaded (networkidle). Waiting extra for QuikStrike...")
                 break
             except Exception as e:
                 last_error = e
                 if attempt < max_retries:
-                    print(f"  Failed: {e}. Retrying in {attempt * 5}s...")
+                    print(f"  Failed: {e}. Retrying in {attempt*5}s...")
                     time.sleep(attempt * 5)
                 else:
                     raise
 
-        if last_error:
-            raise last_error
+        # ── Wait for content to fully render ─────────────────────────────
+        # QuikStrike can take 20-40 seconds to fully render on slow connections
+        print("  Waiting for QuikStrike widget to render...")
 
-        # ── Step 1: Discover the page structure ─────────────────────────
-        print("\n=== Analyzing page structure ===")
+        # Strategy: poll for content appearing
+        max_wait = 60  # seconds
+        rendered = False
+        for w in range(max_wait):
+            time.sleep(2)  # Check every 2 seconds
+            elapsed = (w + 1) * 2
+            body_text = ""
+            try:
+                body_text = page.inner_text("body")
+            except:
+                continue
 
-        # Get full page text for initial analysis
-        body_text = page.inner_text("body")
-        print(f"  Body text length: {len(body_text)} chars")
+            # Check if we have meaningful content (>5000 chars suggests rendering happened)
+            # Also look for key indicators
+            has_dates = bool(re.search(r"\d{1,2}\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)", body_text, re.I))
+            has_probs = bool(re.search(r"EASE|NO\s*CHANGE|HIKE|\d+\.\d+\s*%", body_text, re.I))
+            text_len = len(body_text)
 
-        # Save full HTML for debug
+            if elapsed % 10 == 0 or (has_dates and has_probs):
+                print(f"  [{elapsed}s] text_len={text_len}, dates={has_dates}, probs={has_probs}")
+
+            if has_probs and text_len > 5000:
+                rendered = True
+                print(f"  Content detected at {elapsed}s!")
+                break
+
+        if not rendered:
+            print(f"  WARNING: Content may not have fully rendered after {max_wait}s")
+            # Try anyway - sometimes partial content is useful
+            try:
+                body_text = page.inner_text("body")
+                print(f"  Final text length: {len(body_text)} chars")
+            except:
+                body_text = ""
+
+        # Extra wait for any animations
+        page.wait_for_timeout(3000)
+
+        # ── Save debug HTML ─────────────────────────────────────────────
         debug_dir = DATA_DIR / "debug"
         debug_dir.mkdir(parents=True, exist_ok=True)
         snapshot_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
         try:
-            raw_html = page.content()
+            full_html = page.content()
             with open(debug_dir / f"{snapshot_date}_full_page.html", "w") as f:
-                f.write(raw_html)
-            print(f"  Saved full HTML: {len(raw_html)} chars")
+                f.write(full_html)
+            print(f"  Saved HTML: {len(full_html)} chars")
         except Exception as e:
             print(f"  Could not save HTML: {e}")
 
-        # ── Step 2: Find meeting tabs ────────────────────────────────────
-        print("\n=== Finding meeting tabs ===")
+        # ── Extract data ────────────────────────────────────────────────
+        print("\n=== Extracting Data ===")
 
-        meeting_tabs = find_meeting_tabs(page)
-        print(f"  Found {len(meeting_tabs)} meeting tabs")
-
-        if not meeting_tabs:
-            print("  WARNING: No tabs found. Trying fallback extraction...")
-            meetings_data = fallback_extraction(page)
-            browser.close()
-            return {
-                "meetings": meetings_data,
-                "current_target": "",
-                "effr": None,
-                "captured_apis": captured_apis,
-                "raw_html": body_text[:5000],
-            }
-
-        # ── Step 3: Click each tab and extract data ─────────────────────
-        print("\n=== Extracting data from each meeting ===")
+        # Try multiple extraction strategies
         meetings_data = []
 
-        for idx, tab_info in enumerate(meeting_tabs):
-            tab_el = tab_info["element"]
-            tab_text = tab_info["text"]
-            meeting_date = tab_info.get("date", "")
-
-            print(f"\n  --- Tab {idx+1}/{len(meeting_tabs)}: '{tab_text}' ---")
-
+        # Strategy 1: Look for iframe with QuikStrike content
+        frame_target = None
+        for sel in ["iframe[src*='quikstrike']", "iframe[src*='QuikStrike']", "iframe"]:
             try:
-                # Click the tab
-                tab_el.click()
-                page.wait_for_timeout(3000)  # Wait for ASP.NET postback + render
-
-                # Extract probability data for this meeting
-                meeting_data = extract_meeting_probabilities(page, tab_text, meeting_date)
-                if meeting_data:
-                    meetings_data.append(meeting_data)
-                    top = max(meeting_data["probabilities"].items(), key=lambda x: x[1])
-                    print(f"  -> {meeting_data['date']}: most likely {top[0]}={top[1]:.1f}%")
-                else:
-                    print(f"  -> No data extracted for '{tab_text}'")
-
-            except Exception as e:
-                print(f"  Error clicking tab '{tab_text}': {e}")
+                iframe_el = page.query_selector(sel)
+                if iframe_el:
+                    frame = iframe_el.content_frame()
+                    if frame:
+                        frame_text = frame.inner_text("body")
+                        print(f"  Found iframe ({sel}): {len(frame_text)} chars")
+                        if len(frame_text) > 1000:
+                            frame_target = frame
+                            break
+            except:
                 continue
 
-        # ── Step 4: Extract global info ─────────────────────────────────
-        current_target = extract_current_target_from_page(page)
-        effr = extract_effr_from_page(page)
+        target = frame_target if frame_target else page
+
+        # Strategy 2: Click-based extraction
+        meetings_data = click_and_extract(target, page)
+
+        # Strategy 3: If click failed, try direct parsing
+        if not meetings_data:
+            print("  Click extraction failed, trying direct parsing...")
+            meetings_data = direct_parse_extraction(target)
+
+        # Get global metadata
+        current_target = get_current_target(page)
+        effr = get_effr(page)
 
         browser.close()
 
@@ -241,178 +227,134 @@ def scrape_cme_fedwatch(max_retries=3):
     }
 
 
-def find_meeting_tabs(page):
+def click_and_extract(frame, page):
     """
-    Find all meeting date tab/button elements on the CME FedWatch page.
-    Returns list of {"element": ElementHandle, "text": str, "date": str}
+    Find meeting date tabs, click each one, extract probabilities.
+    This is the primary extraction method.
     """
+    meetings = []
+    date_pat = re.compile(r"^(\d{1,2})[\s\-]*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[\s\-]*\d{2,4}?\s*$", re.I)
+
+    # Collect all clickable date elements
     tabs = []
+    seen = set()
 
-    # Strategy 1: Look for elements containing dates in common FOMC meeting patterns
-    # CME typically shows dates like "29 Jul26", "16 Sep26", etc.
-    date_pattern = re.compile(
-        r"^(\d{1,2})[\s\-]*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[\s\-]*\d{2,4}?\s*$",
-        re.IGNORECASE,
-    )
+    # Search broadly across the page (not just inside frame)
+    search_contexts = [frame]
+    if frame != page:
+        search_contexts.append(page)
 
-    # Look for clickable date elements in various containers
-    selectors_to_try = [
-        # Tab-like elements
-        "[role='tab']",
-        "[role='button']",
-        ".tab",
-        ".tab-item",
-        ".nav-tab",
-        ".meeting-date",
-        "[class*='tab'] [class*='date']",
-        "[class*='trigger']",
-        "[class*='Picker'] span",
-        "[id*='Trigger']",
-        "[class*='PopUpTabs'] *",
-        "#ucPopUpTabs *",
-        # Date spans/divs that are clickable
-        "span[class*='date']",
-        "div[class*='date']:not(div[class*='container']):not(div[class*='wrapper'])",
-        # Generic clickable elements with date text
-        "a[href*='#']",
-        "[onclick]",
-        "[data-date]",
-    ]
+    for ctx in search_contexts:
+        # Try many selector patterns
+        selectors = [
+            "[role='tab']", "[role='button']",
+            ".tab", ".tab-item", ".nav-tab",
+            "span[class*='date']", "div[class*='date']",
+            "a[href^='#']", "[onclick]", "[data-date]",
+            "#ucPopUpTabs span", "#ucPopUpTabs div",
+            "[class*='Trigger']", "[class*='trigger']",
+            "[id*='Picker'] span",
+            # Generic elements containing date-like text
+            "span", "div", "a", "td", "li", "button",
+        ]
 
-    seen_texts = set()
-
-    for selector in selectors_to_try:
-        try:
-            elements = page.query_selector_all(selector)
-            for el in elements:
-                try:
-                    text = el.inner_text().strip()
-                    if not text or text in seen_texts:
+        for sel in selectors:
+            try:
+                elems = ctx.query_selector_all(sel) if ctx == page else frame.query_selector_all(sel)
+                for el in elems:
+                    try:
+                        txt = el.inner_text().strip()
+                        if not txt or txt in seen or len(txt) > 25:
+                            continue
+                        if date_pat.match(txt):
+                            tabs.append({"el": el, "txt": txt, "date": parse_meeting_date(txt)})
+                            seen.add(txt)
+                    except:
                         continue
-                    if date_pattern.match(text):
-                        parsed_date = parse_meeting_date(text)
-                        tabs.append({
-                            "element": el,
-                            "text": text,
-                            "date": parsed_date,
-                        })
-                        seen_texts.add(text)
-                        print(f"    Found tab [{selector}]: '{text}' -> {parsed_date}")
-                except Exception:
-                    continue
-        except Exception:
-            continue
+            except:
+                continue
 
-    # Strategy 2: If no tabs found with selectors, search by text content
+        # Stop if we already found tabs in the first context
+        if tabs:
+            break
+
+    print(f"  Found {len(tabs)} meeting tabs")
+
     if not tabs:
-        print("    Selector search failed. Trying text-based search...")
+        return []
+
+    # Click each tab and extract
+    for i, tab in enumerate(tabs):
+        print(f"\n  [{i+1}/{len(tabs)}] Clicking: '{tab['txt']}'")
         try:
-            # Find all elements that look like meeting dates
-            all_spans = page.query_selector_all("span, div, a, td, th, li, button")
-            for el in all_spans:
+            tab["el"].click()
+            page.wait_for_timeout(4000)  # Wait for postback/render
+
+            # Re-check which context has the data now
+            best_ctx = frame
+            for ctx in [frame, page]:
                 try:
-                    text = el.inner_text().strip()
-                    if not text or text in seen_texts:
-                        continue
-                    if len(text) > 30:  # Skip long text blocks
-                        continue
-                    if date_pattern.match(text):
-                        # Check if it's clickable or visible
-                        is_visible = el.is_visible()
-                        if is_visible:
-                            parsed_date = parse_meeting_date(text)
-                            tabs.append({
-                                "element": el,
-                                "text": text,
-                                "date": parsed_date,
-                            })
-                            seen_texts.add(text)
-                            print(f"    Found by text: '{text}' -> {parsed_date}")
-                except Exception:
+                    t = ctx.inner_text("body")
+                    if "EASE" in t.upper() or "NO CHANGE" in t.upper():
+                        best_ctx = ctx
+                        break
+                except:
                     continue
+
+            # Extract probabilities from the active view
+            probs = extract_probs_from_context(best_ctx, tab["txt"], tab["date"])
+            if probs:
+                meetings.append(probs)
+                top = max(probs["probabilities"].items(), key=lambda x: x[1])
+                print(f"    -> {probs['date']}: top={top[0]}={top[1]:.1f}%")
+            else:
+                print(f"    -> No probabilities found")
+
         except Exception as e:
-            print(f"    Text search error: {e}")
+            print(f"    Error: {e}")
 
-    return tabs
+    return meetings
 
 
-def extract_meeting_probabilities(page, tab_label, meeting_date):
-    """
-    After clicking a meeting tab, extract the probability data shown.
-    Returns dict with "date", "probabilities", "raw_label" keys.
-    """
-    result = {
-        "date": meeting_date,
-        "raw_date": tab_label,
-        "probabilities": {},
-    }
+def extract_probs_from_context(ctx, label, meeting_date):
+    """Extract probability data for current active meeting."""
+    result = {"date": meeting_date, "raw_date": label, "probabilities": {}}
 
     try:
-        body_text = page.inner_text("body")
+        text = ctx.inner_text("body")
+        lines = [l.strip() for l in text.split("\n")]
 
-        # ── Method A: Look for probability table/grid near the selected tab ──
-        # The CME page shows probabilities in a format like:
-        # PROBABILITIES
-        # EASE    NO CHANGE    HIKE
-        # 0.0%    65.8%        34.2%
-        # And also shows the actual rate ranges somewhere nearby
-
-        # Find the probability section
-        lines = body_text.split("\n")
-
-        prob_found = False
-        ease_header_found = False
-        rate_ranges_found = []  # Track any rate ranges found on page
-
+        # Find EASE/NO CHANGE/HIKE header then percentages
+        header_idx = None
         for i, line in enumerate(lines):
-            line_stripped = line.strip()
+            if re.match(r"EASE\s+NO?\s*CHANGE\s+HIKE", line, re.I):
+                header_idx = i
+                break
 
-            # Detect EASE / NO CHANGE / HIKE header
-            if re.match(r"EASE\s+NO?\s*CHANGE\s+HIKE", line_stripped, re.IGNORECASE):
-                ease_header_found = True
-                prob_found = True
-                continue
+        if header_idx is not None:
+            # Next non-empty line(s) should be percentages
+            for j in range(header_idx + 1, min(header_idx + 5, len(lines))):
+                if lines[j] and re.search(r"\d+.*%", lines[j]):
+                    pcts = re.findall(r"(\d+\.?\d*)\s*%", lines[j])
+                    if len(pcts) >= 3:
+                        # Map to rate ranges
+                        ranges = find_rate_ranges(ctx)
+                        if len(ranges) >= 3:
+                            labels = ranges[:3]
+                        else:
+                            labels = ["EASE (-25bp)", "NO CHANGE", "HIKE (+25bp)"]
 
-            # Detect PROBABILITIES label
-            if re.match(r"PROBABILITIES", line_stripped, re.IGNORECASE):
-                prob_found = True
-                continue
+                        for k, pct in enumerate(pcts[:3]):
+                            val = float(pct)
+                            if val > 0 or k == 1:  # Always include NO CHANGE
+                                result["probabilities"][labels[k]] = val
+                        break
 
-            # After header, find percentage values
-            if ease_header_found and re.search(r"\d+\.*\d*\s*%", line_stripped):
-                pcts = re.findall(r"(\d+\.?\d*)\s*%", line_stripped)
-                if len(pcts) >= 3:
-                    result["probabilities"] = {}
-                    # We need to map these to actual rate ranges
-                    # First get the rate ranges from context
-                    rate_ranges = find_rate_ranges_on_page(page)
-                    if len(rate_ranges) >= 3:
-                        labels = ["EASE_range", "NO CHANGE_range", "HIKE_range"]
-                        for j, pct in enumerate(pcts[:3]):
-                            if float(pct) > 0 or j == 1:  # Always include NO_CHANGE
-                                rng = rate_ranges[j] if j < len(rate_ranges) else labels[j]
-                                result["probabilities"][rng] = float(pct)
-                    else:
-                        # Fallback: use generic labels with actual values
-                        if float(pcts[0]) > 0:
-                            result["probabilities"]["EASE"] = float(pcts[0])
-                        result["probabilities"]["NO CHANGE"] = float(pcts[1])
-                        if float(pcts[2]) > 0:
-                            result["probabilities"]["HIKE"] = float(pcts[2])
-                    break
-
-        # ── Method B: If Method A failed, try parsing rate ranges directly ──
+        # If no header-based extraction worked, try finding rate:prob pairs
         if not result["probabilities"]:
-            # Look for rows with rate range + probability pairs
-            rate_probs = extract_rate_probability_pairs(page)
-            if rate_probs:
-                result["probabilities"] = rate_probs
-
-        # ── Method C: Try to find detailed probability grid/table ──
-        if not result["probabilities"]:
-            rate_probs = extract_from_table_elements(page)
-            if rate_probs:
-                result["probabilities"] = rate_probs
+            pairs = find_rate_prob_pairs(ctx)
+            if pairs:
+                result["probabilities"] = pairs
 
     except Exception as e:
         print(f"    Extraction error: {e}")
@@ -420,284 +362,178 @@ def extract_meeting_probabilities(page, tab_label, meeting_date):
     return result if result["probabilities"] else None
 
 
-def find_rate_ranges_on_page(page):
-    """
-    Find the actual rate range labels displayed on the page.
-    These should be near the probability percentages, like:
-    '3.25%-3.50%', '3.50%-3.75%', '3.75%-4.00%'
-    """
+def find_rate_ranges(ctx):
+    """Find rate range labels on page like 3.25%-3.50%, 3.50%-3.75%, etc."""
     ranges = []
     try:
-        body_text = page.inner_text("body")
-
-        # Find all rate range patterns
-        rate_matches = re.findall(
-            r"(\d+\.\d+)\s*%?\s*[-–—]\s*(\d+\.\d+)\s*%",
-            body_text,
-        )
-
+        text = ctx.inner_text("body")
+        matches = re.findall(r"(\d+\.\d+)\s*%?\s*[-–—]\s*(\d+\.\d+)\s*%", text)
         seen = set()
-        for low, high in rate_matches:
-            low_f, high_f = float(low), float(high)
-            # Filter: valid fed funds rate ranges (typically 0-10%)
-            if 0 <= low_f <= 10 and 0 <= high_f <= 10 and high_f > low_f:
-                rng_key = f"{low_f:.2f}%-{high_f:.2f}%"
-                if rng_key not in seen:
-                    ranges.append(rng_key)
-                    seen.add(rng_key)
-
-        # Sort by rate value
-        ranges.sort(key=lambda r: float(r.split("-")[0].replace("%", "")))
-
-        if ranges:
-            print(f"    Rate ranges found: {ranges}")
-
-    except Exception as e:
-        print(f"    Error finding rate ranges: {e}")
-
+        for lo, hi in matches:
+            lo_f, hi_f = float(lo), float(hi)
+            if 0 <= lo_f <= 10 and hi_f > lo_f:
+                key = f"{lo_f:.2f}%-{hi_f:.2f}%"
+                if key not in seen:
+                    ranges.append(key)
+                    seen.add(key)
+        ranges.sort(key=lambda r: float(r.split("-")[0].replace("%","")))
+    except:
+        pass
     return ranges
 
 
-def extract_rate_probability_pairs(page):
-    """
-    Try to extract rate -> probability mappings from page structure.
-    Looks for patterns like '3.50%-3.75%  65.8%'
-    """
+def find_rate_prob_pairs(ctx):
+    """Find rate range -> probability mappings in tables."""
     probs = {}
     try:
-        # Check for table rows where first cell = rate range, second cell = probability
-        tables = page.query_selector_all("table")
+        tables = ctx.query_selector_all("table")
         for table in tables:
-            rows = table.query_selector_all("tr")
-            for row in rows:
-                cells = row.query_selector_all("td, th")
-                if len(cells) >= 2:
-                    first_text = cells[0].inner_text().strip()
-                    second_text = cells[1].inner_text().strip()
-
-                    rng = normalize_rate_range(first_text)
-                    if rng and "%" in first_text:  # It looks like a rate range
-                        pct = parse_percentage(second_text)
-                        if pct > 0:
-                            probs[rng] = pct
-    except Exception:
-        pass
-
-    return probs
-
-
-def extract_from_table_elements(page):
-    """
-    Extract probabilities from any table element that contains rate data.
-    More aggressive table parsing.
-    """
-    probs = {}
-    try:
-        tables = page.query_selector_all("table")
-        for table in tables:
-            html = table.inner_html()
-            text = table.inner_text()
-
-            # Must contain both rate-looking content and percentages
-            if not re.search(r"\d+\.\d+", text) or not re.search(r"\d+\s*%", text):
-                continue
-
-            rows = table.query_selector_all("tr")
-            for row in rows:
-                cells = row.query_selector_all("td, th")
-                cell_texts = [c.inner_text().strip() for c in cells]
-
-                for i, ct in enumerate(cell_texts):
-                    # Is this cell a rate range?
-                    if re.match(r".*\d+\.\d+\s*%?\s*[-–—].*\d+\.\d+\s*%.*", ct):
-                        rng = normalize_rate_range(ct)
-                        # Next cell(s) might be probability
-                        for j in range(i + 1, min(i + 3, len(cell_texts))):
-                            pct = parse_percentage(cell_texts[j])
-                            if pct > 0 and pct <= 100:
-                                probs[rng] = pct
+            for row in table.query_selector_all("tr"):
+                cells = row.query_selector_all("td,th")
+                texts = [c.inner_text().strip() for c in cells]
+                for idx, t in enumerate(texts):
+                    if re.match(r".*\d+\.\d+.*[-–—].*\d+\.\d+.*%.*", t):  # Looks like rate range
+                        rng = norm_rate_range(t)
+                        for j in range(idx+1, min(idx+4, len(texts))):
+                            p = parse_pct(texts[j])
+                            if 0 < p <= 100:
+                                probs[rng] = p
                                 break
-    except Exception:
+    except:
         pass
-
     return probs
 
 
-def extract_current_target_from_page(page):
-    """Try to find current target rate from page text."""
+def direct_parse_extraction(frame):
+    """Fallback: parse all visible data without clicking."""
+    meetings = []
+    try:
+        text = frame.inner_text("body")
+        lines = [l.strip() for l in text.split("\n")]
+        cur_date = None
+        date_pat = re.compile(r"^(\d{1,2})[\s\-]*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[\s\-]*\d{2,4}?", re.I)
+
+        for line in lines:
+            if date_pat.match(line):
+                cur_date = parse_meeting_date(line)
+                continue
+            if cur_date and re.search(r"\d+.*%", line):
+                pcts = re.findall(r"(\d+\.?\d*)\s*%", line)
+                if len(pcts) >= 2:
+                    probs = {}
+                    ranges = find_rate_ranges(frame)
+                    for i, p in enumerate(pcts[:3]):
+                        lbl = ranges[i] if i < len(ranges) else f"option_{i}"
+                        probs[lbl] = float(p)
+                    meetings.append({"date": cur_date, "raw_date": line, "probabilities": probs})
+                    cur_date = None
+    except Exception as e:
+        print(f"Fallback error: {e}")
+    return meetings
+
+
+def get_current_target(page):
+    """Extract current target rate from page."""
     try:
         text = page.inner_text("body")
-        m = re.search(
-            r"(?:Current\s+(?:Rate|Target)|Target\s+Rate).*?(\d+\.\d+)\s*%?\s*[-–—]\s*(\d+\.\d+)\s*%",
-            text, re.IGNORECASE,
-        )
+        m = re.search(r"(?:Current\s*(?:Rate|Target)|Target\s*Rate).*?(\d+\.\d+)\s*%?[-–—]\s*(\d+\.\d+)\s*%", text, re.I)
         if m:
             return f"{float(m.group(1)):.2f}%-{float(m.group(2)):.2f}%"
-    except Exception:
+    except:
         pass
     return ""
 
 
-def extract_effr_from_page(page):
-    """Try to find EFFR from page."""
+def get_effr(page):
+    """Extract EFFR from page."""
     try:
         text = page.inner_text("body")
-        m = re.search(r"(?:EFFR|Effective Federal Funds Rate).*?(\d+\.\d+)\s*%", text, re.IGNORECASE)
+        m = re.search(r"(?:EFFR|Effective Federal Funds Rate).*?(\d+\.\d+)\s*%", text, re.I)
         if m:
             return float(m.group(1))
-    except Exception:
+    except:
         pass
     return None
 
 
-def fallback_extraction(page):
-    """
-    Fallback: try to extract whatever data we can without clicking tabs.
-    Used when no tabs are found.
-    """
-    meetings = []
-    try:
-        body_text = page.inner_text("body")
-        lines = body_text.split("\n")
+# ── Persistence ─────────────────────────────────────────────────────────────
 
-        # Try to find all date + probability groupings
-        current_date = None
-        for line in lines:
-            line = line.strip()
-            date_match = re.match(
-                r"^(\d{1,2})[\s\-]*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[\s\-]*(\d{2,4})?",
-                line, re.IGNORECASE,
-            )
-            if date_match:
-                current_date = parse_meeting_date(line)
-                continue
-
-            # Probability line after a date
-            if current_date and re.search(r"\d+\.*\d*\s*%", line):
-                pcts = re.findall(r"(\d+\.?\d*)\s*%", line)
-                if len(pcts) >= 2:
-                    probs = {}
-                    rate_ranges = find_rate_ranges_on_page(page)
-                    for i, p in enumerate(pcts[:3]):
-                        label = rate_ranges[i] if i < len(rate_ranges) else f"option_{i}"
-                        probs[label] = float(p)
-                    meetings.append({
-                        "date": current_date,
-                        "raw_date": line,
-                        "probabilities": probs,
-                    })
-                    current_date = None
-
-    except Exception as e:
-        print(f"Fallback extraction error: {e}")
-
-    return meetings
-
-
-# ── Data persistence ────────────────────────────────────────────────────────
-
-def save_daily_snapshot(data, snapshot_date):
-    """Save complete daily snapshot as JSON."""
+def save_daily_snapshot(data, sd):
     DAILY_DIR.mkdir(parents=True, exist_ok=True)
-    filepath = DAILY_DIR / f"{snapshot_date}.json"
-
-    snapshot = {
-        "date": snapshot_date,
-        "current_target": data.get("current_target", ""),
-        "effr": data.get("effr"),
-        "meetings": data.get("meetings", []),
-        "captured_api_count": len(data.get("captured_apis", [])),
+    snap = {
+        "date": sd, "current_target": data.get("current_target",""),
+        "effr": data.get("effr"), "meetings": data.get("meetings",[]),
+        "captured_api_count": len(data.get("captured_apis",[])),
     }
-    with open(filepath, "w") as f:
-        json.dump(snapshot, f, indent=2, default=str)
-    print(f"Saved daily snapshot: {filepath}")
+    p = DAILY_DIR / f"{sd}.json"
+    with open(p,"w") as f:
+        json.dump(snap, f, indent=2, default=str)
+    print(f"Saved snapshot: {p}")
 
 
-def append_to_csv(data, snapshot_date):
-    """Append today's data to history CSV."""
+def append_to_csv(data, sd):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-
     if not HISTORY_CSV.exists():
-        with open(HISTORY_CSV, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(CSV_HEADER)
+        with open(HISTORY_CSV,"w",newline="") as f:
+            csv.writer(f).writerow(CSV_HEADER)
 
-    current_target = data.get("current_target", "")
-    effr = data.get("effr", "")
-    meetings = data.get("meetings", [])
-    rows_written = 0
-
-    with open(HISTORY_CSV, "a", newline="") as f:
-        writer = csv.writer(f)
-        for m in meetings:
-            meeting_date = m.get("date", "")
-            probs = m.get("probabilities", {})
-            if not probs:
-                continue
-
-            most_likely = max(probs, key=probs.get) if probs else ""
-
-            for rate_range, prob in probs.items():
-                writer.writerow([
-                    snapshot_date, meeting_date, rate_range, prob,
-                    rate_range == most_likely, current_target, effr, "cme_official",
-                ])
-                rows_written += 1
-
-            top_range = max(probs, key=probs.get)
-            print(f"  CSV: {meeting_date} | most likely {top_range}={probs[top_range]:.1f}%")
-
-    print(f"Appended {rows_written} rows to {HISTORY_CSV}")
+    ct = data.get("current_target","")
+    effr = data.get("effr","")
+    n = 0
+    with open(HISTORY_CSV,"a",newline="") as f:
+        w = csv.writer(f)
+        for m in data.get("meetings",[]):
+            md = m.get("date",""); probs = m.get("probabilities",{})
+            if not probs: continue
+            ml = max(probs.items(), key=lambda x: x[1])[0]
+            for rr, pr in probs.items():
+                w.writerow([sd, md, rr, pr, rr==ml, ct, effr, "cme_official"])
+                n += 1
+            print(f"  CSV: {md} | top={ml}={probs[ml]:.1f}%")
+    print(f"Appended {n} rows")
 
 
-def save_debug_info(data, snapshot_date):
-    """Save debug artifacts."""
+def save_debug(data, sd):
     debug_dir = DATA_DIR / "debug"
     debug_dir.mkdir(parents=True, exist_ok=True)
-
     if data.get("captured_apis"):
-        api_path = debug_dir / f"{snapshot_date}_apis.json"
-        with open(api_path, "w") as f:
+        with open(debug_dir / f"{sd}_apis.json","w") as f:
             json.dump(data["captured_apis"], f, indent=2, default=str)
-        print(f"Saved APIs: {api_path}")
-
+        print(f"Saved debug APIs")
     if data.get("raw_html"):
-        html_path = debug_dir / f"{snapshot_date}_html.txt"
-        with open(html_path, "w") as f:
+        with open(debug_dir / f"{sd}_html.txt","w") as f:
             f.write(data["raw_html"])
-        print(f"Saved HTML snippet: {html_path}")
+        print(f"Saved debug HTML snippet")
 
 
 # ── Main ────────────────────────────────────────────────────────────────────
 
 def main():
     now = datetime.now(timezone.utc)
-    snapshot_date = now.strftime("%Y-%m-%d")
-
-    print(f"[{now.isoformat()}] CME FedWatch Scraper v2")
-    print(f"  Snapshot: {snapshot_date}")
+    sd = now.strftime("%Y-%m-%d")
+    print(f"[{now.isoformat()}] CME FedWatch Scraper v3\n  Snapshot: {sd}")
 
     data = scrape_cme_fedwatch(max_retries=3)
 
     if not data["meetings"]:
         print("\nERROR: No meeting data extracted!")
-        save_debug_info(data, snapshot_date)
+        save_debug(data, sd)
         sys.exit(1)
 
     print(f"\n{'='*50}")
     print(f"Extracted {len(data['meetings'])} meetings:")
     for m in data["meetings"]:
-        probs = m.get("probabilities", {})
-        top = max(probs.items(), key=lambda x: x[1]) if probs else ("N/A", 0)
-        print(f"  {m['date']}: {len(probs)} rate options, top={top[0]} ({top[1]:.1f}%)")
-    print(f"Current target: {data.get('current_target', 'N/A')}")
-    print(f"EFFR: {data.get('effr', 'N/A')}")
+        ps = m.get("probabilities",{})
+        t = max(ps.items(), key=lambda x: x[1]) if ps else ("N/A",0)
+        print(f"  {m['date']}: {len(ps)} options, top={t[0]} ({t[1]:.1f}%)")
+    print(f"Target: {data.get('current_target','N/A')}")
+    print(f"EFFR: {data.get('effr','N/A')}")
 
-    print("\nSaving data...")
-    save_daily_snapshot(data, snapshot_date)
-    append_to_csv(data, snapshot_date)
-    save_debug_info(data, snapshot_date)
-    print(f"\nDone! Data saved for {snapshot_date}")
+    print("\nSaving...")
+    save_daily_snapshot(data, sd)
+    append_to_csv(data, sd)
+    save_debug(data, sd)
+    print(f"\nDone! {sd}")
 
 
 if __name__ == "__main__":
