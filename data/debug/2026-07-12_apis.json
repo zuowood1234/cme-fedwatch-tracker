@@ -1,14 +1,14 @@
 [
   {
+    "url": "https://www.cmegroup.com/bin/service/banners.%7Ccontent%7Ccmegroup%7Cen%7Cmarkets%7Cinterest-rates%7Ccme-fedwatch-tool.json?isProtected&_t=1783862484080",
+    "data": []
+  },
+  {
     "url": "https://www.cmegroup.com/libs/cmegroup/alerts/search.ajax.%7Ccontent%7Ccmegroup%7Cen%7Cmarkets%7Cinterest-rates%7Ccme-fedwatch-tool.-.-.json",
     "data": []
   },
   {
-    "url": "https://www.cmegroup.com/bin/service/banners.%7Ccontent%7Ccmegroup%7Cen%7Cmarkets%7Cinterest-rates%7Ccme-fedwatch-tool.json?isProtected&_t=1783862169069",
-    "data": []
-  },
-  {
-    "url": "https://www.cmegroup.com/bin/service/popups.%7Ccontent%7Ccmegroup%7Cen%7Cmarkets%7Cinterest-rates%7Ccme-fedwatch-tool.json?isProtected&_t=1783862169292",
+    "url": "https://www.cmegroup.com/bin/service/popups.%7Ccontent%7Ccmegroup%7Cen%7Cmarkets%7Cinterest-rates%7Ccme-fedwatch-tool.json?isProtected&_t=1783862484280",
     "data": [
       {
         "formId": "CUF-2024-IR-003",
@@ -456,15 +456,15 @@
     }
   },
   {
-    "url": "https://cmegroup-tools.quikstrike.net//AjaxPages/SessionUtilityMethods.aspx/SetTimeZoneOffset?timeZoneOffset=0&insid=232611457&qsid=508c2f8f-a58c-4278-a102-1b583cbf590b",
+    "url": "https://cmegroup-tools.quikstrike.net//AjaxPages/SessionUtilityMethods.aspx/SetTimeZoneOffset?timeZoneOffset=0&insid=232611740&qsid=4d5930a3-b9be-4442-be92-125e2cbd3bd3",
     "data": {
       "d": null
     }
   },
   {
-    "url": "https://cmegroup-tools.quikstrike.net//AjaxPages/UtilityMethods.aspx/UtcTime?partyId=1856&insid=232611457&qsid=508c2f8f-a58c-4278-a102-1b583cbf590b&_=1783862170175",
+    "url": "https://cmegroup-tools.quikstrike.net//AjaxPages/UtilityMethods.aspx/UtcTime?partyId=1856&insid=232611740&qsid=4d5930a3-b9be-4442-be92-125e2cbd3bd3&_=1783862484924",
     "data": {
-      "d": "07/12/2026 13:17:10"
+      "d": "07/12/2026 13:22:25"
     }
   }
 ]
