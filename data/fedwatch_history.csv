@@ -3,3 +3,5 @@ date,meeting_date,rate_range,probability,is_most_likely,current_target,effr,sour
 2026-07-12,2027-09-15,HIKE,34.2,False,,,cme_official
 2026-07-12,2027-09-15,NO CHANGE,65.8,True,,,cme_official
 2026-07-12,2027-09-15,HIKE,34.2,False,,,cme_official
+2026-07-12,2027-09-15,NO CHANGE,65.8,True,,,cme_official
+2026-07-12,2027-09-15,HIKE,34.2,False,,,cme_official
