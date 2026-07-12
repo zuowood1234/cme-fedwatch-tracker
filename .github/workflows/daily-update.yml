@@ -26,8 +26,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install playwright
-          playwright install chromium
-          playwright install-deps chromium
+          playwright install firefox
+          playwright install-deps firefox
 
       - name: Fetch and append data
         run: python fetch_data.py

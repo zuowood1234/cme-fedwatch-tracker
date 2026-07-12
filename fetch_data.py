@@ -120,15 +120,11 @@ def scrape_cme_fedwatch(max_retries=3):
     captured_apis = []
     last_error = None
 
+    # Use Firefox instead of Chromium — different HTTP stack avoids ERR_HTTP2_PROTOCOL_ERROR
+    # Firefox uses its own networking (Necko) and handles TLS/HTTP differently
     with sync_playwright() as p:
-        browser = p.chromium.launch(
+        browser = p.firefox.launch(
             headless=True,
-            args=[
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-features=Http2",
-                "--force-http1",
-            ],
         )
         context = browser.new_context(
             user_agent=(
