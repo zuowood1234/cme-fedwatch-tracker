@@ -1,0 +1,470 @@
+[
+  {
+    "url": "https://www.cmegroup.com/libs/cmegroup/alerts/search.ajax.%7Ccontent%7Ccmegroup%7Cen%7Cmarkets%7Cinterest-rates%7Ccme-fedwatch-tool.-.-.json",
+    "data": []
+  },
+  {
+    "url": "https://www.cmegroup.com/bin/service/banners.%7Ccontent%7Ccmegroup%7Cen%7Cmarkets%7Cinterest-rates%7Ccme-fedwatch-tool.json?isProtected&_t=1783862169069",
+    "data": []
+  },
+  {
+    "url": "https://www.cmegroup.com/bin/service/popups.%7Ccontent%7Ccmegroup%7Cen%7Cmarkets%7Cinterest-rates%7Ccme-fedwatch-tool.json?isProtected&_t=1783862169292",
+    "data": [
+      {
+        "formId": "CUF-2024-IR-003",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "afterSubmissionText": "<p>Thank you for completing the form. A member of our team will be contacting you shortly.</p>\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question about trading SOFR? Simply fill out the form, and one of our team members will be in touch.",
+        "buttonText": "Schedule a Call",
+        "popupTitle": "Talk to an expert",
+        "popupTrigger": "scroll",
+        "popupId": "CUF-2024-IR-003",
+        "scroll": 50,
+        "delay": 30,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-IR-004",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question about trading SOFR? Simply fill out the form, and one of our team members will be in touch.",
+        "buttonText": "Schedule a Call",
+        "popupTitle": "Talk to an expert",
+        "popupTrigger": "scroll",
+        "popupId": "CUF-2024-IR-004",
+        "scroll": 1,
+        "delay": 30,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-GSD-015",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question about managing your emerging markets exposure? We're here to help you get the answers you need during the Australian trading day. Speak to a member of our team today.",
+        "buttonText": "Talk to an expert",
+        "popupTitle": "Connect with a team member",
+        "popupTrigger": "immediately",
+        "popupId": "CUF-2024-GSD-015",
+        "scroll": 65,
+        "delay": 5,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-GSD-013",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question about AIR Total Return futures? We're here to help you get the answers you need during the Australian trading day.",
+        "buttonText": "Talk to an expert",
+        "popupTitle": "Connect with a team member",
+        "popupTrigger": "delay",
+        "popupId": "CUF-2024-GSD-013",
+        "scroll": 65,
+        "delay": 5,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-GSD-014",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question about trading Australian Dollar futures? We're here to help you get the answers you need during the Australian trading day. Speak to a member of our team today.",
+        "buttonText": "Talk to an expert",
+        "popupTitle": "Connect with a team member",
+        "popupTrigger": "delay",
+        "popupId": "CUF-2024-GSD-014",
+        "scroll": 65,
+        "delay": 5,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-GSD-016",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question? Our team is available to help you get the answers you need during the Australian trading day. Speak to a Interest Rates expert to get started in our markets. ",
+        "buttonText": "Talk to an expert",
+        "popupTitle": "Connect with a team member",
+        "popupTrigger": "delay",
+        "popupId": "CUF-2024-GSD-016",
+        "scroll": 65,
+        "delay": 5,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-GSD-017",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question? Our team is available to help you get the answers you need during the Australian trading day. Speak to a Interest Rates expert to get started in our markets. ",
+        "buttonText": "Talk to an expert",
+        "popupTitle": "Connect with a team member",
+        "popupTrigger": "delay",
+        "popupId": "CUF-2024-GSD-017",
+        "scroll": 65,
+        "delay": 5,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-GSD-009",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question about trading SOFR? We're here to help you get the answers you need during the Australian trading day.",
+        "buttonText": "Talk to an expert",
+        "popupTitle": "Connect with a team member",
+        "popupTrigger": "delay",
+        "popupId": "CUF-2024-GSD-009",
+        "scroll": 65,
+        "delay": 5,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-GSD-023",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question about our Wheat Spread futures? We\u2019re here to help you get the answers you need during the Australian trading day.",
+        "buttonText": "Talk to our team",
+        "popupTitle": "Connect with a team member",
+        "popupTrigger": "delay",
+        "popupId": "CUF-2024-GSD-023",
+        "scroll": 65,
+        "delay": 5,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-GSD-024",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question about live cattle Futures? We\u2019re here to help you get the answers you need during the Australian trading day.",
+        "buttonText": "Talk to our team",
+        "popupTitle": "Connect with a team member",
+        "popupTrigger": "delay",
+        "popupId": "CUF-2024-GSD-024",
+        "scroll": 65,
+        "delay": 5,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-GSD-025",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question about Australian Carbon Credit Unit futures? We\u2019re here to help you get the answers you need during the Australian trading day. ",
+        "buttonText": "Talk to our team",
+        "popupTitle": "Connect with a team member",
+        "popupTrigger": "delay",
+        "popupId": "CUF-2024-GSD-025",
+        "scroll": 65,
+        "delay": 5,
+        "isPersonalized": true
+      },
+      {
+        "formId": "CUF-2024-GSD-026",
+        "contentData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"textarea\"><div class=\"component textarea\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Message__c\">\r\n      question or comment\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper textarea-wrapper p-1\">\r\n      <textarea id=\"Message__c\" class=\"form-control\" name=\"Message__c\" rows=\"7\"></textarea>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\r\n  \r\n\r\n\r\n\r\n\n    \n\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Business Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "isHighValueForm": true,
+        "descriptionText": "Have a question? We're here to help. Our team is available to help our customers in Australia get answers, get connected, get data and more.",
+        "buttonText": "Talk to our team",
+        "popupTitle": "Connect with a team member",
+        "popupTrigger": "delay",
+        "popupId": "CUF-2024-GSD-026",
+        "scroll": 65,
+        "delay": 5,
+        "isPersonalized": true
+      },
+      {
+        "descriptionText": "Pricing &amp; Hedging IRS with SOFR futures",
+        "buttonText": "Find out more",
+        "buttonStyle": "primary",
+        "popupTitle": "New essential reading for STIR desks ",
+        "titleSize": "title-h1",
+        "popupLocation": "bottom-left",
+        "isReverse": true,
+        "urlBackgroundImage": "/content/dam/cmegroup/markets/interest-rates/images/pop001-ir-potr_940x600.jpg",
+        "backgroundColor": "#112B42",
+        "popupTrigger": "immediately",
+        "backgroundType": "IMAGE",
+        "popupId": "wf-1857655",
+        "scroll": 50,
+        "delay": 15,
+        "scope": [
+          "/content/cmegroup/en/markets/interest-rates/stirs/30-day-federal-fund",
+          "/content/cmegroup/en/markets/interest-rates/stirs/eur-xccy",
+          "/content/cmegroup/en/markets/interest-rates/stirs/euro-short-term-rate",
+          "/content/cmegroup/en/markets/interest-rates/stirs/one-month-sofr",
+          "/content/cmegroup/en/markets/interest-rates/stirs/three-month-sofr",
+          "/content/cmegroup/en/markets/interest-rates/stirs/us-t-bill",
+          "/content/cmegroup/en/markets/interest-rates/cme-fedwatch-tool",
+          "/content/cmegroup/en/markets/interest-rates/cme-sofrwatch",
+          "/content/cmegroup/en/markets/interest-rates/secured-overnight-financing-rate",
+          "/content/cmegroup/en/markets/interest-rates",
+          "/content/cmegroup/en/markets/interest-rates/cme-estrwatch",
+          "/content/cmegroup/en/markets/interest-rates/cme-group-cross-currency-basis-watch",
+          "/content/cmegroup/en/tools-information/quikstrike/short-term-interest-rate-analytics",
+          "/content/cmegroup/en/education/courses/introduction-to-sofr",
+          "/content/cmegroup/en/education/courses/introduction-to-sofr/explaining-the-sofr-settlement-process",
+          "/content/cmegroup/en/education/courses/introduction-to-sofr/trading-sofr-futures",
+          "/content/cmegroup/en/education/courses/introduction-to-sofr/understanding-imm-index-and-dates",
+          "/content/cmegroup/en/education/courses/introduction-to-sofr/understanding-sofr-strips",
+          "/content/cmegroup/en/education/courses/introduction-to-sofr/what-is-sofr"
+        ],
+        "linkUrl": "/articles/2025/price-and-hedging-usd-sofr-interest-swaps-with-sofr-futures.html",
+        "linkDownload": false
+      },
+      {
+        "formId": "CUF-2026-CRYPTO-020",
+        "userData": "<main id=\"main-content\" tabindex=\"-1\">\r\n  <div class=\"root parsys\">\n\n\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"First_Name__c\">\r\n      First Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"First_Name__c\" class=\"form-control\" name=\"First_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your first name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Last_Name__c\">\r\n      Last Name\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Last_Name__c\" class=\"form-control\" name=\"Last_Name__c\" type=\"text\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your last name\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  \r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start None \">\r\n  <div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Email__c\">\r\n      Email\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  email\">\r\n      <input id=\"Email__c\" class=\"form-control\" name=\"Email__c\" type=\"email\" data-required=\"required\" data-pre-fill=\"yes\" data-fill-error=\"Please enter your business email address\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n<div class=\"col-md-6\">\r\n\r\n  \r\n  <div class=\"hidden\"><div class=\"component hidden\">\r\n  <input type=\"hidden\" name=\"Custom_Question_1__c\" value=\"X handle\" data-pre-fill=\"yes\"/>\r\n</div>\r\n\n    \n\r\n</div>\n<div class=\"input\"><div class=\"component input\">\r\n  <div class=\"form-group\">\r\n    <label for=\"Custom_Answer_1__c\">\r\n      X (formerly Twitter) handle\r\n      \r\n    </label>\r\n    <div class=\"form-control-wrapper input-wrapper  text\">\r\n      <input id=\"Custom_Answer_1__c\" class=\"form-control\" name=\"Custom_Answer_1__c\" placeholder=\"@\" type=\"text\" data-required=\"required\" data-fill-error=\"Please enter your X handle\"/>\r\n      <span></span>\r\n    </div>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n    \n    \n    <div class=\"colctrlcomp\">\r\n\r\n<div class=\"component row  justify-content-start crmb-3 \">\r\n  <div class=\"col\">\r\n\r\n  \r\n  <div class=\"checkbox\"><div class=\"component checkbox\">\r\n  <div class=\"form-group form-check rte-global-styles\">\r\n    <label for=\"Privacy_Policy__c\">\r\n      <div class=\"form-control-wrapper checkbox-wrapper \">\r\n        <input type=\"checkbox\" class=\"form-check-input\" name=\"Privacy_Policy__c\" id=\"Privacy_Policy__c\" value=\"true\" data-required=\"required\" data-fill-error=\"Please fill out this field.\"/>\r\n        <span></span>\r\n      </div>\r\n      I have read and understand the\u00a0<a href=\"https://www.cmegroup.com/privacy-policy.html\" target=\"_blank\">Privacy Policy</a>\u00a0and <a href=\"/content/dam/cmegroup/events/files/2026/247-crypto-giveaway-rules.pdf\" target=\"_blank\">Official Rules</a>.\r\n      \r\n    </label>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n<div class=\"checkbox\"><div class=\"component checkbox\">\r\n  <div class=\"form-group form-check rte-global-styles\">\r\n    <label for=\"Terms_of_Service__c\">\r\n      <div class=\"form-control-wrapper checkbox-wrapper \">\r\n        <input type=\"checkbox\" class=\"form-check-input\" name=\"Terms_of_Service__c\" id=\"Terms_of_Service__c\" value=\"true\" data-required=\"required\"/>\r\n        <span></span>\r\n      </div>\r\n      I have read and agree to the\u00a0<a href=\"http://www.cmegroup.com/cookie-policy.html\" target=\"_blank\">Cookie Notice</a>.\r\n      \r\n    </label>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n<div class=\"checkbox\"><div class=\"component checkbox\">\r\n  <div class=\"form-group form-check rte-global-styles\">\r\n    <label for=\"Receive_Communications__c\">\r\n      <div class=\"form-control-wrapper checkbox-wrapper \">\r\n        <input type=\"checkbox\" class=\"form-check-input\" name=\"Receive_Communications__c\" id=\"Receive_Communications__c\" value=\"true\"/>\r\n        <span></span>\r\n      </div>\r\n      Yes. I would like to receive communications regarding CME Group products, services, &amp; events. I understand that I can unsubscribe at any time. By registering, I agree to the processing of my personal data in accordance with the CME Group Privacy Policy.\u00a0<i>(Optional)</i>\r\n      \r\n    </label>\r\n    <span class=\"error-message d-none\"></span>\r\n  </div>\r\n</div>\r\n\n    \n\r\n</div>\n\r\n  \r\n\r\n</div>\n\r\n</div>\r\n</div>\n\n\n</div>\n\r\n</main>\r\n\n\r\n\n\n\n\n\r\n  \n    \n\n\n\n\n\r\n  \r\n  \r\n\r\n\r\n",
+        "afterSubmissionText": "<p>Thank you for completing the form.</p>\r\n",
+        "descriptionText": "<p><b>Your chance to win a $247 Starbucks gift card</b></p>\r\n<p>Post a screenshot* of your Crypto futures and options watchlists or charts on X using #CME247CryptoGiveaway, tag @CMEActiveTrader and fill out the form below before Sunday, May 31, 2026, at 11:59 p.m. ET.</p>\r\n<p style=\"margin-bottom: 10.0px;\"><span class=\"small\"><i>*Don\u2019t share sensitive data in your screenshot.</i></span></p>\r\n<div class=\"smaller\"><span class=\"small\" style=\"font-size: 9.0px;\"><i>NO PURCHASE OR TRADE NECESSARY. Winners will be chosen at random. By participating in this random drawing, the registrant is providing consent to electronic communications in accordance with the <a href=\"https://www.cmegroup.com/privacy-policy/general.html\">CME Group Privacy Notice</a>. To learn more visit <a href=\"https://www.cmegroup.com/privacy-policy.html\">Privacy Center</a>. Void where prohibited. Open to legal residents of the US, 18+. Begins 5/29/26 at 65:00 PM ET and ends 5/31/26 at 11:59 PM ET. Limit 1 entry per person. Twenty (20) Prizes will be awarded, each consisting of a $247.00 Starbucks e-Gift Card. Total ARV of all prizes: $4,940.00. Winners selected via random drawing on or about June 1, 2026. Starbucks is not a sponsor of or participant in this promotion.</i></span></div>\r\n",
+        "popupTitle": "24/7 Opening Weekend Giveaway",
+        "popupTrigger": "immediately",
+        "popupId": "CUF-2026-CRYPTO-020",
+        "scroll": 50,
+        "delay": 5,
+        "isPersonalized": true
+      }
+    ]
+  },
+  {
+    "url": "https://edge.api.brightcove.com/playback/v1/accounts/49919183001/videos/ref%3A170329FedWatchTool",
+    "data": {
+      "poster": "https://cf-images.us-east-1.prod.boltdns.net/v1/static/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/29117ba1-d38f-4b88-b5d0-4bfa4aec5fc6/1280x720/match/image.jpg",
+      "thumbnail": "https://cf-images.us-east-1.prod.boltdns.net/v1/static/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/6b8f305e-654b-4e36-867c-0869a68730b0/160x90/match/image.jpg",
+      "poster_sources": [
+        {
+          "src": "https://cf-images.us-east-1.prod.boltdns.net/v1/static/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/29117ba1-d38f-4b88-b5d0-4bfa4aec5fc6/1280x720/match/image.jpg"
+        }
+      ],
+      "thumbnail_sources": [
+        {
+          "src": "https://cf-images.us-east-1.prod.boltdns.net/v1/static/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/6b8f305e-654b-4e36-867c-0869a68730b0/160x90/match/image.jpg"
+        }
+      ],
+      "description": "FedWatch Tool",
+      "tags": [
+        "dotsub_marketedu",
+        "fedwatch"
+      ],
+      "cue_points": [],
+      "custom_fields": {},
+      "account_id": "49919183001",
+      "sources": [
+        {
+          "codecs": "avc1,mp4a",
+          "ext_x_version": "4",
+          "src": "http://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/10s/master.m3u8?fastly_token=NmMzNGQ5ZTJfODY3NzAxNDQxNWZiNTMwODAyNWJhZGVhZWQ4NTgzNWQwY2NmN2ZjZmNjNDU5YTNlOTUwNWRiN2Q4YWYwMGE4OA%3D%3D",
+          "type": "application/x-mpegURL"
+        },
+        {
+          "codecs": "avc1,mp4a",
+          "ext_x_version": "4",
+          "src": "https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/10s/master.m3u8?fastly_token=NmMzNGQ5ZTJfODY3NzAxNDQxNWZiNTMwODAyNWJhZGVhZWQ4NTgzNWQwY2NmN2ZjZmNjNDU5YTNlOTUwNWRiN2Q4YWYwMGE4OA%3D%3D",
+          "type": "application/x-mpegURL"
+        },
+        {
+          "codecs": "avc1,mp4a",
+          "profiles": "urn:mpeg:dash:profile:isoff-live:2011",
+          "src": "http://manifest.prod.boltdns.net/manifest/v1/dash/live-baseurl/clear/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/6s/manifest.mpd?fastly_token=NmMzNGQ5ZTJfMTAxZmE3ZGVjZmIxOGNkMDc5NzBkMTAxMmVlNTM1YTdiYWNmMTgxZTZlYjQ1YTgxN2E1ZDVjNzA0MDQ3NjY4Zg%3D%3D",
+          "type": "application/dash+xml"
+        },
+        {
+          "codecs": "avc1,mp4a",
+          "profiles": "urn:mpeg:dash:profile:isoff-live:2011",
+          "src": "https://manifest.prod.boltdns.net/manifest/v1/dash/live-baseurl/clear/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/6s/manifest.mpd?fastly_token=NmMzNGQ5ZTJfMTAxZmE3ZGVjZmIxOGNkMDc5NzBkMTAxMmVlNTM1YTdiYWNmMTgxZTZlYjQ1YTgxN2E1ZDVjNzA0MDQ3NjY4Zg%3D%3D",
+          "type": "application/dash+xml"
+        },
+        {
+          "avg_bitrate": 2105000,
+          "codec": "H264",
+          "container": "MP4",
+          "duration": 178996,
+          "height": 720,
+          "size": 47203445,
+          "src": "http://house-fastly-signed-us-east-1-prod.brightcovecdn.com/media/v1/pmp4/static/clear/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/42a55c4f-240e-40c7-bddf-4813cba466ea/main.mp4?fastly_token=NmMzNGQ5ZTJfYjVjMWZhNTZkMzE4NmRiN2U4NjI2YzNjNjQ4NDg3NTcxOTY1MDU1YWJjYWY1YmY4OWQ2YzU2MGQyOWE4ZDNkMV8vL2hvdXNlLWZhc3RseS1zaWduZWQtdXMtZWFzdC0xLXByb2QuYnJpZ2h0Y292ZWNkbi5jb20vbWVkaWEvdjEvcG1wNC9zdGF0aWMvY2xlYXIvNDk5MTkxODMwMDEvZDU2ZDk1MDEtYTg1Yi00NjkxLTlkYWQtMTkyYjY2NTZmZDcwLzQyYTU1YzRmLTI0MGUtNDBjNy1iZGRmLTQ4MTNjYmE0NjZlYS9tYWluLm1wNA%3D%3D",
+          "width": 1280
+        },
+        {
+          "avg_bitrate": 2105000,
+          "codec": "H264",
+          "container": "MP4",
+          "duration": 178996,
+          "height": 720,
+          "size": 47203445,
+          "src": "https://house-fastly-signed-us-east-1-prod.brightcovecdn.com/media/v1/pmp4/static/clear/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/42a55c4f-240e-40c7-bddf-4813cba466ea/main.mp4?fastly_token=NmMzNGQ5ZTJfYjVjMWZhNTZkMzE4NmRiN2U4NjI2YzNjNjQ4NDg3NTcxOTY1MDU1YWJjYWY1YmY4OWQ2YzU2MGQyOWE4ZDNkMV8vL2hvdXNlLWZhc3RseS1zaWduZWQtdXMtZWFzdC0xLXByb2QuYnJpZ2h0Y292ZWNkbi5jb20vbWVkaWEvdjEvcG1wNC9zdGF0aWMvY2xlYXIvNDk5MTkxODMwMDEvZDU2ZDk1MDEtYTg1Yi00NjkxLTlkYWQtMTkyYjY2NTZmZDcwLzQyYTU1YzRmLTI0MGUtNDBjNy1iZGRmLTQ4MTNjYmE0NjZlYS9tYWluLm1wNA%3D%3D",
+          "width": 1280
+        }
+      ],
+      "video_preview": [
+        {
+          "ext_x_version": "7",
+          "src": "http://manifest.prod.boltdns.net/manifest/v2/hls/v7/clear/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/10s/preview.m3u8?fastly_token=NmMzNGQ5ZTJfMDFhYTVhNWFiOTk5NGUwODY3NDAxZjExNTY2M2UzMjZiNjkxNzNjOTdlOTJjM2Y2ZjNiYTVlZTM4MmZmMmVmMA%3D%3D",
+          "type": "application/x-mpegURL"
+        },
+        {
+          "ext_x_version": "7",
+          "src": "https://manifest.prod.boltdns.net/manifest/v2/hls/v7/clear/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/10s/preview.m3u8?fastly_token=NmMzNGQ5ZTJfMDFhYTVhNWFiOTk5NGUwODY3NDAxZjExNTY2M2UzMjZiNjkxNzNjOTdlOTJjM2Y2ZjNiYTVlZTM4MmZmMmVmMA%3D%3D",
+          "type": "application/x-mpegURL"
+        }
+      ],
+      "name": "Introduction to CME FedWatch",
+      "reference_id": "170329FedWatchTool",
+      "long_description": "Gain a better understanding of our most popular tool, the CME FedWatch tool, which uses 30-Day Fed Fund futures prices to gauge the probability of an upcoming rate hike.\u00a0\u00a0",
+      "duration": 179051,
+      "economics": "FREE",
+      "text_tracks": [
+        {
+          "id": "0a0f8d2c-4844-4f9a-9edf-5ad58185cd7b",
+          "account_id": "49919183001",
+          "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/chi_hans/vtt",
+          "srclang": "chi_hans",
+          "label": "Chinese (Simplified)",
+          "kind": "captions",
+          "mime_type": "text/vtt",
+          "asset_id": null,
+          "sources": [
+            {
+              "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/chi_hans/vtt"
+            }
+          ],
+          "default": false
+        },
+        {
+          "id": "6ceb40c9-906e-480b-8afb-0ab809354d7d",
+          "account_id": "49919183001",
+          "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/chi_hant/vtt",
+          "srclang": "chi_hant",
+          "label": "Chinese (Traditional)",
+          "kind": "captions",
+          "mime_type": "text/vtt",
+          "asset_id": null,
+          "sources": [
+            {
+              "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/chi_hant/vtt"
+            }
+          ],
+          "default": false
+        },
+        {
+          "id": "bdd92882-b09c-4a68-8fe7-ef127dc95173",
+          "account_id": "49919183001",
+          "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/eng/vtt",
+          "srclang": "en",
+          "label": "English",
+          "kind": "captions",
+          "mime_type": "text/vtt",
+          "asset_id": null,
+          "sources": [
+            {
+              "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/eng/vtt"
+            }
+          ],
+          "default": false
+        },
+        {
+          "id": "078a8458-8840-4ec4-a7f1-db53178ef55c",
+          "account_id": "49919183001",
+          "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/jpn/vtt",
+          "srclang": "jpn",
+          "label": "Japanese",
+          "kind": "captions",
+          "mime_type": "text/vtt",
+          "asset_id": null,
+          "sources": [
+            {
+              "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/jpn/vtt"
+            }
+          ],
+          "default": false
+        },
+        {
+          "id": "0c00d69e-fca0-48f9-8c57-4bbae970ad4d",
+          "account_id": "49919183001",
+          "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/kor/vtt",
+          "srclang": "ko",
+          "label": "Korean",
+          "kind": "captions",
+          "mime_type": "text/vtt",
+          "asset_id": null,
+          "sources": [
+            {
+              "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/kor/vtt"
+            }
+          ],
+          "default": false
+        },
+        {
+          "id": "e40694d7-f9a4-4c79-ac46-67a8ed3e6ab0",
+          "account_id": "49919183001",
+          "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/por_br/vtt",
+          "srclang": "por_br",
+          "label": "Portuguese (Brazil)",
+          "kind": "captions",
+          "mime_type": "text/vtt",
+          "asset_id": null,
+          "sources": [
+            {
+              "src": "https://dotsub.com/media/d2777fb9-2b1f-4adb-825b-6fd7c8573f7c/c/por_br/vtt"
+            }
+          ],
+          "default": false
+        },
+        {
+          "id": null,
+          "account_id": "49919183001",
+          "src": "http://manifest.prod.boltdns.net/thumbnail/v1/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/128ccffd-2683-438a-b1c4-cfdf8b044364/thumbnail.webvtt?fastly_token=NmMzNGQ5ZTJfZWQxMDU1OTZhODIzOWQwZTNhY2VkMDI0YTFjODZkMzFlNTI3ZTcxNzBiYzJiOGJkMDY4MTljM2ViMTA3YmMxYg%3D%3D",
+          "srclang": null,
+          "label": "thumbnails",
+          "kind": "metadata",
+          "mime_type": "text/webvtt",
+          "asset_id": null,
+          "sources": null,
+          "default": false,
+          "width": 480,
+          "height": 270,
+          "bandwidth": 444
+        },
+        {
+          "id": null,
+          "account_id": "49919183001",
+          "src": "https://manifest.prod.boltdns.net/thumbnail/v1/49919183001/d56d9501-a85b-4691-9dad-192b6656fd70/128ccffd-2683-438a-b1c4-cfdf8b044364/thumbnail.webvtt?fastly_token=NmMzNGQ5ZTJfZWQxMDU1OTZhODIzOWQwZTNhY2VkMDI0YTFjODZkMzFlNTI3ZTcxNzBiYzJiOGJkMDY4MTljM2ViMTA3YmMxYg%3D%3D",
+          "srclang": null,
+          "label": "thumbnails",
+          "kind": "metadata",
+          "mime_type": "text/webvtt",
+          "asset_id": null,
+          "sources": null,
+          "default": false,
+          "width": 480,
+          "height": 270,
+          "bandwidth": 444
+        }
+      ],
+      "published_at": "2017-04-19T14:28:19.371Z",
+      "created_at": "2017-04-19T14:26:18.560Z",
+      "updated_at": "2017-08-09T14:41:39.135Z",
+      "offline_enabled": false,
+      "link": null,
+      "id": "5403329907001",
+      "ad_keys": null
+    }
+  },
+  {
+    "url": "https://cmegroup-tools.quikstrike.net//AjaxPages/SessionUtilityMethods.aspx/SetTimeZoneOffset?timeZoneOffset=0&insid=232611457&qsid=508c2f8f-a58c-4278-a102-1b583cbf590b",
+    "data": {
+      "d": null
+    }
+  },
+  {
+    "url": "https://cmegroup-tools.quikstrike.net//AjaxPages/UtilityMethods.aspx/UtcTime?partyId=1856&insid=232611457&qsid=508c2f8f-a58c-4278-a102-1b583cbf590b&_=1783862170175",
+    "data": {
+      "d": "07/12/2026 13:17:10"
+    }
+  }
+]

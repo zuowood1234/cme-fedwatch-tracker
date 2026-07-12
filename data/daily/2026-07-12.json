@@ -1,0 +1,16 @@
+{
+  "date": "2026-07-12",
+  "current_target": "",
+  "effr": null,
+  "meetings": [
+    {
+      "date": "2027-09-15",
+      "raw_date": "15 Sep27",
+      "probabilities": {
+        "NO CHANGE": 65.8,
+        "HIKE": 34.2
+      }
+    }
+  ],
+  "captured_api_count": 6
+}
