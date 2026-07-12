@@ -160,8 +160,8 @@ def scrape_cme_fedwatch(max_retries=3):
                 page.goto(CME_FEDWATCH_URL, wait_until="domcontentloaded", timeout=120000)
                 print("  Page loaded, waiting for content...")
 
-                # Extra wait for JS rendering
-                page.wait_for_timeout(5000)
+                # Extra wait for JS rendering — ASP.NET QuikStrike can be slow
+                page.wait_for_timeout(10000)
                 last_error = None
                 break
 
@@ -178,6 +178,18 @@ def scrape_cme_fedwatch(max_retries=3):
 
         if last_error:
             raise last_error
+
+        # ── Check what's actually on the page ───────────────────────────────
+        # Save full HTML for debugging
+        try:
+            raw_html_full = page.content()
+            debug_dir = DATA_DIR / "debug"
+            debug_dir.mkdir(parents=True, exist_ok=True)
+            with open(debug_dir / f"{snapshot_date}_full_page.html", "w") as f:
+                f.write(raw_html_full)
+            print(f"  Saved full page HTML: {len(raw_html_full)} chars")
+        except Exception as e:
+            print(f"  Could not save full HTML: {e}")
 
         # Wait for the probability table to render
         # The CME FedWatch page typically embeds a QuikStrike iframe
