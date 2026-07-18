@@ -1,17 +1,21 @@
 {
   "snapshot_date": "2026-07-18",
-  "scrape_time": "2026-07-18T07:41:29.389918+00:00",
+  "scrape_time": "2026-07-18T07:45:13.546179+00:00",
   "source_url": "https://www.cmegroup.cn/fed-watch/",
   "num_meetings": 10,
   "meetings": [
     {
       "tab_label": "29 Jul26",
-      "meeting_date": "",
-      "contract": "",
-      "mid_price": "",
-      "current_target": "350-375",
-      "timestamp": "18 Jul 2026 02:27:13",
-      "summary": {},
+      "meeting_date": "2026-07-29",
+      "contract": "ZQN6",
+      "mid_price": "96.3700",
+      "current_target": "350-37587",
+      "timestamp": "",
+      "summary": {
+        "ease": 0,
+        "no_change": 87.2,
+        "hike": 12.8
+      },
       "rate_probabilities": [
         {
           "range": "350-375 (Current)",
@@ -31,12 +35,16 @@
     },
     {
       "tab_label": "16 Sep26",
-      "meeting_date": "",
-      "contract": "",
-      "mid_price": "",
-      "current_target": "350-375",
-      "timestamp": "18 Jul 2026 02:27:13",
-      "summary": {},
+      "meeting_date": "2026-09-16",
+      "contract": "ZQU6",
+      "mid_price": "96.2800",
+      "current_target": "350-37542",
+      "timestamp": "",
+      "summary": {
+        "ease": 0,
+        "no_change": 42.2,
+        "hike": 57.8
+      },
       "rate_probabilities": [
         {
           "range": "350-375 (Current)",
@@ -48,7 +56,7 @@
         {
           "range": "375-400",
           "now": 51.2,
-          "day1": 47.0,
+          "day1": 47,
           "week1": 51.2,
           "month1": 49.9
         },
@@ -57,18 +65,22 @@
           "now": 6.6,
           "day1": 5.4,
           "week1": 18.4,
-          "month1": 19.0
+          "month1": 19
         }
       ]
     },
     {
       "tab_label": "28 Oct26",
-      "meeting_date": "",
-      "contract": "",
-      "mid_price": "",
-      "current_target": "350-375",
-      "timestamp": "18 Jul 2026 02:30:40",
-      "summary": {},
+      "meeting_date": "2026-10-28",
+      "contract": "ZQV6",
+      "mid_price": "96.2050",
+      "current_target": "350-37531",
+      "timestamp": "",
+      "summary": {
+        "ease": 0,
+        "no_change": 31.9,
+        "hike": 68.1
+      },
       "rate_probabilities": [
         {
           "range": "350-375 (Current)",
@@ -79,7 +91,7 @@
         },
         {
           "range": "375-400",
-          "now": 49.0,
+          "now": 49,
           "day1": 47.1,
           "week1": 46.6,
           "month1": 44.9
@@ -102,12 +114,16 @@
     },
     {
       "tab_label": "9 Dec26",
-      "meeting_date": "",
-      "contract": "",
-      "mid_price": "",
-      "current_target": "350-375",
-      "timestamp": "18 Jul 2026 02:27:13",
-      "summary": {},
+      "meeting_date": "2026-12-09",
+      "contract": "ZQZ6",
+      "mid_price": "96.0850",
+      "current_target": "350-37521",
+      "timestamp": "",
+      "summary": {
+        "ease": 0,
+        "no_change": 21.1,
+        "hike": 78.9
+      },
       "rate_probabilities": [
         {
           "range": "350-375 (Current)",
@@ -132,7 +148,7 @@
         },
         {
           "range": "425-450",
-          "now": 7.0,
+          "now": 7,
           "day1": 5.1,
           "week1": 12.3,
           "month1": 13.9
@@ -142,18 +158,22 @@
           "now": 0.5,
           "day1": 0.3,
           "week1": 1.6,
-          "month1": 2.0
+          "month1": 2
         }
       ]
     },
     {
       "tab_label": "27 Jan27",
-      "meeting_date": "",
-      "contract": "",
-      "mid_price": "",
-      "current_target": "350-375",
-      "timestamp": "18 Jul 2026 02:27:13",
-      "summary": {},
+      "meeting_date": "2027-01-27",
+      "contract": "ZQF7",
+      "mid_price": "96.0600",
+      "current_target": "350-37517",
+      "timestamp": "",
+      "summary": {
+        "ease": 0,
+        "no_change": 17.7,
+        "hike": 82.3
+      },
       "rate_probabilities": [
         {
           "range": "350-375 (Current)",
@@ -187,7 +207,7 @@
           "range": "450-475",
           "now": 1.6,
           "day1": 1.1,
-          "week1": 3.0,
+          "week1": 3,
           "month1": 3.9
         },
         {
@@ -201,12 +221,16 @@
     },
     {
       "tab_label": "17 Mar27",
-      "meeting_date": "",
-      "contract": "",
-      "mid_price": "",
-      "current_target": "350-375",
-      "timestamp": "18 Jul 2026 02:30:40",
-      "summary": {},
+      "meeting_date": "2027-03-17",
+      "contract": "ZQH7",
+      "mid_price": "96.0000",
+      "current_target": "350-37514",
+      "timestamp": "",
+      "summary": {
+        "ease": 0,
+        "no_change": 14.2,
+        "hike": 85.8
+      },
       "rate_probabilities": [
         {
           "range": "350-375 (Current)",
@@ -234,14 +258,14 @@
           "now": 14.4,
           "day1": 12.4,
           "week1": 19.4,
-          "month1": 20.0
+          "month1": 20
         },
         {
           "range": "450-475",
           "now": 3.3,
           "day1": 2.6,
           "week1": 5.7,
-          "month1": 6.0
+          "month1": 6
         },
         {
           "range": "475-500",
@@ -252,21 +276,25 @@
         },
         {
           "range": "500-525",
-          "now": 0.0,
-          "day1": 0.0,
-          "week1": 0.0,
+          "now": 0,
+          "day1": 0,
+          "week1": 0,
           "month1": 0.1
         }
       ]
     },
     {
       "tab_label": "28 Apr27",
-      "meeting_date": "",
-      "contract": "",
-      "mid_price": "",
-      "current_target": "350-375",
-      "timestamp": "18 Jul 2026 02:30:40",
-      "summary": {},
+      "meeting_date": "2027-04-28",
+      "contract": "ZQJ7",
+      "mid_price": "95.9750",
+      "current_target": "350-37513",
+      "timestamp": "",
+      "summary": {
+        "ease": 0,
+        "no_change": 13.3,
+        "hike": 86.7
+      },
       "rate_probabilities": [
         {
           "range": "350-375 (Current)",
@@ -277,9 +305,9 @@
         },
         {
           "range": "375-400",
-          "now": 34.0,
+          "now": 34,
           "day1": 35.4,
-          "week1": 29.0,
+          "week1": 29,
           "month1": 29.1
         },
         {
@@ -293,27 +321,27 @@
           "range": "425-450",
           "now": 15.5,
           "day1": 13.9,
-          "week1": 20.0,
-          "month1": 20.0
+          "week1": 20,
+          "month1": 20
         },
         {
           "range": "450-475",
-          "now": 4.0,
+          "now": 4,
           "day1": 3.5,
           "week1": 6.3,
-          "month1": 6.0
+          "month1": 6
         },
         {
           "range": "475-500",
           "now": 0.6,
           "day1": 0.5,
-          "week1": 1.0,
+          "week1": 1,
           "month1": 0.9
         },
         {
           "range": "500-525",
-          "now": 0.0,
-          "day1": 0.0,
+          "now": 0,
+          "day1": 0,
           "week1": 0.1,
           "month1": 0.1
         }
@@ -321,12 +349,16 @@
     },
     {
       "tab_label": "9 Jun27",
-      "meeting_date": "",
-      "contract": "",
-      "mid_price": "",
-      "current_target": "350-375",
-      "timestamp": "18 Jul 2026 02:30:40",
-      "summary": {},
+      "meeting_date": "2027-06-09",
+      "contract": "ZQM7",
+      "mid_price": "95.9600",
+      "current_target": "350-3750",
+      "timestamp": "",
+      "summary": {
+        "ease": 0.2,
+        "no_change": 13.6,
+        "hike": 86.2
+      },
       "rate_probabilities": [
         {
           "range": "325-350",
@@ -344,7 +376,7 @@
         },
         {
           "range": "375-400",
-          "now": 34.0,
+          "now": 34,
           "day1": 35.3,
           "week1": 29.4,
           "month1": 29.6
@@ -354,7 +386,7 @@
           "now": 32.3,
           "day1": 30.8,
           "week1": 33.1,
-          "month1": 33.0
+          "month1": 33
         },
         {
           "range": "425-450",
@@ -365,7 +397,7 @@
         },
         {
           "range": "450-475",
-          "now": 4.0,
+          "now": 4,
           "day1": 3.4,
           "week1": 5.9,
           "month1": 5.6
@@ -374,31 +406,35 @@
           "range": "475-500",
           "now": 0.6,
           "day1": 0.5,
-          "week1": 1.0,
+          "week1": 1,
           "month1": 0.8
         },
         {
           "range": "500-525",
-          "now": 0.0,
-          "day1": 0.0,
+          "now": 0,
+          "day1": 0,
           "week1": 0.1,
-          "month1": 0.0
+          "month1": 0
         }
       ]
     },
     {
       "tab_label": "28 Jul27",
-      "meeting_date": "",
-      "contract": "",
-      "mid_price": "",
-      "current_target": "350-375",
-      "timestamp": "18 Jul 2026 02:27:13",
-      "summary": {},
+      "meeting_date": "2027-07-28",
+      "contract": "ZQN7",
+      "mid_price": "95.9650",
+      "current_target": "350-3751",
+      "timestamp": "",
+      "summary": {
+        "ease": 1.1,
+        "no_change": 14.9,
+        "hike": 84
+      },
       "rate_probabilities": [
         {
           "range": "300-325",
-          "now": 0.0,
-          "day1": 0.0,
+          "now": 0,
+          "day1": 0,
           "week1": 0.1,
           "month1": 0.1
         },
@@ -421,12 +457,12 @@
           "now": 33.9,
           "day1": 35.1,
           "week1": 29.7,
-          "month1": 30.0
+          "month1": 30
         },
         {
           "range": "400-425",
           "now": 31.2,
-          "day1": 30.0,
+          "day1": 30,
           "week1": 31.9,
           "month1": 31.1
         },
@@ -435,14 +471,14 @@
           "now": 14.6,
           "day1": 13.3,
           "week1": 17.9,
-          "month1": 17.0
+          "month1": 17
         },
         {
           "range": "450-475",
           "now": 3.7,
           "day1": 3.3,
           "week1": 5.5,
-          "month1": 5.0
+          "month1": 5
         },
         {
           "range": "475-500",
@@ -453,21 +489,25 @@
         },
         {
           "range": "500-525",
-          "now": 0.0,
-          "day1": 0.0,
+          "now": 0,
+          "day1": 0,
           "week1": 0.1,
-          "month1": 0.0
+          "month1": 0
         }
       ]
     },
     {
       "tab_label": "15 Sep27",
-      "meeting_date": "",
-      "contract": "",
-      "mid_price": "",
-      "current_target": "350-375",
-      "timestamp": "18 Jul 2026 02:30:40",
-      "summary": {},
+      "meeting_date": "2027-09-15",
+      "contract": "ZQU7",
+      "mid_price": "95.9950",
+      "current_target": "350-3750",
+      "timestamp": "",
+      "summary": {
+        "ease": 2.7,
+        "no_change": 17,
+        "hike": 80.3
+      },
       "rate_probabilities": [
         {
           "range": "300-325",
@@ -485,7 +525,7 @@
         },
         {
           "range": "350-375 (Current)",
-          "now": 17.0,
+          "now": 17,
           "day1": 0,
           "week1": 0,
           "month1": 0
