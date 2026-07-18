@@ -57,10 +57,12 @@ st.caption(
 
 # ── GitHub Sync ──────────────────────────────────────────────────────────────
 
-def github_push_data(data_dir):
+def github_push_data(data_dir, extra_files=None):
     """
     Push local data files to GitHub repo using Contents API.
     Uses GITHUB_TOKEN from secrets.
+
+    extra_files: optional list of (git_path, local_path) tuples to push additionally.
     """
     import base64
     import requests
@@ -87,6 +89,9 @@ def github_push_data(data_dir):
     daily_json_path = os.path.join(data_dir, "daily", f"{today_str}.json")
     if os.path.exists(daily_json_path):
         files_to_push.append((f"data/daily/{today_str}.json", daily_json_path))
+
+    if extra_files:
+        files_to_push.extend(extra_files)
 
     if not files_to_push:
         return True
@@ -238,15 +243,28 @@ def run_scraper(log_lines=None):
             diag_dir = Path(DATA_DIR) / "debug"
             diag_dir.mkdir(parents=True, exist_ok=True)
             ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+            extra_files = []
 
             screenshot_b64 = meetings.get('screenshot')
             if screenshot_b64:
-                (diag_dir / f"fail_{ts}.png").write_bytes(base64.b64decode(screenshot_b64))
-                log_to_ui(f"📸 Screenshot saved to {diag_dir}/fail_{ts}.png")
+                png_path = diag_dir / f"fail_{ts}.png"
+                png_path.write_bytes(base64.b64decode(screenshot_b64))
+                extra_files.append((f"data/debug/{png_path.name}", str(png_path)))
+                log_to_ui(f"📸 Screenshot saved: {png_path.name}")
 
             main_html = meetings.get('main_html', '')
             if main_html:
-                (diag_dir / f"fail_{ts}_main.html").write_text(main_html, encoding='utf-8')
+                html_path = diag_dir / f"fail_{ts}_main.html"
+                html_path.write_text(main_html, encoding='utf-8')
+                extra_files.append((f"data/debug/{html_path.name}", str(html_path)))
+                log_to_ui(f"📝 HTML saved: {html_path.name}")
+
+            # Push diagnostics to GitHub so we can inspect them
+            log_to_ui("☁️ Pushing diagnostics to GitHub...")
+            try:
+                github_push_data(DATA_DIR, extra_files=extra_files)
+            except Exception as e:
+                log_to_ui(f"⚠️ Diagnostic push failed: {e}")
 
             iframe_summary = []
             for fi in meetings.get('iframes', []):
