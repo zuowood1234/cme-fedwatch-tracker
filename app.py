@@ -13,6 +13,7 @@ Secrets required (set in Streamlit Cloud > Settings):
   - GITHUB_USERNAME: your GitHub username
 """
 
+import base64
 import os
 import re
 import sys
@@ -231,6 +232,34 @@ def run_scraper(log_lines=None):
                 display.stop()
             except Exception:
                 pass
+
+        # Handle diagnostic dict returned on failure
+        if isinstance(meetings, dict) and meetings.get('error'):
+            diag_dir = Path(DATA_DIR) / "debug"
+            diag_dir.mkdir(parents=True, exist_ok=True)
+            ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+
+            screenshot_b64 = meetings.get('screenshot')
+            if screenshot_b64:
+                (diag_dir / f"fail_{ts}.png").write_bytes(base64.b64decode(screenshot_b64))
+                log_to_ui(f"📸 Screenshot saved to {diag_dir}/fail_{ts}.png")
+
+            main_html = meetings.get('main_html', '')
+            if main_html:
+                (diag_dir / f"fail_{ts}_main.html").write_text(main_html, encoding='utf-8')
+
+            iframe_summary = []
+            for fi in meetings.get('iframes', []):
+                iframe_summary.append(
+                    f"  iframe[{fi.get('index')}] {fi.get('url','')}: text={fi.get('text_len','?')} chars"
+                )
+
+            diag_msg = "\n".join([
+                f"❌ {meetings['error']}",
+                f"URL: {meetings.get('url', '')}",
+                "Iframes:",
+            ] + iframe_summary)
+            return False, diag_msg + "\n\n" + "\n".join(log_lines[-10:]), 0
 
         if not meetings:
             return False, "No meetings extracted. QuikStrike may have failed to render.\n\n" + "\n".join(log_lines[-15:]), 0
