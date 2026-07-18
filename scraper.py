@@ -349,12 +349,27 @@ def scrape_all_meetings(headless=False, max_wait=90, log_func=print):
             return []
 
         # Click each tab and extract
+        prev_meeting_date = None
         for idx, tab in enumerate(tab_links):
             tab_id = tab['id']
             tab_text = tab['text']
             log_func(f"[{idx+1}/{len(tab_links)}] {tab_text}")
 
             try:
+                # Capture current meeting date before clicking
+                if idx > 0:
+                    prev_meeting_date = qs_frame.evaluate('''() => {
+                        const tables = document.querySelectorAll('table.grid-thm');
+                        for (const t of tables) {
+                            const text = Array.from(t.querySelectorAll('th, td')).map(el => el.textContent.trim()).join(' ');
+                            if (text.includes('Meeting Date')) {
+                                const cells = t.querySelectorAll('td');
+                                return cells.length > 0 ? cells[0].textContent.trim() : '';
+                            }
+                        }
+                        return '';
+                    }''')
+
                 clicked = qs_frame.evaluate('''(id) => {
                     const el = document.getElementById(id);
                     if (el) { el.click(); return true; }
@@ -365,19 +380,31 @@ def scrape_all_meetings(headless=False, max_wait=90, log_func=print):
                     log_func(f"  WARNING: Could not find {tab_id}")
                     continue
 
-                # Wait for ASP.NET postback
-                for w in range(12):
-                    time.sleep(1)
-                    ready = qs_frame.evaluate('''() => {
+                # Wait for ASP.NET postback: meeting date changed or throbber gone
+                max_wait_loops = 40  # 12 seconds max
+                for w in range(max_wait_loops):
+                    time.sleep(0.3)
+                    ready = qs_frame.evaluate('''(prevDate) => {
                         const throbber = document.querySelector('.throbber, [class*="loading"]');
                         if (throbber && throbber.offsetParent !== null) return false;
-                        const cells = document.querySelectorAll('td.center:not(.hide)');
-                        return cells.length > 0;
-                    }''')
+                        if (!prevDate) return true;
+                        const tables = document.querySelectorAll('table.grid-thm');
+                        for (const t of tables) {
+                            const text = Array.from(t.querySelectorAll('th, td')).map(el => el.textContent.trim()).join(' ');
+                            if (text.includes('Meeting Date')) {
+                                const cells = t.querySelectorAll('td');
+                                const current = cells.length > 0 ? cells[0].textContent.trim() : '';
+                                return current && current !== prevDate;
+                            }
+                        }
+                        return false;
+                    }''', prev_meeting_date)
                     if ready:
                         break
+                else:
+                    log_func("  WARNING: postback may not have completed, data might be stale")
 
-                time.sleep(1)
+                time.sleep(0.3)
 
             except Exception as e:
                 log_func(f"  Click error: {e}")
