@@ -6,6 +6,7 @@ Scrapes probability data from cmegroup.cn/fed-watch/ (QuikStrike widget).
 Uses Playwright + headed/xvfb browser.
 """
 
+import base64
 import csv
 import json
 import os
@@ -275,6 +276,43 @@ def extract_meeting_from_dom(frame):
 
 # ── Main scraper ─────────────────────────────────────────────────────────────
 
+def _diagnostic_dump(page, log_func=print):
+    """
+    Capture page state when QuikStrike fails to render.
+    Returns dict with screenshot (base64), main html, and iframe summaries.
+    """
+    diag = {'screenshot': None, 'main_html': '', 'iframes': [], 'url': page.url}
+    try:
+        screenshot_bytes = page.screenshot(full_page=True)
+        diag['screenshot'] = base64.b64encode(screenshot_bytes).decode('utf-8')
+        log_func(f"  Screenshot captured ({len(screenshot_bytes)} bytes)")
+    except Exception as e:
+        log_func(f"  Screenshot failed: {e}")
+
+    try:
+        diag['main_html'] = page.content()
+        log_func(f"  Main HTML captured ({len(diag['main_html'])} chars)")
+    except Exception as e:
+        log_func(f"  Main HTML failed: {e}")
+
+    for fi, frame in enumerate(page.frames):
+        try:
+            text = frame.inner_text('body')
+            html = frame.content()
+            url = frame.url
+            diag['iframes'].append({
+                'index': fi,
+                'url': url,
+                'text_len': len(text),
+                'html_len': len(html),
+                'text_preview': text[:500],
+            })
+        except Exception as e:
+            diag['iframes'].append({'index': fi, 'error': str(e)})
+
+    return diag
+
+
 def scrape_all_meetings(headless=False, max_wait=90, log_func=print):
     """
     Scrape all FOMC meeting probabilities from CME FedWatch.
@@ -286,6 +324,7 @@ def scrape_all_meetings(headless=False, max_wait=90, log_func=print):
 
     Returns:
         List of dicts (one per meeting) with full probability data.
+        On failure returns a dict with diagnostic info under key 'error'.
     """
     from playwright.sync_api import sync_playwright
 
@@ -330,8 +369,10 @@ def scrape_all_meetings(headless=False, max_wait=90, log_func=print):
 
         if not qs_frame:
             log_func("ERROR: QuikStrike did not render within timeout.")
+            diag = _diagnostic_dump(page, log_func)
             browser.close()
-            return []
+            diag['error'] = 'QuikStrike did not render within timeout'
+            return diag
 
         # Find meeting tab links
         tab_links = qs_frame.evaluate('''() => {
