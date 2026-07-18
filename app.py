@@ -180,13 +180,18 @@ def _install_playwright():
         return False
 
 
-def run_scraper(log_to_ui=None):
+def run_scraper(log_lines=None):
     """
     Run CME FedWatch scraper.
     Returns (success: bool, message: str, meetings_count: int)
+
+    log_lines: optional list to append log messages to (thread-safe if caller manages it).
     """
-    if log_to_ui is None:
-        log_to_ui = lambda x: None
+    if log_lines is None:
+        log_lines = []
+
+    def log_to_ui(msg):
+        log_lines.append(msg)
 
     # Ensure Playwright is installed
     log_to_ui("📦 Checking Playwright browsers...")
@@ -217,15 +222,9 @@ def run_scraper(log_to_ui=None):
             log_to_ui(f"⚠️ xvfb setup issue: {e}, trying without...")
             use_xvfb = False
 
-    log_lines = []
-
-    def log_fn(msg):
-        log_lines.append(msg)
-        log_to_ui(msg)
-
     try:
         log_to_ui("🌐 Opening CME FedWatch page...")
-        meetings = scrape_all_meetings(headless=False, max_wait=90, log_func=log_fn)
+        meetings = scrape_all_meetings(headless=False, max_wait=90, log_func=log_to_ui)
 
         if display:
             try:
@@ -262,16 +261,25 @@ def run_scraper(log_to_ui=None):
         return False, f"Scraper error: {e}\n\n" + "\n".join(log_lines[-15:]), 0
 
 
-def run_scraper_with_timeout(timeout=240, log_to_ui=None):
-    """Run scraper in a thread with a hard timeout."""
-    if log_to_ui is None:
-        log_to_ui = lambda x: None
+def run_scraper_with_timeout(timeout=240, log_container=None):
+    """Run scraper in a thread with a hard timeout. UI updates happen only from the main thread."""
+    log_lines = []
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(run_scraper, log_to_ui=log_to_ui)
-        try:
-            return future.result(timeout=timeout)
-        except concurrent.futures.TimeoutError:
-            return False, f"⏱️ Scraper timed out after {timeout}s. The CME site or browser may be stuck. Try again or switch to GitHub Actions mode.", 0
+        future = executor.submit(run_scraper, log_lines=log_lines)
+        start = time.time()
+
+        while True:
+            # Update UI from the main thread only
+            if log_container and log_lines:
+                log_container.code("\n".join(log_lines[-8:]), language="text")
+
+            try:
+                return future.result(timeout=1)
+            except concurrent.futures.TimeoutError:
+                if time.time() - start > timeout:
+                    return False, f"⏱️ Scraper timed out after {timeout}s.\n\nLatest logs:\n" + "\n".join(log_lines[-10:]), 0
+                # otherwise continue loop and keep updating UI
 
 
 # ── Load data (local first, fallback to GitHub) ─────────────────────────────
@@ -311,16 +319,8 @@ if auto_scrape_needed:
     scrape_status = st.empty()
     scrape_logs = st.empty()
 
-    def log_ui(msg):
-        if not hasattr(log_ui, "logs"):
-            log_ui.logs = []
-        log_ui.logs.append(msg)
-        if len(log_ui.logs) > 8:
-            log_ui.logs = log_ui.logs[-8:]
-        scrape_logs.code("\n".join(log_ui.logs), language="text")
-
     with st.spinner("Scraping CME FedWatch data (this may take 2-4 minutes)..."):
-        success, msg, count = run_scraper_with_timeout(timeout=240, log_to_ui=log_ui)
+        success, msg, count = run_scraper_with_timeout(timeout=240, log_container=scrape_logs)
         if success:
             scrape_status.success(msg)
             # Reload local data
@@ -344,16 +344,8 @@ if show_scrape_button:
             manual_status = st.empty()
             manual_logs = st.empty()
 
-            def manual_log_ui(msg):
-                if not hasattr(manual_log_ui, "logs"):
-                    manual_log_ui.logs = []
-                manual_log_ui.logs.append(msg)
-                if len(manual_log_ui.logs) > 8:
-                    manual_log_ui.logs = manual_log_ui.logs[-8:]
-                manual_logs.code("\n".join(manual_log_ui.logs), language="text")
-
             with st.spinner("Scraping CME FedWatch (up to 4 min)..."):
-                success, msg, count = run_scraper_with_timeout(timeout=240, log_to_ui=manual_log_ui)
+                success, msg, count = run_scraper_with_timeout(timeout=240, log_container=manual_logs)
                 if success:
                     manual_status.success(msg)
                     time.sleep(1)
