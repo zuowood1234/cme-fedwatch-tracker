@@ -31,9 +31,10 @@ CSV_HEADER = [
 ]
 
 
-def parse_cn_date(text):
-    """Parse Chinese date like '29 7月 2026' to YYYY-MM-DD."""
+def parse_date(text):
+    """Parse date like '29 Jul 2026' or '29 7月 2026' to YYYY-MM-DD."""
     text = text.strip()
+    # Chinese format: '29 7月 2026'
     m = re.match(r'(\d{1,2})\s*(\d{1,2})月\s*(\d{2,4})', text)
     if m:
         day, month, year = int(m.group(1)), int(m.group(2)), int(m.group(3))
@@ -43,7 +44,24 @@ def parse_cn_date(text):
             return f"{year}-{month:02d}-{day:02d}"
         except ValueError:
             pass
+
+    # English format: '29 Jul 2026'
+    m = re.match(r'(\d{1,2})\s+([A-Za-z]{3})\s+(\d{2,4})', text)
+    if m:
+        day, month_str, year = m.group(1), m.group(2), int(m.group(3))
+        if year < 100:
+            year += 2000
+        try:
+            month = datetime.strptime(month_str, '%b').month
+            return f"{year}-{month:02d}-{int(day):02d}"
+        except ValueError:
+            pass
+
     return text
+
+
+# Keep old name for backward compatibility
+parse_cn_date = parse_date
 
 
 def parse_pct(s):
@@ -60,17 +78,27 @@ def parse_pct(s):
 def extract_meeting_info(text):
     """Extract meeting info dict from iframe text."""
     info = {}
+
+    # Chinese format: "29 7月 2026 ZQN6 31 7月 2026 96.3700"
     dm = re.search(
         r'(\d{1,2}\s*\d{1,2}月\s*\d{4})\s+(\w+)\s+'
         r'(\d{1,2}\s*\d{1,2}月\s*\d{4})\s+([\d.]+)', text
     )
+
+    # English format: "29 Jul 2026 ZQN6 31 Jul 2026 96.3700"
+    if not dm:
+        dm = re.search(
+            r'(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})\s+(\w+)\s+'
+            r'(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})\s+([\d.]+)', text
+        )
+
     if dm:
-        info['meeting_date'] = parse_cn_date(dm.group(1))
+        info['meeting_date'] = parse_date(dm.group(1))
         info['contract'] = dm.group(2)
-        info['expires'] = parse_cn_date(dm.group(3))
+        info['expires'] = parse_date(dm.group(3))
         info['mid_price'] = dm.group(4)
 
-    tm = re.search(r'Current target rate is (\d+-\d+)', text)
+    tm = re.search(r'Current target rate is (\d+-\d+)', text, re.I)
     if tm:
         info['current_target'] = tm.group(1)
 
@@ -89,11 +117,11 @@ def extract_probabilities_from_text(text):
     result = {'summary': {}, 'table': []}
     lines = text.split('\n')
 
-    # Find EASE / NO CHANGE / HIKE summary
+    # Find EASE / NO CHANGE / HIKE summary (allow spaces before %)
     for i, line in enumerate(lines):
         if re.match(r'EASE\s+NO\s*CHANGE\s+HIKE', line, re.I):
             for j in range(i + 1, min(i + 4, len(lines))):
-                pcts = re.findall(r'([\d.]+)%', lines[j])
+                pcts = re.findall(r'([\d.]+)\s*%', lines[j])
                 if len(pcts) >= 3:
                     result['summary'] = {
                         'ease': float(pcts[0]),
@@ -104,7 +132,6 @@ def extract_probabilities_from_text(text):
             break
 
     # Find detailed probability table
-    in_table = False
     header_found = False
     date_line_found = False
 
@@ -118,10 +145,9 @@ def extract_probabilities_from_text(text):
         if header_found and not date_line_found:
             if 'NOW' in stripped.upper() or '1 DAY' in stripped.upper():
                 date_line_found = True
-                in_table = True
-            continue
+                continue
 
-        if in_table and stripped:
+        if header_found and date_line_found and stripped:
             row_match = re.match(r'^(\d+-\d+(?:\s*\(Current\))?)\t(.+)$', stripped)
             if row_match:
                 rate_range = row_match.group(1).strip()
@@ -136,19 +162,115 @@ def extract_probabilities_from_text(text):
                 })
             elif re.match(r'^\d+-\d+', stripped):
                 parts = re.split(r'\s+', stripped)
-                if len(parts) >= 2 and '%' in str(parts[1]):
+                # Find the first part that looks like a percentage
+                pct_idx = next((i for i, p in enumerate(parts) if '%' in p), None)
+                if pct_idx is not None and pct_idx > 0:
+                    rate_range = ' '.join(parts[:pct_idx])
                     result['table'].append({
-                        'range': parts[0],
-                        'now': parse_pct(parts[1]),
-                        'day1': parse_pct(parts[2]) if len(parts) > 2 else 0,
-                        'week1': parse_pct(parts[3]) if len(parts) > 3 else 0,
-                        'month1': parse_pct(parts[4]) if len(parts) > 4 else 0,
+                        'range': rate_range,
+                        'now': parse_pct(parts[pct_idx]),
+                        'day1': parse_pct(parts[pct_idx + 1]) if len(parts) > pct_idx + 1 else 0,
+                        'week1': parse_pct(parts[pct_idx + 2]) if len(parts) > pct_idx + 2 else 0,
+                        'month1': parse_pct(parts[pct_idx + 3]) if len(parts) > pct_idx + 3 else 0,
                     })
 
             if stripped.startswith('* Data') or stripped.startswith('Powered by'):
                 break
 
     return result
+
+
+def extract_meeting_from_dom(frame):
+    """
+    Extract meeting data using QuikStrike DOM selectors.
+    More reliable than regex when text formatting changes.
+    """
+    try:
+        data = frame.evaluate('''() => {
+            function findInnerTable(keyword) {
+                const tables = document.querySelectorAll('table.grid-thm');
+                for (const t of tables) {
+                    const text = Array.from(t.querySelectorAll('th, td')).map(el => el.textContent.trim()).join(' ');
+                    if (text.includes(keyword)) return t;
+                }
+                return null;
+            }
+
+            function parsePct(s) {
+                if (!s) return 0;
+                const cleaned = s.toString().replace(/[%<>≈\u200b]/g, '').trim();
+                const m = cleaned.match(/([\\d.]+)/);
+                return m ? parseFloat(m[1]) : 0;
+            }
+
+            const result = { meeting_date: '', contract: '', expires: '', mid_price: '', current_target: '', summary: {}, table: [] };
+
+            // Meeting info table (inner grid-thm table)
+            const infoTable = findInnerTable('Meeting Date');
+            if (infoTable) {
+                const cells = infoTable.querySelectorAll('td');
+                if (cells.length >= 4) {
+                    result.meeting_date = cells[0].textContent.trim();
+                    result.contract = cells[1].textContent.trim();
+                    result.expires = cells[2].textContent.trim();
+                    result.mid_price = cells[3].textContent.trim();
+                }
+            }
+
+            // Probabilities summary table
+            const probTable = findInnerTable('Probabilities');
+            if (probTable) {
+                const rows = probTable.querySelectorAll('tr');
+                for (const row of rows) {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 3) {
+                        result.summary = {
+                            ease: parsePct(cells[0].textContent),
+                            no_change: parsePct(cells[1].textContent),
+                            hike: parsePct(cells[2].textContent),
+                        };
+                    }
+                }
+            }
+
+            // Target rate table
+            const rateTable = findInnerTable('Target Rate (bps)');
+            if (rateTable) {
+                const rows = rateTable.querySelectorAll('tr');
+                for (const row of rows) {
+                    if (row.classList.contains('hide')) continue;
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 2) {
+                        const range = cells[0].textContent.trim();
+                        const values = Array.from(cells).slice(1).map(c => c.textContent.trim());
+                        if (/^\\d+-\\d+/.test(range)) {
+                            result.table.push({
+                                range: range,
+                                now: parsePct(values[0]),
+                                day1: parsePct(values[1]),
+                                week1: parsePct(values[2]),
+                                month1: parsePct(values[3]),
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Current target rate
+            const all = document.querySelectorAll('*');
+            for (const el of all) {
+                const m = el.textContent.match(/Current target rate is (\\d+-\\d+)/i);
+                if (m) {
+                    result.current_target = m[1];
+                    break;
+                }
+            }
+
+            return result;
+        }''')
+        return data
+    except Exception:
+        return None
 
 
 # ── Main scraper ─────────────────────────────────────────────────────────────
@@ -261,12 +383,36 @@ def scrape_all_meetings(headless=False, max_wait=90, log_func=print):
                 log_func(f"  Click error: {e}")
                 continue
 
-            # Extract data
+            # Extract data: try DOM selectors first, then regex fallback
             try:
+                dom_data = extract_meeting_from_dom(qs_frame)
+                if dom_data and len(dom_data.get('table', [])) > 0:
+                    info = {
+                        'meeting_date': parse_date(dom_data.get('meeting_date', '')),
+                        'contract': dom_data.get('contract', ''),
+                        'expires': parse_date(dom_data.get('expires', '')),
+                        'mid_price': dom_data.get('mid_price', ''),
+                        'current_target': dom_data.get('current_target', ''),
+                        'timestamp': '',
+                    }
+                    probs = {
+                        'summary': dom_data.get('summary', {}),
+                        'table': dom_data.get('table', []),
+                    }
+                else:
+                    raise ValueError("DOM extraction returned empty table")
+            except Exception as e:
                 iframe_text = qs_frame.inner_text('body')
                 info = extract_meeting_info(iframe_text)
                 probs = extract_probabilities_from_text(iframe_text)
 
+            # Fallback: parse tab text if meeting date still missing
+            if not info.get('meeting_date') and tab_text:
+                m = re.match(r'(\d{1,2})\s+([A-Za-z]{3})(\d{2,4})', tab_text)
+                if m:
+                    info['meeting_date'] = parse_date(f"{m.group(1)} {m.group(2)} {m.group(3)}")
+
+            try:
                 meeting_record = {
                     'tab_label': tab_text,
                     'meeting_date': info.get('meeting_date', ''),
@@ -285,7 +431,6 @@ def scrape_all_meetings(headless=False, max_wait=90, log_func=print):
                     f"E:{s.get('ease','?')}% NC:{s.get('no_change','?')}% H:{s.get('hike','?')}% | "
                     f"{len(probs.get('table', []))} ranges"
                 )
-
             except Exception as e:
                 log_func(f"  Extraction error: {e}")
 
