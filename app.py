@@ -1,12 +1,17 @@
 """
-CME FedWatch Tracker — Streamlit Dashboard (Self-Scraping Mode)
+CME FedWatch Tracker — Streamlit Dashboard
 
 Runs on Streamlit Community Cloud:
-  1. On load: check data freshness, auto-scrape if stale (>6h)
-  2. Manual [Refresh Data] button for on-demand updates
-  3. Scrape via Playwright + xvfb (virtual display)
-  4. Push new data to GitHub repo for persistence
-  5. Display 4-panel dashboard
+  1. On load: load latest data from GitHub (or local fallback)
+  2. If today's data already exists, skip scraping
+  3. Manual [Refresh Data] button for on-demand updates
+  4. Scrape via Playwright + xvfb (virtual display) when needed
+  5. Push new data to GitHub repo for persistence
+  6. Display 4-panel dashboard
+
+For daily automated scraping, use the separate scheduled automation
+(e.g. WorkBuddy automation or GitHub Actions) instead of relying on
+Streamlit Cloud page views.
 
 Secrets required (set in Streamlit Cloud > Settings):
   - GITHUB_TOKEN: GitHub PAT with repo scope
@@ -37,8 +42,6 @@ CSV_URL = f"{GITHUB_RAW_BASE}/data/fedwatch_history.csv"
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 DAILY_DIR = os.path.join(DATA_DIR, "daily")
 HISTORY_CSV = os.path.join(DATA_DIR, "fedwatch_history.csv")
-
-AUTO_SCRAPE_INTERVAL_HOURS = 6  # Auto-scrape if data older than this
 
 
 # ── Page setup ──────────────────────────────────────────────────────────────
@@ -139,9 +142,16 @@ def github_push_data(data_dir, extra_files=None):
 
 
 def load_csv_from_github(url):
-    """Load CSV from GitHub raw URL with fallback."""
+    """Load CSV from GitHub raw URL with fallback and column normalization."""
     try:
         df = pd.read_csv(url)
+        # Normalize legacy column names
+        if "date" in df.columns and "snapshot_date" not in df.columns:
+            df = df.rename(columns={"date": "snapshot_date"})
+        if "probability" in df.columns and "prob_now" not in df.columns:
+            df = df.rename(columns={"probability": "prob_now"})
+        if "current_target" in df.columns and "current_target_rate" not in df.columns:
+            df = df.rename(columns={"current_target": "current_target_rate"})
         df["snapshot_date"] = pd.to_datetime(df["snapshot_date"]).dt.date
         df["meeting_date"] = pd.to_datetime(df["meeting_date"]).dt.date
         df["prob_now"] = pd.to_numeric(df["prob_now"], errors="coerce")
@@ -151,11 +161,18 @@ def load_csv_from_github(url):
 
 
 def load_local_csv():
-    """Load CSV from local filesystem."""
+    """Load CSV from local filesystem with column normalization."""
     csv_path = HISTORY_CSV
     if os.path.exists(csv_path):
         try:
             df = pd.read_csv(csv_path)
+            # Normalize legacy column names
+            if "date" in df.columns and "snapshot_date" not in df.columns:
+                df = df.rename(columns={"date": "snapshot_date"})
+            if "probability" in df.columns and "prob_now" not in df.columns:
+                df = df.rename(columns={"probability": "prob_now"})
+            if "current_target" in df.columns and "current_target_rate" not in df.columns:
+                df = df.rename(columns={"current_target": "current_target_rate"})
             df["snapshot_date"] = pd.to_datetime(df["snapshot_date"]).dt.date
             df["meeting_date"] = pd.to_datetime(df["meeting_date"]).dt.date
             df["prob_now"] = pd.to_numeric(df["prob_now"], errors="coerce")
@@ -329,38 +346,49 @@ def run_scraper_with_timeout(timeout=240, log_container=None):
                 # Continue looping and updating UI
 
 
-# ── Load data (local first, fallback to GitHub) ─────────────────────────────
+# ── Load data (GitHub first for cloud, local as fallback) ───────────────────
 
-# Try local CSV first (from last scrape), then GitHub
+# Load both sources and keep the newer one
+df_github = load_csv_from_github(CSV_URL)
 df_local = load_local_csv()
-df_github = load_csv_from_github(CSV_URL) if df_local.empty or (not df_local.empty and df_local['snapshot_date'].max() < (datetime.now(timezone.utc).date() - timedelta(days=1))) else pd.DataFrame()
 
-# Use whichever is newer
-if not df_local.empty and not df_github.empty:
-    local_max = df_local['snapshot_date'].max()
-    github_max = df_github['snapshot_date'].max()
-    df = df_local if local_max >= github_max else df_github
-elif not df_local.empty:
-    df = df_local
-else:
+if not df_github.empty and not df_local.empty:
+    github_max = df_github["snapshot_date"].max()
+    local_max = df_local["snapshot_date"].max()
+    df = df_github if github_max >= local_max else df_local
+elif not df_github.empty:
     df = df_github
+else:
+    df = df_local
 
-# ── Auto-scrape check ───────────────────────────────────────────────────────
+# Determine freshness
+today = datetime.now(timezone.utc).date()
+has_today_data = not df.empty and df["snapshot_date"].max() == today
+latest_date = df["snapshot_date"].max() if not df.empty else None
+
+# ── Status banner ───────────────────────────────────────────────────────────
+status_container = st.container()
+if has_today_data:
+    status_container.success(f"✅ Data is up to date ({today}). No scrape needed.")
+elif not df.empty:
+    status_container.warning(
+        f"⚠️ CME FedWatch data is stale. Latest snapshot: {latest_date}. "
+        f"The CME website may be temporarily unavailable. Showing cached data."
+    )
+else:
+    status_container.error("❌ No data available. Try manual refresh below.")
+
+# ── Auto-scrape check (only if no today data) ───────────────────────────────
 show_scrape_button = True
-auto_scrape_needed = False
+auto_scrape_needed = df.empty  # Only auto-scrape on first run if no data at all
 
-if df.empty:
-    auto_scrape_needed = True
+if has_today_data:
+    show_scrape_button = True  # Still allow manual refresh
+    auto_scrape_needed = False
+
+if auto_scrape_needed:
     st.info("🔍 No data found yet. Starting initial scrape...")
     show_scrape_button = False
-else:
-    all_dates = sorted(df["snapshot_date"].unique())
-    latest_date = max(all_dates)
-    hours_since_update = (datetime.now(timezone.utc) - datetime.combine(latest_date, datetime.min.time()).replace(tzinfo=timezone.utc)).total_seconds() / 3600
-
-    if hours_since_update > AUTO_SCRAPE_INTERVAL_HOURS:
-        auto_scrape_needed = True
-        st.caption(f"⏰ Data is {hours_since_update:.0f}h old. Auto-scraping...")
 
 if auto_scrape_needed:
     scrape_status = st.empty()
@@ -387,25 +415,30 @@ if auto_scrape_needed:
 if show_scrape_button:
     c1, _, c2 = st.columns([1, 4, 1])
     with c1:
-        if st.button("🔄 Refresh Data", help="Re-scrape CME FedWatch now"):
-            manual_status = st.empty()
-            manual_logs = st.empty()
+        if has_today_data:
+            st.button("🔄 Refresh Data", disabled=True, help=f"Today's data ({today}) already exists. No need to refresh.")
+        elif st.button("🔄 Refresh Data", help="Re-scrape CME FedWatch now"):
+            if has_today_data:
+                st.success(f"✅ Today's data ({today}) already exists. Skipping scrape.")
+            else:
+                manual_status = st.empty()
+                manual_logs = st.empty()
 
-            with st.spinner("Scraping CME FedWatch (up to 4 min)..."):
-                success, msg, count = run_scraper_with_timeout(timeout=240, log_container=manual_logs)
-                if success:
-                    manual_status.success(msg)
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    manual_status.error(msg)
+                with st.spinner("Scraping CME FedWatch (up to 4 min)..."):
+                    success, msg, count = run_scraper_with_timeout(timeout=240, log_container=manual_logs)
+                    if success:
+                        manual_status.success(msg)
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        manual_status.error(msg)
     with c2:
         last_updated = max(df["snapshot_date"].unique()) if not df.empty else "?"
         st.caption(f"Last: {last_updated}")
 
 # ── Guard: no data ──────────────────────────────────────────────────────────
 if df.empty:
-    st.warning("No data available. Click 'Refresh Data' to scrape.")
+    st.warning("No data available. Click 'Refresh Data' once CME FedWatch is accessible.")
     st.stop()
 
 
