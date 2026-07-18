@@ -13,6 +13,7 @@ Secrets required (set in Streamlit Cloud > Settings):
   - GITHUB_USERNAME: your GitHub username
 """
 
+import concurrent.futures
 import os
 import re
 import sys
@@ -167,11 +168,11 @@ def _install_playwright():
     try:
         subprocess.run(
             [sys.executable, "-m", "playwright", "install", "chromium"],
-            capture_output=True, timeout=120,
+            capture_output=True, timeout=180,
         )
         subprocess.run(
             [sys.executable, "-m", "playwright", "install-deps", "chromium"],
-            capture_output=True, timeout=180,
+            capture_output=True, timeout=300,
         )
         return True
     except Exception as e:
@@ -179,17 +180,20 @@ def _install_playwright():
         return False
 
 
-def run_scraper():
+def run_scraper(log_to_ui=None):
     """
     Run CME FedWatch scraper.
     Returns (success: bool, message: str, meetings_count: int)
     """
+    if log_to_ui is None:
+        log_to_ui = lambda x: None
+
     # Ensure Playwright is installed
+    log_to_ui("📦 Checking Playwright browsers...")
     _install_playwright()
 
     # Import scraper module
     try:
-        # Add project dir to path so we can import scraper
         script_dir = os.path.dirname(os.path.abspath(__file__))
         if script_dir not in sys.path:
             sys.path.insert(0, script_dir)
@@ -206,38 +210,45 @@ def run_scraper():
             from pyvirtualdisplay import Display
             display = Display(visible=0, size=(1920, 1080))
             display.start()
+            log_to_ui("🖥️  Virtual display (xvfb) started")
         except ImportError:
-            # Fallback: try without xvfb (some environments work fine)
             use_xvfb = False
         except Exception as e:
-            st.warning(f"xvfb setup issue: {e}, trying without...")
+            log_to_ui(f"⚠️ xvfb setup issue: {e}, trying without...")
             use_xvfb = False
 
     log_lines = []
 
     def log_fn(msg):
         log_lines.append(msg)
+        log_to_ui(msg)
 
     try:
+        log_to_ui("🌐 Opening CME FedWatch page...")
         meetings = scrape_all_meetings(headless=False, max_wait=90, log_func=log_fn)
 
         if display:
-            display.stop()
+            try:
+                display.stop()
+            except Exception:
+                pass
 
         if not meetings:
-            return False, "No meetings extracted. QuikStrike may have failed to render.\n\n" + "\n".join(log_lines[-10:]), 0
+            return False, "No meetings extracted. QuikStrike may have failed to render.\n\n" + "\n".join(log_lines[-15:]), 0
 
         # Save locally
+        log_to_ui("💾 Saving results locally...")
         os.makedirs(DATA_DIR, exist_ok=True)
         os.makedirs(DAILY_DIR, exist_ok=True)
         snap_file, rows = save_results(meetings, DATA_DIR)
 
         # Push to GitHub
+        log_to_ui("☁️ Pushing to GitHub...")
         ok = github_push_data(DATA_DIR)
 
         msg = (
             f"Scraped **{len(meetings)}** meetings, **{rows}** rows.\n\n"
-            + "\n".join(log_lines[-8:])
+            + "\n".join(log_lines[-10:])
             + (f"\n\n✅ Pushed to GitHub" if ok else "\n⚠️ GitHub push failed")
         )
         return True, msg, len(meetings)
@@ -248,7 +259,19 @@ def run_scraper():
                 display.stop()
             except Exception:
                 pass
-        return False, f"Scraper error: {e}\n\n" + "\n".join(log_lines[-10:]), 0
+        return False, f"Scraper error: {e}\n\n" + "\n".join(log_lines[-15:]), 0
+
+
+def run_scraper_with_timeout(timeout=240, log_to_ui=None):
+    """Run scraper in a thread with a hard timeout."""
+    if log_to_ui is None:
+        log_to_ui = lambda x: None
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(run_scraper, log_to_ui=log_to_ui)
+        try:
+            return future.result(timeout=timeout)
+        except concurrent.futures.TimeoutError:
+            return False, f"⏱️ Scraper timed out after {timeout}s. The CME site or browser may be stuck. Try again or switch to GitHub Actions mode.", 0
 
 
 # ── Load data (local first, fallback to GitHub) ─────────────────────────────
@@ -278,38 +301,65 @@ if df.empty:
 else:
     all_dates = sorted(df["snapshot_date"].unique())
     latest_date = max(all_dates)
-    hours_since_update = (datetime.now(timezone.utc) - datetime.combine(latest_date, datetime.min.time())).total_seconds() / 3600
+    hours_since_update = (datetime.now(timezone.utc) - datetime.combine(latest_date, datetime.min.time()).replace(tzinfo=timezone.utc)).total_seconds() / 3600
 
     if hours_since_update > AUTO_SCRAPE_INTERVAL_HOURS:
         auto_scrape_needed = True
         st.caption(f"⏰ Data is {hours_since_update:.0f}h old. Auto-scraping...")
 
 if auto_scrape_needed:
-    with st.spinner("Scraping CME FedWatch data (this may take 1-2 minutes)..."):
-        success, msg, count = run_scraper()
+    scrape_status = st.empty()
+    scrape_logs = st.empty()
+
+    def log_ui(msg):
+        if not hasattr(log_ui, "logs"):
+            log_ui.logs = []
+        log_ui.logs.append(msg)
+        if len(log_ui.logs) > 8:
+            log_ui.logs = log_ui.logs[-8:]
+        scrape_logs.code("\n".join(log_ui.logs), language="text")
+
+    with st.spinner("Scraping CME FedWatch data (this may take 2-4 minutes)..."):
+        success, msg, count = run_scraper_with_timeout(timeout=240, log_to_ui=log_ui)
         if success:
-            st.success(msg)
+            scrape_status.success(msg)
             # Reload local data
             df = load_local_csv()
             if df.empty:
-                df = df_github
+                df = load_csv_from_github(CSV_URL)
             st.rerun()
         else:
-            st.error(msg)
+            scrape_status.error(msg)
+            # Fallback: try GitHub CSV even if stale
+            if not df.empty:
+                st.warning("⚠️ Scraping failed. Showing cached data from GitHub/local storage.")
+            else:
+                st.warning("⚠️ Scraping failed and no cached data is available. Try the manual refresh button.")
 
 # ── Manual refresh button ───────────────────────────────────────────────────
 if show_scrape_button:
     c1, _, c2 = st.columns([1, 4, 1])
     with c1:
         if st.button("🔄 Refresh Data", help="Re-scrape CME FedWatch now"):
-            with st.spinner("Scraping CME FedWatch (1-2 min)..."):
-                success, msg, count = run_scraper()
+            manual_status = st.empty()
+            manual_logs = st.empty()
+
+            def manual_log_ui(msg):
+                if not hasattr(manual_log_ui, "logs"):
+                    manual_log_ui.logs = []
+                manual_log_ui.logs.append(msg)
+                if len(manual_log_ui.logs) > 8:
+                    manual_log_ui.logs = manual_log_ui.logs[-8:]
+                manual_logs.code("\n".join(manual_log_ui.logs), language="text")
+
+            with st.spinner("Scraping CME FedWatch (up to 4 min)..."):
+                success, msg, count = run_scraper_with_timeout(timeout=240, log_to_ui=manual_log_ui)
                 if success:
-                    st.success(msg)
+                    manual_status.success(msg)
                     time.sleep(1)
                     st.rerun()
                 else:
-                    st.error(msg)
+                    manual_status.error(msg)
     with c2:
         last_updated = max(df["snapshot_date"].unique()) if not df.empty else "?"
         st.caption(f"Last: {last_updated}")
