@@ -1,6 +1,6 @@
 {
   "snapshot_date": "2026-07-18",
-  "scrape_time": "2026-07-18T06:25:50.868631+00:00",
+  "scrape_time": "2026-07-18T06:26:21.730165+00:00",
   "source_url": "https://www.cmegroup.cn/fed-watch/",
   "num_meetings": 10,
   "meetings": [
@@ -265,7 +265,7 @@
       "contract": "",
       "mid_price": "",
       "current_target": "350-375",
-      "timestamp": "18 Jul 2026 01:11:59",
+      "timestamp": "18 Jul 2026 01:15:09",
       "summary": {},
       "rate_probabilities": [
         {
@@ -325,7 +325,7 @@
       "contract": "",
       "mid_price": "",
       "current_target": "350-375",
-      "timestamp": "18 Jul 2026 01:11:59",
+      "timestamp": "18 Jul 2026 01:15:09",
       "summary": {},
       "rate_probabilities": [
         {
@@ -466,7 +466,7 @@
       "contract": "",
       "mid_price": "",
       "current_target": "350-375",
-      "timestamp": "18 Jul 2026 01:15:09",
+      "timestamp": "18 Jul 2026 01:11:59",
       "summary": {},
       "rate_probabilities": [
         {
