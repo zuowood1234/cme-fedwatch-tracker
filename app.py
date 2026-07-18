@@ -13,10 +13,10 @@ Secrets required (set in Streamlit Cloud > Settings):
   - GITHUB_USERNAME: your GitHub username
 """
 
-import concurrent.futures
 import os
 import re
 import sys
+import threading
 import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -262,24 +262,34 @@ def run_scraper(log_lines=None):
 
 
 def run_scraper_with_timeout(timeout=240, log_container=None):
-    """Run scraper in a thread with a hard timeout. UI updates happen only from the main thread."""
+    """Run scraper in a daemon thread with a hard timeout. UI updates happen only from the main thread."""
     log_lines = []
+    result = [None]
+    exception = [None]
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(run_scraper, log_lines=log_lines)
-        start = time.time()
+    def target():
+        try:
+            result[0] = run_scraper(log_lines=log_lines)
+        except Exception as e:
+            exception[0] = e
 
-        while True:
-            # Update UI from the main thread only
-            if log_container and log_lines:
-                log_container.code("\n".join(log_lines[-8:]), language="text")
+    t = threading.Thread(target=target, daemon=True)
+    t.start()
+    start = time.time()
 
-            try:
-                return future.result(timeout=1)
-            except concurrent.futures.TimeoutError:
-                if time.time() - start > timeout:
-                    return False, f"⏱️ Scraper timed out after {timeout}s.\n\nLatest logs:\n" + "\n".join(log_lines[-10:]), 0
-                # otherwise continue loop and keep updating UI
+    while t.is_alive() and time.time() - start < timeout:
+        # Update UI from the main thread only
+        if log_container and log_lines:
+            log_container.code("\n".join(log_lines[-8:]), language="text")
+        time.sleep(0.5)
+
+    if t.is_alive():
+        return False, f"⏱️ Scraper timed out after {timeout}s.\n\nLatest logs:\n" + "\n".join(log_lines[-10:]), 0
+
+    if exception[0]:
+        return False, f"Scraper error: {exception[0]}\n\nLatest logs:\n" + "\n".join(log_lines[-10:]), 0
+
+    return result[0]
 
 
 # ── Load data (local first, fallback to GitHub) ─────────────────────────────
