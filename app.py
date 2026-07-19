@@ -1,18 +1,25 @@
 """
-CME FedWatch Tracker — Streamlit Dashboard (Self-Scraping Mode)
+CME FedWatch Tracker — Streamlit Dashboard
 
 Runs on Streamlit Community Cloud:
-  1. On load: check data freshness, auto-scrape if stale (>6h)
-  2. Manual [Refresh Data] button for on-demand updates
-  3. Scrape via Playwright + xvfb (virtual display)
-  4. Push new data to GitHub repo for persistence
-  5. Display 4-panel dashboard
+  1. On load: load latest data from GitHub (or local fallback)
+  2. If today's data already exists, skip scraping
+  3. Manual [Refresh Data] button for on-demand updates
+  4. Scrape via Playwright + xvfb (virtual display) when needed
+  5. Push new data to GitHub repo for persistence
+  6. Display 4-panel dashboard
+
+For daily automated scraping, use the separate scheduled automation
+(e.g. WorkBuddy automation or GitHub Actions) instead of relying on
+Streamlit Cloud page views.
 
 Secrets required (set in Streamlit Cloud > Settings):
   - GITHUB_TOKEN: GitHub PAT with repo scope
   - GITHUB_USERNAME: your GitHub username
 """
 
+import base64
+import concurrent.futures
 import os
 import re
 import sys
@@ -36,8 +43,6 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 DAILY_DIR = os.path.join(DATA_DIR, "daily")
 HISTORY_CSV = os.path.join(DATA_DIR, "fedwatch_history.csv")
 
-AUTO_SCRAPE_INTERVAL_HOURS = 6  # Auto-scrape if data older than this
-
 
 # ── Page setup ──────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -55,10 +60,12 @@ st.caption(
 
 # ── GitHub Sync ──────────────────────────────────────────────────────────────
 
-def github_push_data(data_dir):
+def github_push_data(data_dir, extra_files=None):
     """
     Push local data files to GitHub repo using Contents API.
     Uses GITHUB_TOKEN from secrets.
+
+    extra_files: optional list of (git_path, local_path) tuples to push additionally.
     """
     import base64
     import requests
@@ -85,6 +92,9 @@ def github_push_data(data_dir):
     daily_json_path = os.path.join(data_dir, "daily", f"{today_str}.json")
     if os.path.exists(daily_json_path):
         files_to_push.append((f"data/daily/{today_str}.json", daily_json_path))
+
+    if extra_files:
+        files_to_push.extend(extra_files)
 
     if not files_to_push:
         return True
@@ -131,30 +141,79 @@ def github_push_data(data_dir):
     return pushed == len(files_to_push)
 
 
+def _normalize_csv(df):
+    """Normalize legacy column names and dtypes."""
+    if "date" in df.columns and "snapshot_date" not in df.columns:
+        df = df.rename(columns={"date": "snapshot_date"})
+    if "probability" in df.columns and "prob_now" not in df.columns:
+        df = df.rename(columns={"probability": "prob_now"})
+    if "current_target" in df.columns and "current_target_rate" not in df.columns:
+        df = df.rename(columns={"current_target": "current_target_rate"})
+    df["snapshot_date"] = pd.to_datetime(df["snapshot_date"], errors="coerce").dt.date
+    df["meeting_date"] = pd.to_datetime(df["meeting_date"], errors="coerce").dt.date
+    df["prob_now"] = pd.to_numeric(df["prob_now"], errors="coerce")
+    # Drop rows where dates couldn't be parsed
+    df = df.dropna(subset=["snapshot_date", "meeting_date"])
+    return df
+
+
 def load_csv_from_github(url):
-    """Load CSV from GitHub raw URL with fallback."""
-    try:
-        df = pd.read_csv(url)
-        df["snapshot_date"] = pd.to_datetime(df["snapshot_date"]).dt.date
-        df["meeting_date"] = pd.to_datetime(df["meeting_date"]).dt.date
-        df["prob_now"] = pd.to_numeric(df["prob_now"], errors="coerce")
-        return df
-    except Exception:
-        return pd.DataFrame()
+    """
+    Load CSV from GitHub raw URL with retries and GitHub API fallback.
+    Returns (df, error_message).
+    """
+    import requests
+
+    last_error = None
+
+    # Try raw URL a few times using requests + StringIO
+    for attempt in range(3):
+        try:
+            resp = requests.get(url, timeout=20)
+            resp.raise_for_status()
+            df = pd.read_csv(pd.io.common.StringIO(resp.text))
+            if df.empty or "meeting_date" not in df.columns:
+                last_error = "GitHub raw CSV is empty or missing expected columns"
+                time.sleep(0.5 * (attempt + 1))
+                continue
+            return _normalize_csv(df), None
+        except Exception as e:
+            last_error = f"Raw URL attempt {attempt + 1} failed: {e}"
+            time.sleep(0.5 * (attempt + 1))
+
+    # Fallback: GitHub Contents API
+    if GITHUB_TOKEN:
+        try:
+            api_path = url.replace(GITHUB_RAW_BASE, "").lstrip("/")
+            api_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{REPO_NAME}/contents/{api_path}"
+            headers = {
+                "Authorization": f"token {GITHUB_TOKEN}",
+                "Accept": "application/vnd.github.v3+json",
+            }
+            resp = requests.get(api_url, headers=headers, timeout=20)
+            if resp.status_code == 200:
+                content_b64 = resp.json().get("content", "")
+                decoded = base64.b64decode(content_b64).decode("utf-8")
+                df = pd.read_csv(pd.io.common.StringIO(decoded))
+                if not df.empty and "meeting_date" in df.columns:
+                    return _normalize_csv(df), None
+            else:
+                last_error += f" | API fallback status {resp.status_code}"
+        except Exception as e:
+            last_error += f" | API fallback error: {e}"
+
+    return pd.DataFrame(), last_error or "Failed to load CSV from GitHub"
 
 
 def load_local_csv():
-    """Load CSV from local filesystem."""
+    """Load CSV from local filesystem with column normalization."""
     csv_path = HISTORY_CSV
     if os.path.exists(csv_path):
         try:
             df = pd.read_csv(csv_path)
-            df["snapshot_date"] = pd.to_datetime(df["snapshot_date"]).dt.date
-            df["meeting_date"] = pd.to_datetime(df["meeting_date"]).dt.date
-            df["prob_now"] = pd.to_numeric(df["prob_now"], errors="coerce")
-            return df
-        except Exception:
-            pass
+            return _normalize_csv(df)
+        except Exception as e:
+            st.warning(f"Failed to load local CSV: {e}")
     return pd.DataFrame()
 
 
@@ -167,11 +226,11 @@ def _install_playwright():
     try:
         subprocess.run(
             [sys.executable, "-m", "playwright", "install", "chromium"],
-            capture_output=True, timeout=120,
+            capture_output=True, timeout=180,
         )
         subprocess.run(
             [sys.executable, "-m", "playwright", "install-deps", "chromium"],
-            capture_output=True, timeout=180,
+            capture_output=True, timeout=300,
         )
         return True
     except Exception as e:
@@ -179,17 +238,25 @@ def _install_playwright():
         return False
 
 
-def run_scraper():
+def run_scraper(log_lines=None):
     """
     Run CME FedWatch scraper.
     Returns (success: bool, message: str, meetings_count: int)
+
+    log_lines: optional list to append log messages to (thread-safe if caller manages it).
     """
+    if log_lines is None:
+        log_lines = []
+
+    def log_to_ui(msg):
+        log_lines.append(msg)
+
     # Ensure Playwright is installed
+    log_to_ui("📦 Checking Playwright browsers...")
     _install_playwright()
 
     # Import scraper module
     try:
-        # Add project dir to path so we can import scraper
         script_dir = os.path.dirname(os.path.abspath(__file__))
         if script_dir not in sys.path:
             sys.path.insert(0, script_dir)
@@ -206,38 +273,80 @@ def run_scraper():
             from pyvirtualdisplay import Display
             display = Display(visible=0, size=(1920, 1080))
             display.start()
+            log_to_ui("🖥️  Virtual display (xvfb) started")
         except ImportError:
-            # Fallback: try without xvfb (some environments work fine)
             use_xvfb = False
         except Exception as e:
-            st.warning(f"xvfb setup issue: {e}, trying without...")
+            log_to_ui(f"⚠️ xvfb setup issue: {e}, trying without...")
             use_xvfb = False
 
-    log_lines = []
-
-    def log_fn(msg):
-        log_lines.append(msg)
-
     try:
-        meetings = scrape_all_meetings(headless=False, max_wait=90, log_func=log_fn)
+        log_to_ui("🌐 Opening CME FedWatch page...")
+        meetings = scrape_all_meetings(headless=False, max_wait=90, log_func=log_to_ui)
 
         if display:
-            display.stop()
+            try:
+                display.stop()
+            except Exception:
+                pass
+
+        # Handle diagnostic dict returned on failure
+        if isinstance(meetings, dict) and meetings.get('error'):
+            diag_dir = Path(DATA_DIR) / "debug"
+            diag_dir.mkdir(parents=True, exist_ok=True)
+            ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+            extra_files = []
+
+            screenshot_b64 = meetings.get('screenshot')
+            if screenshot_b64:
+                png_path = diag_dir / f"fail_{ts}.png"
+                png_path.write_bytes(base64.b64decode(screenshot_b64))
+                extra_files.append((f"data/debug/{png_path.name}", str(png_path)))
+                log_to_ui(f"📸 Screenshot saved: {png_path.name}")
+
+            main_html = meetings.get('main_html', '')
+            if main_html:
+                html_path = diag_dir / f"fail_{ts}_main.html"
+                html_path.write_text(main_html, encoding='utf-8')
+                extra_files.append((f"data/debug/{html_path.name}", str(html_path)))
+                log_to_ui(f"📝 HTML saved: {html_path.name}")
+
+            # Push diagnostics to GitHub so we can inspect them
+            log_to_ui("☁️ Pushing diagnostics to GitHub...")
+            try:
+                github_push_data(DATA_DIR, extra_files=extra_files)
+            except Exception as e:
+                log_to_ui(f"⚠️ Diagnostic push failed: {e}")
+
+            iframe_summary = []
+            for fi in meetings.get('iframes', []):
+                iframe_summary.append(
+                    f"  iframe[{fi.get('index')}] {fi.get('url','')}: text={fi.get('text_len','?')} chars"
+                )
+
+            diag_msg = "\n".join([
+                f"❌ {meetings['error']}",
+                f"URL: {meetings.get('url', '')}",
+                "Iframes:",
+            ] + iframe_summary)
+            return False, diag_msg + "\n\n" + "\n".join(log_lines[-10:]), 0
 
         if not meetings:
-            return False, "No meetings extracted. QuikStrike may have failed to render.\n\n" + "\n".join(log_lines[-10:]), 0
+            return False, "No meetings extracted. QuikStrike may have failed to render.\n\n" + "\n".join(log_lines[-15:]), 0
 
         # Save locally
+        log_to_ui("💾 Saving results locally...")
         os.makedirs(DATA_DIR, exist_ok=True)
         os.makedirs(DAILY_DIR, exist_ok=True)
         snap_file, rows = save_results(meetings, DATA_DIR)
 
         # Push to GitHub
+        log_to_ui("☁️ Pushing to GitHub...")
         ok = github_push_data(DATA_DIR)
 
         msg = (
             f"Scraped **{len(meetings)}** meetings, **{rows}** rows.\n\n"
-            + "\n".join(log_lines[-8:])
+            + "\n".join(log_lines[-10:])
             + (f"\n\n✅ Pushed to GitHub" if ok else "\n⚠️ GitHub push failed")
         )
         return True, msg, len(meetings)
@@ -248,76 +357,116 @@ def run_scraper():
                 display.stop()
             except Exception:
                 pass
-        return False, f"Scraper error: {e}\n\n" + "\n".join(log_lines[-10:]), 0
+        return False, f"Scraper error: {e}\n\n" + "\n".join(log_lines[-15:]), 0
 
 
-# ── Load data (local first, fallback to GitHub) ─────────────────────────────
+def run_scraper_with_timeout(timeout=240, log_container=None):
+    """Run scraper in a worker thread with a hard timeout. UI updates happen only from the main thread."""
+    log_lines = []
 
-# Try local CSV first (from last scrape), then GitHub
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(run_scraper, log_lines=log_lines)
+        start = time.time()
+
+        while True:
+            # Update UI from the main thread only
+            if log_container and log_lines:
+                log_container.code("\n".join(log_lines[-8:]), language="text")
+
+            try:
+                return future.result(timeout=0.5)
+            except concurrent.futures.TimeoutError:
+                if time.time() - start > timeout:
+                    return False, f"⏱️ Scraper timed out after {timeout}s.\n\nLatest logs:\n" + "\n".join(log_lines[-10:]), 0
+                # Continue looping and updating UI
+
+
+# ── Load data (GitHub first for cloud, local as fallback) ───────────────────
+
+# Load both sources and keep the newer one
+df_github, github_error = load_csv_from_github(CSV_URL)
 df_local = load_local_csv()
-df_github = load_csv_from_github(CSV_URL) if df_local.empty or (not df_local.empty and df_local['snapshot_date'].max() < (datetime.now(timezone.utc).date() - timedelta(days=1))) else pd.DataFrame()
 
-# Use whichever is newer
-if not df_local.empty and not df_github.empty:
-    local_max = df_local['snapshot_date'].max()
-    github_max = df_github['snapshot_date'].max()
-    df = df_local if local_max >= github_max else df_github
+load_source = None
+if not df_github.empty and not df_local.empty:
+    github_max = df_github["snapshot_date"].max()
+    local_max = df_local["snapshot_date"].max()
+    df = df_github if github_max >= local_max else df_local
+    load_source = "GitHub" if github_max >= local_max else "local"
+elif not df_github.empty:
+    df = df_github
+    load_source = "GitHub"
 elif not df_local.empty:
     df = df_local
+    load_source = "local"
 else:
-    df = df_github
+    df = pd.DataFrame()
+    load_source = None
 
-# ── Auto-scrape check ───────────────────────────────────────────────────────
+# Determine freshness
+today = datetime.now(timezone.utc).date()
+has_today_data = not df.empty and df["snapshot_date"].max() == today
+latest_date = df["snapshot_date"].max() if not df.empty else None
+
+# ── Status banner ───────────────────────────────────────────────────────────
+status_container = st.container()
+if has_today_data:
+    status_container.success(
+        f"✅ Data is up to date ({today}). Source: {load_source}. No scrape needed."
+    )
+elif not df.empty:
+    status_container.warning(
+        f"⚠️ Showing cached data from **{latest_date}** (source: {load_source}). "
+        f"Live CME FedWatch is currently unavailable. "
+        f"QuikStrike reported: Could not find a current FedFund future for the meeting date 7/28/2027. "
+        f"Daily automated scraping is paused until CME fixes the issue."
+    )
+    if github_error:
+        with st.expander("GitHub load details"):
+            st.code(github_error)
+else:
+    status_container.error("❌ No data available. Try manual refresh below.")
+    if github_error:
+        st.error(f"GitHub load error: {github_error}")
+
+# ── Auto-scrape check (disabled on page load; use scheduled automation) ─────
 show_scrape_button = True
-auto_scrape_needed = False
+auto_scrape_needed = False  # Do not auto-scrape when the page loads
 
+if has_today_data:
+    show_scrape_button = True  # Still allow manual refresh
+
+# No automatic on-load scraping; keep the UI responsive when CME is down.
 if df.empty:
-    auto_scrape_needed = True
-    st.info("🔍 No data found yet. Starting initial scrape...")
-    show_scrape_button = False
-else:
-    all_dates = sorted(df["snapshot_date"].unique())
-    latest_date = max(all_dates)
-    hours_since_update = (datetime.now(timezone.utc) - datetime.combine(latest_date, datetime.min.time())).total_seconds() / 3600
-
-    if hours_since_update > AUTO_SCRAPE_INTERVAL_HOURS:
-        auto_scrape_needed = True
-        st.caption(f"⏰ Data is {hours_since_update:.0f}h old. Auto-scraping...")
-
-if auto_scrape_needed:
-    with st.spinner("Scraping CME FedWatch data (this may take 1-2 minutes)..."):
-        success, msg, count = run_scraper()
-        if success:
-            st.success(msg)
-            # Reload local data
-            df = load_local_csv()
-            if df.empty:
-                df = df_github
-            st.rerun()
-        else:
-            st.error(msg)
-
+    st.warning("No cached data available. Click 'Refresh Data' once CME FedWatch is accessible.")
+    st.stop()
 # ── Manual refresh button ───────────────────────────────────────────────────
 if show_scrape_button:
     c1, _, c2 = st.columns([1, 4, 1])
     with c1:
-        if st.button("🔄 Refresh Data", help="Re-scrape CME FedWatch now"):
-            with st.spinner("Scraping CME FedWatch (1-2 min)..."):
-                success, msg, count = run_scraper()
-                if success:
-                    st.success(msg)
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    st.error(msg)
+        if has_today_data:
+            st.button("🔄 Refresh Data", disabled=True, help=f"Today's data ({today}) already exists. No need to refresh.")
+        elif st.button("🔄 Refresh Data", help="Re-scrape CME FedWatch now"):
+            if has_today_data:
+                st.success(f"✅ Today's data ({today}) already exists. Skipping scrape.")
+            else:
+                manual_status = st.empty()
+                manual_logs = st.empty()
+
+                with st.spinner("Scraping CME FedWatch (up to 4 min)..."):
+                    success, msg, count = run_scraper_with_timeout(timeout=240, log_container=manual_logs)
+                    if success:
+                        manual_status.success(msg)
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        manual_status.error(msg)
+                        # If scraping fails, keep showing cached data instead of blank page
+                        if not df.empty:
+                            st.warning(f"⚠️ Refresh failed. Continuing to show cached data from {latest_date}.")
     with c2:
         last_updated = max(df["snapshot_date"].unique()) if not df.empty else "?"
         st.caption(f"Last: {last_updated}")
-
-# ── Guard: no data ──────────────────────────────────────────────────────────
-if df.empty:
-    st.warning("No data available. Click 'Refresh Data' to scrape.")
-    st.stop()
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -559,13 +708,13 @@ if len(all_dates) >= 2:
         # Merge on rate_range for same-range comparison
         merged = curr_sub.merge(prev_sub, on="rate_range", suffixes=("_now", "_prev"))
         for _, row in merged.iterrows():
-            delta = row["prob_now"] - row["prob_prev"]
+            delta = row["prob_now_now"] - row["prob_now_prev"]
             if abs(delta) >= 5:
                 alerts.append({
                     "meeting": md.strftime("%b %d, %Y") if hasattr(md, "strftime") else str(md),
                     "range": row["rate_range"],
-                    "prev": row["prob_prev"],
-                    "now": row["prob_now"],
+                    "prev": row["prob_now_prev"],
+                    "now": row["prob_now_now"],
                     "delta": delta,
                 })
 
