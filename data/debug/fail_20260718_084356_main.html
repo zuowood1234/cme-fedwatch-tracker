@@ -1,0 +1,1296 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <title>芝商所FedWatch工具-美联储利率调整的权威市场预期指标</title>
+  <meta name="Keywords" content="FedWatch工具,FedWatch,芝商所FedWatch工具,芝商所FedWatch,CME FedWatch工具">
+  <meta name="Description" content="芝商所FedWatch工具是追踪美联储利率决策预期的权威指标。该工具通过分析30天联邦基金期货定价数据，实时量化FOMC会议加息或降息概率。CME FedWatch工具为市场提供清晰的货币政策前瞻指引。">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="format-detection" content="telephone=no">
+<meta name="applicable-device" content="pc,mobile">
+<meta name="msvalidate.01" content="2866C664F24E90AF19A09C433A9F3048">
+<link rel="icon" type="image/png" href="https://cme.cdnimage.net/templates/1/default/assets/img/cme_logo.png">
+<!-- Open Graph 社交分享（文章页 / 栏目列表 / 首页等） -->
+<meta property="og:title" content="芝商所FedWatch工具-美联储利率调整的权威市场预期指标">
+<meta property="og:description" content="芝商所FedWatch工具是追踪美联储利率决策预期的权威指标。该工具通过分析30天联邦基金期货定价数据，实时量化FOMC会议加息或降息概率。CME FedWatch工具为市场提供清晰的货币政策前瞻指引。">
+<meta property="og:image" content="https://cme.cdnimage.net/templates/1/default/assets/img/cme_logo.png">
+<meta property="og:url" content="https://www.cmegroup.cn/fed-watch/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CME Group芝商所官网">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/css/reset.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/swiper/swiper-3.4.2.min.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/css/base.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/css/style.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/font-awesome-4.7.0/css/font-awesome.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/v2022/css/font_3335302_kj1zzfasea.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/css/produce.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/css/common.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/css/vv.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/animateCss/animate.min.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/v2022/css/newCommon.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/v2022/css/newStyle.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/css/common-banner.css?v=2026051301">
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/v2022/css/sharejs/css/share.min.css?v=2026051301">
+  <link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/css/agricultural-insights.css?v=2026051301">
+<script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-WDRRR7Y1J3&amp;cx=c&amp;gtm=4e67f0h1"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-8DGC69CJ3K&amp;cx=c&amp;gtm=4e67f0"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-YFCTH6NBDZ&amp;cx=c&amp;gtm=4e67f0"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-L69G7D7MMN&amp;cx=c&amp;gtm=4e67f0"></script><script src="https://hm.baidu.com/hm.js?00246667cacba3cda13e96acc5c08d12"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-T3WZWRH"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-W39SMGS"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-8DGC69CJ3K"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/js/ga-init.js?v=2026051301"></script>
+  <style>
+    p.text {
+        font-family: Averta;
+        font-size: 1rem;
+        font-weight: 400;
+        letter-spacing: .03em;
+        line-height: 1.5rem;
+        margin-bottom: 1.875rem
+    }
+    .fed-watch-page .singleVideo video {
+      aspect-ratio: 16 / 9;
+      background: #000;
+      display: block;
+      height: auto;
+      width: 100%;
+    }
+    @media screen and (max-width: 500px) {
+      .fed-watch-page .singleVideo iframe,
+      .fed-watch-page .singleVideo video {
+        height: auto !important;
+        aspect-ratio: 16 / 9;
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body class="v2022">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W39SMGS" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3WZWRH" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<div class="head-box">
+  <div class="nPageContainer">
+    <div class="head">
+      <div class="logo">
+        <a href="https://www.cmegroup.cn/"><img src="https://cme.cdnimage.net/templates/1/default/assets/img_pc/logo.png" alt="CME"></a>
+      </div>
+      <div class="nnav">
+        <ul>
+          <li class="chanpinjiaoyi">
+            <span>产品介绍</span>
+            <div class="nav-child">
+              <div class="nav-child-list">
+                <div>
+                  <span class="tt"><a href="https://www.cmegroup.cn/trading/" title="期货产品介绍">产品介绍<i class="iconfont ic-arrow-right"></i></a></span>
+                  <div class="group-list">
+                    <div class="group">
+                      <a>资产类别</a>
+                      <div class="a-list">
+                        <div class="nav-col-160">
+                          <a href="https://www.cmegroup.cn/trading-agricultural/" title="农产品期货">农产品</a>
+                          <a href="https://www.cmegroup.cn/trading-energy/" title="能源期货">能源</a>
+                          <a href="https://www.cmegroup.cn/trading-equity-index/" title="股指期货">股指</a>
+                          <a href="https://www.cmegroup.cn/trading-fx/" title="外汇期货">外汇</a>
+                          <a href="https://www.cmegroup.cn/trading-interest-rates/" title="利率期货">利率</a>
+                          <a href="https://www.cmegroup.cn/trading-metals/" title="金属期货">金属</a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="group">
+                      <a>主导产品</a>
+                      <div class="a-list">
+                        <div>
+                          <a href="https://www.cmegroup.cn/soybean/" title="大豆期货">大豆期货</a>
+                          <a href="https://www.cmegroup.cn/corn/" title="玉米期货">玉米期货</a>
+                          <a href="https://www.cmegroup.cn/wti/" title="原油期货">WTI原油期货</a>
+                          <a href="https://www.cmegroup.cn/mirco-wti/" title="微型WTI原油期货">微型WTI原油期货</a>
+                          <a href="https://www.cmegroup.cn/henryhub/" title="天然气期货">亨利港天然气期货</a>
+                          <a href="https://www.cmegroup.cn/e-mini-sp-500-futures/" title="E-迷你标普500">E-迷你标普500指数</a>
+                        </div>
+                        <div class="nav-col-230">
+                          <a href="https://www.cmegroup.cn/micro-e-mini-sp-500/" title="微型E-迷你标普500">微型E-迷你标普500指数</a>
+                          <a href="https://www.cmegroup.cn/e-mini-nasdaq-100-futures/" title="E-迷你纳斯达克100">E-迷你纳斯达克100指数</a>
+                          <a href="https://www.cmegroup.cn/micro-e-mini-nasdaq-100/" title="微型E-迷你纳斯达克100">微型E-迷你纳斯达克100指数</a>
+                          <a href="https://www.cmegroup.cn/euro-fx/" title="欧元兑美元期货">欧元兑美元期货</a>
+                          <a href="https://www.cmegroup.cn/usd-cnh/" title="美元兑离岸人民币期货">美元兑离岸人民币期货</a>
+                          <a href="https://www.cmegroup.cn/japanese-yen/" title="日元兑美元期货">日元兑美元期货</a>
+                        </div>
+                        <div>
+                          <a href="https://www.cmegroup.cn/10-year-us-treasury-note/" title="十年美国国债">10年期美国国债期货</a>
+                          <a href="https://www.cmegroup.cn/3-month-sofr/" title="3个月SOFR期货">3个月SOFR期货和期权</a>
+                          <a href="https://www.cmegroup.cn/copper/" title="铜期货">铜期货</a>
+                          <a href="https://www.cmegroup.cn/gold/" title="黄金期货">黄金期货</a>
+                          <a href="https://www.cmegroup.cn/micro-gold/" title="微型黄金期货">微型黄金期货</a>
+                          <a href="https://www.cmegroup.cn/aluminum/" title="铝期货">铝期货</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/dealer/" title="期货交易商">
+                    <span class="tt">期货交易商<i class="iconfont ic-direction-right"></i></span>
+                    <p>众多在亚洲的交易商均提供芝商所的交易服务，请您从期货交易商名单中找到适合的交易商。</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="shichangdongcha">
+            <span>市场洞察</span>
+            <div class="nav-child">
+              <div class="nav-child-list">
+                <div>
+                  <span class="tt"><a href="https://www.cmegroup.cn/report/">市场洞察<i class="iconfont ic-arrow-right"></i></a></span>
+                  <div class="group">
+                    <a href="javascript:void(0);">市场研报</a>
+                    <div class="a-list">
+                      <div>
+                        <a href="https://www.cmegroup.cn/report/economicreports/">芝商所经济研究报告</a>
+                        <a href="https://www.cmegroup.cn/report/metalsoptions/">金属期权报告</a>
+                        <a href="https://www.cmegroup.cn/report/market/">市场资讯</a>
+                      </div>
+                      <div>
+                        <a href="https://www.cmegroup.cn/report/metals/">金属市场周报</a>
+                        <a href="https://www.cmegroup.cn/report/nat-gas/">天然气市场月报</a>
+                        <a href="https://www.cmegroup.cn/report/crude/">原油市场周报</a>
+                        <a href="https://www.cmegroup.cn/report/fx/">外汇市场周报</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/video/" rel="nofollow">
+                    <span class="tt"><b>3分钟看经济 <i class="iconfont ic-iconbofang nav-video-icon"></i></b><i class="iconfont ic-direction-right"></i></span>
+                    <p>芝商所经济研究专家团队以短视频形式，为大家分析宏观经济热点，评估期货和期权市场趋势、波动性和相关性的发展动向。</p>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/subscription/" rel="nofollow">
+                    <span class="tt">订阅芝商所报告<i class="iconfont ic-direction-right"></i></span>
+                    <p>了解独家资讯，获得活动邀请及时接收新闻及预警。</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="yanshengpinzhiku shujuhangqing active">
+            <span>数据</span>
+            <div class="nav-child">
+              <div class="nav-child-list">
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/market-data/" title="市场数据总貌">
+                    <span class="tt">市场数据总貌<i class="iconfont ic-arrow-right"></i></span>
+                    <p>利用数据解决方案，满足交易、研究、合规和风险管理要求。</p>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/futures-market/" title="数据行情">
+                    <span class="tt">数据行情<i class="iconfont ic-direction-right"></i></span>
+                    <p>芝商所为遍布全球的客户提供最精确、透明的市场数据。</p>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/data-distributor/" title="期货分销商">
+                    <span class="tt">期货分销商<i class="iconfont ic-direction-right"></i></span>
+                    <p>投资者只能通过许可认证的渠道获取芝商所的市场数据。</p>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/fed-watch/" title="芝商所FedWatch工具">
+                    <span class="tt">芝商所FedWatch工具<i class="iconfont ic-direction-right"></i></span>
+                    <p>追踪FOMC利率变动的最新可能性。</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="yanshengpinzhiku">
+            <span>清算服务</span>
+            <div class="nav-child">
+              <div class="nav-child-list">
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/clearing/">
+                    <span class="tt">清算服务总貌<i class="iconfont ic-arrow-right"></i></span>
+                    <p>清算有保障，风险大幅降低。</p>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/clearing/risk-management/">
+                    <span class="tt">风险管理<i class="iconfont ic-direction-right"></i></span>
+                    <p>了解现有产品与服务，识别、分析和限制损失。</p>
+                  </a>
+                </div>
+                <div class="div-a nav-card-dark">
+                  <a href="https://www.cmegroup.cn/clearing/span-methodology-overview/">
+                    <span class="tt">芝商所SPAN算法简介<i class="iconfont ic-direction-right"></i></span>
+                    <p>芝商所SPAN算法经过不断改进和完善，可用于评估最广泛的衍生工具和实物工具的风险。</p>
+                  </a>
+                </div>
+                <div class="div-a nav-card-blue">
+                  <a href="https://www.cmegroup.cn/clearing/launching-span-2/">
+                    <span class="tt">SPAN 2 框架<i class="iconfont ic-direction-right"></i></span>
+                    <p>SPAN 2™的保证金框架历经大量测试，已初步针对特定产品组别分阶段跨年推出。</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="yanshengpinzhiku">
+            <span>期货教育</span>
+            <div class="nav-child">
+              <div class="nav-child-list">
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/education/" title="期货期权视频课程">
+                    <span class="tt">期货教育视频课程<i class="iconfont ic-arrow-right"></i></span>
+                    <p>观看网上课程，认识期货和期权市场，掌握交易过程的每个阶段</p>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/infographics/">
+                    <span class="tt">漫画期货<i class="iconfont ic-direction-right"></i></span>
+                    <p>一看就懂的信息图，带您走进衍生品交易世界</p>
+                  </a>
+                </div>
+                <div class="div-a nav-card-dark">
+                  <a href="https://www.cmegroup.cn/futures-vocabulary/">
+                    <span class="tt">期货期权词汇<i class="iconfont ic-direction-right"></i></span>
+                    <p>期货与期权常用术语速查，帮助您更快理解衍生品交易</p>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/subscription/" rel="nofollow">
+                    <span class="tt">订阅芝商所报告<i class="iconfont ic-direction-right"></i></span>
+                    <p>了解独家资讯，获得活动邀请及时接收新闻及预警。</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="faguixuzhi">
+            <span>法规须知</span>
+            <div class="nav-child">
+              <div class="nav-child-list">
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/market-regulation/" rel="nofollow">
+                    <span class="tt">法规须知<i class="iconfont ic-arrow-right"></i></span>
+                    <p>查看芝商所发布的市场监管建议通告(MRAN)、清算通告及其它重要通告。</p>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/regulation-video/" rel="nofollow">
+                    <span class="tt">法规相关培训课程<i class="iconfont ic-direction-right"></i></span>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/subscription/" rel="nofollow">
+                    <span class="tt">订阅芝商所报告<i class="iconfont ic-direction-right"></i></span>
+                    <p>了解独家资讯，获得活动邀请及时接收新闻及预警。</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="guanyuzhishangsuo">
+            <span>关于芝商所</span>
+            <div class="nav-child">
+              <div class="nav-child-list">
+                <div>
+                  <span class="tt"><a href="https://www.cmegroup.cn/about-us/" rel="nofollow">关于芝商所<i class="iconfont ic-arrow-right"></i></a></span>
+                  <a class="link" href="https://www.cmegroup.cn/about/" rel="nofollow">公司简介</a>
+                  <a class="link" href="https://www.cmegroup.cn/about/global-offices/" rel="nofollow">全球分支机构</a>
+                  <a class="link" href="https://www.cmegroup.cn/about/partnerships/" rel="nofollow">全球合作伙伴</a>
+                  <a class="link" href="https://www.cmegroup.com/cn-s/tools-information/contacts-list.html" rel="nofollow" target="_blank">联系我们</a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/news/" rel="nofollow">
+                    <span class="tt">新闻中心<i class="iconfont ic-direction-right"></i></span>
+                    <p>最新媒体资讯动态，新闻稿发布都能在此找到。</p>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/applets/" rel="nofollow">
+                    <span class="tt">芝商所小程序<i class="iconfont ic-direction-right"></i></span>
+                    <p>全新上线 一网打尽期货知识及市场动态</p>
+                  </a>
+                </div>
+                <div class="div-a">
+                  <a href="https://www.cmegroup.cn/fraud-alert/" rel="nofollow">
+                    <span class="tt">反诈提示<i class="iconfont ic-direction-right"></i></span>
+                    <p>认识芝商所各在线平台，时刻保持警惕，防范假冒合法企业从事欺诈误导。</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="head-right-actions">
+        <a class="search-icon-btn" href="javascript:void(0);">
+          <img src="https://cme.cdnimage.net/templates/1/default/assets/v2022/img/icon-search.png" alt="搜索">
+        </a>
+        <a class="subscribe-btn" href="https://www.cmegroup.cn/subscription/">订阅</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="head-box-placeholder"></div>
+
+<div class="search-panel-overlay"></div>
+<div class="search-panel">
+  <div class="search-panel-close"><img src="https://cme.cdnimage.net/templates/1/default/assets/v2022/img/icon-close.png" alt="关闭"></div>
+  <div class="search-panel-content">
+    <div class="search-panel-input-wrapper">
+      <input type="text" name="q" class="search-panel-input" placeholder="搜索产品、页面和更多内容" autocomplete="off" style="">
+      <button type="button" class="search-panel-submit"><img src="https://cme.cdnimage.net/templates/1/default/assets/v2022/img/icon-search-light.png" alt="搜索"></button>
+    </div>
+    <div class="search-panel-section">
+      <h4 class="search-panel-label">最近搜索</h4>
+      <div class="search-panel-tags-wrapper">
+        <div class="search-panel-tags"></div>
+        <div class="search-panel-clear-btn" title="清空搜索历史">
+          <i class="iconfont ic-delete"></i>
+        </div>
+      </div>
+    </div>
+    <div class="search-panel-section">
+      <h4 class="search-panel-label">热门页面</h4>
+      <div class="search-panel-hot-list">
+        <a class="search-panel-hot-item" href="https://www.cmegroup.cn/fed-watch/">
+          <span>芝商所FedWatch工具</span>
+          <i class="iconfont ic-direction-right"></i>
+        </a>
+        <a class="search-panel-hot-item" href="https://www.cmegroup.cn/ltc/">
+          <span>氢氧化锂 CIF CJK (Fastmarkets) 期货和期权</span>
+          <i class="iconfont ic-direction-right"></i>
+        </a>
+        <a class="search-panel-hot-item" href="https://www.cmegroup.cn/report/economicreports/">
+          <span>芝商所经济研究报告</span>
+          <i class="iconfont ic-direction-right"></i>
+        </a>
+        <a class="search-panel-hot-item" href="https://www.cmegroup.cn/education/overview-futures/">
+          <span>期货有哪些优势？</span>
+          <i class="iconfont ic-direction-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="m-head">
+  <a class="m-head-logo-box" href="https://www.cmegroup.cn/">
+    <img class="m-logo" src="https://cme.cdnimage.net/templates/1/default/assets/img_pc/logo.png" alt="CME">
+    <img class="m-logo-white" src="https://cme.cdnimage.net/templates/1/default/assets/v2022/img/headLogoMini-white.png" alt="CME">
+  </a>
+  <div class="m-handles">
+    <a class="m-search-btn fr" href="javascript:void(0);">
+      <img src="https://cme.cdnimage.net/templates/1/default/assets/img_m/search_btnm.png" class="open_search">
+      <img src="https://cme.cdnimage.net/templates/1/default/assets/img_m/close.png" class="close_search">
+    </a>
+    <a class="m-nav-btn fr" href="javascript:void(0);">
+      <img src="https://cme.cdnimage.net/templates/1/default/assets/img_m/images/nav_btn.png" class="open_nav">
+      <img src="https://cme.cdnimage.net/templates/1/default/assets/img_m/close.png" class="close_nav">
+    </a>
+  </div>
+  <div class="m-search-box">
+    <input type="text" name="q" placeholder="请输入关键字" autocomplete="off" style="">
+    <button type="button" class="m-search-btn">
+      <img class="m-search-icon" src="https://cme.cdnimage.net/templates/1/default/assets/img_m/search-icon.png">
+    </button>
+  </div>
+</div>
+<div class="m-head-placeholder"></div>
+<script>
+(function () {
+  function goSiteSearch(input) {
+    var q = input && input.value ? String(input.value).trim() : '';
+    if (!q) {
+      return;
+    }
+    // 保存搜索历史
+    if (typeof window.saveSearchHistory === 'function') {
+      window.saveSearchHistory(q);
+    }
+    window.location.assign('/search/?q=' + encodeURIComponent(q));
+  }
+  function bindSearch(input, btn) {
+    if (!input || !btn) {
+      return;
+    }
+    btn.addEventListener('click', function () {
+      goSiteSearch(input);
+    });
+    input.addEventListener('keydown', function (e) {
+      var k = e.key || e.keyCode;
+      if (k === 'Enter' || k === 13) {
+        e.preventDefault();
+        goSiteSearch(input);
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    var panelWrap = document.querySelector('.search-panel-input-wrapper');
+    if (panelWrap) {
+      bindSearch(panelWrap.querySelector('.search-panel-input'), panelWrap.querySelector('.search-panel-submit'));
+    }
+    var mbox = document.querySelector('.m-head .m-search-box');
+    if (mbox) {
+      bindSearch(mbox.querySelector('input'), mbox.querySelector('.m-search-btn'));
+    }
+  });
+})();
+</script>
+
+<div class="mnav">
+  <ul>
+    <li class="chanpinjiaoyi">
+      <span class="h1">产品介绍 <i class="iconfont ic-add"></i></span>
+      <div class="nav-child">
+        <div class="nav-child-list">
+          <div>
+            <span class="tt"><a href="https://www.cmegroup.cn/trading/" title="期货产品介绍">产品介绍</a><i class="iconfont ic-arrow-right"></i></span>
+            <div class="group-list">
+              <div class="group">
+                <a class="group-tt color-yellow">资产类别 <i class="iconfont ic-add"></i></a>
+                <div class="a-list">
+                  <div>
+                    <a href="https://www.cmegroup.cn/trading-agricultural/" title="农产品期货">农产品</a>
+                    <a href="https://www.cmegroup.cn/trading-energy/" title="能源期货">能源</a>
+                    <a href="https://www.cmegroup.cn/trading-equity-index/" title="股指期货">股指</a>
+                    <a href="https://www.cmegroup.cn/trading-fx/" title="外汇期货">外汇</a>
+                    <a href="https://www.cmegroup.cn/trading-interest-rates/" title="利率期货">利率</a>
+                    <a href="https://www.cmegroup.cn/trading-metals/" title="金属期货">金属</a>
+                  </div>
+                </div>
+              </div>
+              <div class="group">
+                <a class="group-tt color-yellow">主导产品 <i class="iconfont ic-add"></i></a>
+                <div class="a-list">
+                  <div>
+                    <a href="https://www.cmegroup.cn/soybean/" title="大豆期货">大豆期货</a>
+                    <a href="https://www.cmegroup.cn/corn/" title="玉米期货">玉米期货</a>
+                    <a href="https://www.cmegroup.cn/wti/" title="原油期货">WTI原油期货</a>
+                    <a href="https://www.cmegroup.cn/mirco-wti/" title="微型WTI原油期货">微型WTI原油期货</a>
+                    <a href="https://www.cmegroup.cn/henryhub/" title="天然气期货">亨利港天然气期货</a>
+                    <a href="https://www.cmegroup.cn/e-mini-sp-500-futures/" title="E-迷你标普500">E-迷你标普500指数</a>
+                  </div>
+                  <div>
+                    <a href="https://www.cmegroup.cn/micro-e-mini-sp-500/" title="微型E-迷你标普500">微型E-迷你标普500指数</a>
+                    <a href="https://www.cmegroup.cn/e-mini-nasdaq-100-futures/" title="E-迷你纳斯达克100">E-迷你纳斯达克100指数</a>
+                    <a href="https://www.cmegroup.cn/micro-e-mini-nasdaq-100/" title="微型E-迷你纳斯达克100">微型E-迷你纳斯达克100指数</a>
+                    <a href="https://www.cmegroup.cn/euro-fx/" title="欧元兑美元期货">欧元兑美元期货</a>
+                    <a href="https://www.cmegroup.cn/usd-cnh/" title="美元兑离岸人民币期货">美元兑离岸人民币期货</a>
+                    <a href="https://www.cmegroup.cn/japanese-yen/" title="日元兑美元期货">日元兑美元期货</a>
+                  </div>
+                  <div>
+                    <a href="https://www.cmegroup.cn/10-year-us-treasury-note/" title="十年美国国债">10年期美国国债期货</a>
+                    <a href="https://www.cmegroup.cn/3-month-sofr/" title="3个月SOFR期货">3个月SOFR期货和期权</a>
+                    <a href="https://www.cmegroup.cn/copper/" title="铜期货">铜期货</a>
+                    <a href="https://www.cmegroup.cn/gold/" title="黄金期货">黄金期货</a>
+                    <a href="https://www.cmegroup.cn/micro-gold/" title="微型黄金期货">微型黄金期货</a>
+                    <a href="https://www.cmegroup.cn/aluminum/" title="铝期货">铝期货</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <span class="tt"><a href="https://www.cmegroup.cn/dealer/" title="期货交易商">期货交易商</a><i class="iconfont ic-direction-right"></i></span>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li class="shichangdongcha">
+      <span class="h1">市场洞察 <i class="iconfont ic-add"></i></span>
+      <div class="nav-child">
+        <div class="nav-child-list">
+          <div>
+            <span class="tt"><a href="https://www.cmegroup.cn/report/">市场洞察</a><i class="iconfont ic-arrow-right"></i></span>
+            <div class="group-list">
+              <div class="group">
+                <a class="group-tt">市场研报 <i class="iconfont ic-add"></i></a>
+                <div class="a-list">
+                  <div>
+                    <a href="https://www.cmegroup.cn/report/economicreports/">芝商所经济研究报告</a>
+                    <a href="https://www.cmegroup.cn/report/metalsoptions/">金属期权报告</a>
+                    <a href="https://www.cmegroup.cn/report/market/">市场资讯</a>
+                  </div>
+                  <div>
+                    <a href="https://www.cmegroup.cn/report/metals/">金属市场周报</a>
+                    <a href="https://www.cmegroup.cn/report/nat-gas/">天然气市场月报</a>
+                    <a href="https://www.cmegroup.cn/report/crude/">原油市场周报</a>
+                    <a href="https://www.cmegroup.cn/report/fx/">外汇市场周报</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <span class="tt"><a href="https://www.cmegroup.cn/video/" rel="nofollow">3分钟看经济</a><i class="iconfont ic-direction-right"></i></span>
+          </div>
+          <div>
+            <span class="tt"><a href="https://www.cmegroup.cn/subscription/" rel="nofollow">订阅芝商所报告</a><i class="iconfont ic-direction-right"></i></span>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li class="yanshishuju">
+      <span class="h1">数据 <i class="iconfont ic-add"></i></span>
+      <div class="nav-child">
+        <div class="nav-child-list">
+          <div><span class="tt"><a rel="nofollow" href="https://www.cmegroup.cn/market-data/">市场数据总貌</a><i class="iconfont ic-arrow-right"></i></span></div>
+          <div><span class="tt"><a rel="nofollow" href="https://www.cmegroup.cn/futures-market/">数据行情</a><i class="iconfont ic-arrow-right"></i></span></div>
+          <div><span class="tt"><a href="https://www.cmegroup.cn/data-distributor/">期货分销商</a><i class="iconfont ic-direction-right"></i></span></div>
+          <div><span class="tt"><a href="https://www.cmegroup.cn/fed-watch/">芝商所FedWatch工具</a><i class="iconfont ic-direction-right"></i></span></div>
+        </div>
+      </div>
+    </li>
+    <li class="yanshishuju">
+      <span class="h1">清算服务 <i class="iconfont ic-add"></i></span>
+      <div class="nav-child">
+        <div class="nav-child-list">
+          <div><span class="tt"><a rel="nofollow" href="https://www.cmegroup.cn/clearing/">清算服务总貌</a><i class="iconfont ic-arrow-right"></i></span></div>
+          <div><span class="tt"><a rel="nofollow" href="https://www.cmegroup.cn/clearing/risk-management/">风险管理</a><i class="iconfont ic-arrow-right"></i></span></div>
+          <div><span class="tt"><a href="https://www.cmegroup.cn/clearing/span-methodology-overview/">芝商所SPAN算法简介</a><i class="iconfont ic-direction-right"></i></span></div>
+          <div><span class="tt"><a href="https://www.cmegroup.cn/clearing/launching-span-2/">SPAN 2 框架</a><i class="iconfont ic-direction-right"></i></span></div>
+        </div>
+      </div>
+    </li>
+    <li class="yanshengpinzhiku">
+      <span class="h1">期货教育 <i class="iconfont ic-add"></i></span>
+      <div class="nav-child">
+        <div class="nav-child-list">
+          <div><span class="tt"><a href="https://www.cmegroup.cn/education/" title="期货期权视频课程">期货教育视频课程</a><i class="iconfont ic-arrow-right"></i></span></div>
+          <div><span class="tt"><a href="https://www.cmegroup.cn/infographics/" title="漫画期货">漫画期货</a><i class="iconfont ic-direction-right"></i></span></div>
+          <div><span class="tt"><a href="https://www.cmegroup.cn/futures-vocabulary/">期货期权词汇</a><i class="iconfont ic-direction-right"></i></span></div>
+          <div><span class="tt"><a href="https://www.cmegroup.cn/subscription/" rel="nofollow">订阅芝商所报告</a><i class="iconfont ic-direction-right"></i></span></div>
+        </div>
+      </div>
+    </li>
+    <li class="faguixuzhi">
+      <span class="h1">法规须知 <i class="iconfont ic-add"></i></span>
+      <div class="nav-child">
+        <div class="nav-child-list">
+          <div><span class="tt"><a rel="nofollow" href="https://www.cmegroup.cn/market-regulation/">法规须知</a><i class="iconfont ic-arrow-right"></i></span></div>
+          <div><span class="tt"><a rel="nofollow" href="https://www.cmegroup.cn/regulation-video/">法规相关培训课程</a><i class="iconfont ic-direction-right"></i></span></div>
+          <div><span class="tt"><a href="https://www.cmegroup.cn/subscription/" rel="nofollow">订阅芝商所报告</a><i class="iconfont ic-direction-right"></i></span></div>
+        </div>
+      </div>
+    </li>
+    <li class="guanyuzhishangsuo">
+      <span class="h1">关于芝商所 <i class="iconfont ic-add"></i></span>
+      <div class="nav-child">
+        <div class="nav-child-list">
+          <div>
+            <span class="tt"><a rel="nofollow" href="https://www.cmegroup.cn/about-us/">关于芝商所</a><i class="iconfont ic-arrow-right"></i></span>
+            <div class="group-list">
+              <div class="group">
+                <span class="group-tt"><a rel="nofollow" href="https://www.cmegroup.cn/about/">公司简介</a><i class="iconfont ic-arrow-right"></i></span>
+              </div>
+              <div class="group">
+                <span class="group-tt"><a rel="nofollow" href="https://www.cmegroup.cn/about/global-offices/">全球分支机构</a><i class="iconfont ic-arrow-right"></i></span>
+              </div>
+              <div class="group">
+                <span class="group-tt"><a rel="nofollow" href="https://www.cmegroup.cn/about/partnerships/">全球合作伙伴</a><i class="iconfont ic-arrow-right"></i></span>
+              </div>
+              <div class="group">
+                <span class="group-tt"><a rel="nofollow" href="https://www.cmegroup.com/cn-s/tools-information/contacts-list.html" target="_blank">联系我们</a><i class="iconfont ic-arrow-right"></i></span>
+              </div>
+            </div>
+          </div>
+          <div><span class="tt"><a rel="nofollow" href="https://www.cmegroup.cn/news/">新闻中心</a><i class="iconfont ic-direction-right"></i></span></div>
+          <div><span class="tt"><a rel="nofollow" href="https://www.cmegroup.cn/applets/">芝商所小程序</a><i class="iconfont ic-direction-right"></i></span></div>
+          <div><span class="tt"><a rel="nofollow" href="https://www.cmegroup.cn/fraud-alert/">反诈提示</a><i class="iconfont ic-direction-right"></i></span></div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+<div class="nPageMask"></div>
+
+<!-- banner -->
+<div class="bb-banner">
+  <div class="banner-box banner-box-pc">
+    <div class="content">
+      <div class="banner-text">
+        <h1 class="banner-title">
+          芝商所FedWatch工具
+        </h1>
+        <div class="banner-sub-title">
+          追踪FOMC利率变动的最新可能性
+        </div>
+      </div>
+    </div>
+    <img class="banner-pc" src="https://cme.cdnimage.net/templates/1/default/assets/img/v32/banner_bg.png" alt="芝商所FedWatch工具">
+  </div>
+  <div class="banner-box banner-box-m">
+    <div class="content">
+      <div class="banner-text">
+        <div class="banner-title">
+          芝商所FedWatch工具
+        </div>
+        <div class="banner-sub-title">
+          追踪FOMC利率变动的最新可能性
+        </div>
+      </div>
+    </div>
+    <img class="banner-m" src="https://cme.cdnimage.net/templates/1/default/assets/img/v32/banner_bg_m.png" alt="芝商所FedWatch工具">
+  </div>
+</div>
+<!-- Crumb -->
+<div class="crumb mb-60">
+  <div class="nPageContainer">
+    <a href="https://www.cmegroup.cn/" class="">CME芝商所</a><span class="">&gt;</span>
+    <!-- <a href="https://www.cmegroup.cn/market-data/" class="mobileHide">数据</a><span class="mobileHide">&gt;</span> -->
+    <h2>芝商所FedWatch工具</h2>
+  </div>
+</div>
+
+<!-- Main -->
+<!-- Main -->
+
+<div class="main fed-watch-page">
+  <div class=" mb-60 bgBlue">
+    <div class="nPageContainer pt-60 pb-60">
+      <div class="fed-watch-content">
+        <div class="top-nav-left">
+          <div class="content-info mb-30">
+            本工具通过分析30天联邦基金期货定价数据，为您实时展示和量化利率交易者对美联储在即将召开的FOMC会议上调整联邦目标利率的可能性。这是分析美国货币政策调整预期的权威指标。
+          </div>
+          <div class="content-tip">
+            （媒体引用提示：若报告中引述利率变动的可能性，请注明数据的来源为"芝商所 FedWatch 工具"。）
+          </div>
+        </div>
+        <!-- sp -->
+        <div class="nav-item-list">
+          <div class="tt">快速链接</div>
+          <div class="list">
+            <a href="https://www.cmegroup.cn/fed-watch-use/">用户指南</a><br>
+            <a href="#a1">视频演示</a><br>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nPageContainer mb-40">
+    <div class="iframe-item-container mb-60">
+      <iframe src="https://cmegroup-tools.quikstrike.net/User/QuikStrikeTools.aspx?viewitemid=IntegratedFedWatchTool&amp;userId=lwolf&amp;jobRole=&amp;company=&amp;companyType=&amp;userId=lwolf&amp;jobRole=&amp;company=&amp;companyType=" style="width: 100%; height: 900px; overflow: auto; border: 0" scrolling="auto" frameborder="0" id="cmeIframe-swgqawlz1" class="cmeIframe"></iframe>
+      <p class="mb-30 mt-30 text">
+        *免责声明：本工具的数据来源和所有输出均不构成投资建议，也并非来自芝商所的个人建议。 此内容不构成买卖任何期货或期权的承诺。 使用此工具进行任何投资活动，风险均由相关投资者自行承担。 芝商所明确声明，不为（无论是访客还是其他人）对此工具所含信息的使用和解释承担任何责任。投资者基于这些信息做出决定，需自行承担全部责任。 本页面的所有访客均同意保护芝商所及其附属公司和许可方免受因访客基于此类信息做出任何决定而产生的任何损害而提起的索赔。
+      </p>
+    </div>
+    <div class="third-title">查看芝商所利率期货及期权市场行情</div>
+    <div class="content">
+      <div class="prograph mb-40 mt-20">
+        <p>
+          市场数据延迟至少十分钟。芝商所网站包含的所有市场数据应仅视为参考，不应用于验证或补充实时推送的市场数据。
+        </p>
+      </div>
+    </div>
+    <div class="e-tab-content table-style-1" id="shujushichang7_data_cme">
+      <table class="hide">
+        <tbody>
+        <tr>
+          <td class="table-menu table-menu1">
+            <table class="tabtop table table-striped shichangshuju2_table">
+              <tbody>
+              <tr class="as-middle-line ALL" style="display: table-row; height: 0px;">
+                <th class="text-center">
+                  <span>产品</span></th>
+              </tr>
+              </tbody>
+            </table>
+            <table class="tab1 table table-striped shichangshuju2_table CME">
+              <tbody>
+              <tr class="as-middle-line CBOT" style="display: table-row">
+                <td class="">10年期收益率期货</td>
+              </tr>
+              <tr class="as-middle-line ff-td-1 CME" style="display: table-row; height: 52.7969px;">
+                <td class="">1个月SOFR期货</td></tr>
+              <tr class="as-middle-line CME" style="display: table-row; height: 52.7969px;">
+                <td class="">3个月SOFR期货</td></tr>
+              <tr class="as-middle-line CME" style="display: table-row; height: 52.7969px;">
+                <td class="">2年期美国国债期货</td></tr>
+              <tr class="as-middle-line CME" style="display: table-row; height: 52.7969px;">
+                <td class="">5年期美国国债期货</td></tr>
+              <tr class="as-middle-line CME" style="display: table-row; height: 52.7969px;">
+                <td class="">10年期美国国债期货</td></tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="table-body table-scroll-x">
+        <table id="tabtop" class="hide table table-striped shichangshuju2_table">
+          <tbody>
+          <tr class="as-middle-line ALL" style="display: table-row;">
+            <th class="ff-td-1"></th>
+            <th>合约</th>
+            <th>最新价</th>
+            <th>买价</th>
+            <th>卖价</th>
+            <th>最高</th>
+            <th>最低</th>
+            <th>涨跌($)</th>
+            <th>涨跌(%)</th>
+            <th>成交量</th>
+            <th>持仓量</th>
+            <th>最后更新时间</th></tr>
+          </tbody>
+        </table>
+        <table id="tab1" class="table table-striped shichangshuju2_table CME">
+          <thead>
+          <tr class="as-middle-line ALL" style="display: table-row;">
+            <th class="ff-td-1">产品</th>
+            <th>合约</th>
+            <th>最新价</th>
+            <th>买价</th>
+            <th>卖价</th>
+            <th>最高</th>
+            <th>最低</th>
+            <th>涨跌($)</th>
+            <th>涨跌(%)</th>
+            <th>成交量</th>
+            <th>持仓量</th>
+            <th>最后更新时间</th></tr>
+          </thead>
+          <tbody>
+          <tr class="as-middle-line CBOT" style="display: table-row; height: 52.7969px;">
+            <td class="ff-td-1">10年期收益率期货</td>
+            <td id="CBOT_10Y_1">JUL 2026</td>
+            <td id="CBOT_10Y_2">4.53</td>
+            <td id="CBOT_10Y_11">4.51</td>
+            <td id="CBOT_10Y_12">4.57</td>
+            <td id="CBOT_10Y_3">4.56</td>
+            <td id="CBOT_10Y_4">4.51</td>
+            <td id="CBOT_10Y_5" class="color-green">-0.03</td>
+            <td id="CBOT_10Y_6" class="color-green">-0.61%</td>
+            <td id="CBOT_10Y_7">348</td>
+            <td id="CBOT_10Y_8">1,783</td>
+            <td id="CBOT_10Y_9" class="last-td">05:00:00</td>
+          </tr>
+          <tr class="as-middle-line CME" style="display: table-row; height: 52.7969px;">
+            <td class="ff-td-1">1个月SOFR期货</td>
+            <td id="CME_SR1_1">JUL 2026</td>
+            <td id="CME_SR1_2">96.38</td>
+            <td id="CME_SR1_11">96.38</td>
+            <td id="CME_SR1_12">96.38</td>
+            <td id="CME_SR1_3">96.39</td>
+            <td id="CME_SR1_4">96.38</td>
+            <td id="CME_SR1_5" class="color-red">0</td>
+            <td id="CME_SR1_6" class="color-red">0%</td>
+            <td id="CME_SR1_7">73,778</td>
+            <td id="CME_SR1_8">386,512</td>
+            <td id="CME_SR1_9">05:00:00</td></tr>
+          <tr class="as-middle-line CME" style="display: table-row; height: 52.7969px;">
+            <td class="ff-td-1">3个月SOFR期货</td>
+            <td id="CME_SR3_1">JUN 2026</td>
+            <td id="CME_SR3_2">96.33</td>
+            <td id="CME_SR3_11">96.33</td>
+            <td id="CME_SR3_12">96.33</td>
+            <td id="CME_SR3_3">96.34</td>
+            <td id="CME_SR3_4">96.33</td>
+            <td id="CME_SR3_5" class="color-green">-0.01</td>
+            <td id="CME_SR3_6" class="color-green">-0.01%</td>
+            <td id="CME_SR3_7">70,818</td>
+            <td id="CME_SR3_8">1,284,349</td>
+            <td id="CME_SR3_9">05:00:00</td></tr>
+          <tr class="as-middle-line CME" style="display: table-row; height: 52.7969px;">
+            <td class="ff-td-1">2年期美国国债期货</td>
+            <td id="CBOT_ZT_1">SEP 2026</td>
+            <td id="CBOT_ZT_2">103</td>
+            <td id="CBOT_ZT_11">103</td>
+            <td id="CBOT_ZT_12">103</td>
+            <td id="CBOT_ZT_3">103'13</td>
+            <td id="CBOT_ZT_4">102'99</td>
+            <td id="CBOT_ZT_5" class="color-green">-0.04</td>
+            <td id="CBOT_ZT_6" class="color-green">-0.03%</td>
+            <td id="CBOT_ZT_7">700,529</td>
+            <td id="CBOT_ZT_8">4,402,711</td>
+            <td id="CBOT_ZT_9">05:00:00</td></tr>
+          <tr class="as-middle-line CME" style="display: table-row; height: 52.7969px;">
+            <td class="ff-td-1">5年期美国国债期货</td>
+            <td id="CBOT_ZF_1">SEP 2026</td>
+            <td id="CBOT_ZF_2">106'68</td>
+            <td id="CBOT_ZF_11">106'67</td>
+            <td id="CBOT_ZF_12">106'68</td>
+            <td id="CBOT_ZF_3">106'92</td>
+            <td id="CBOT_ZF_4">106'66</td>
+            <td id="CBOT_ZF_5" class="color-red">0</td>
+            <td id="CBOT_ZF_6" class="color-red">0%</td>
+            <td id="CBOT_ZF_7">1,063,517</td>
+            <td id="CBOT_ZF_8">6,188,567</td>
+            <td id="CBOT_ZF_9">05:00:00</td></tr>
+          <tr class="as-middle-line CME" style="display: table-row; height: 52.2969px;">
+            <td class="ff-td-1">10年期美国国债期货</td>
+            <td id="CBOT_ZN_1">SEP 2026</td>
+            <td id="CBOT_ZN_2">109'22</td>
+            <td id="CBOT_ZN_11">109'2</td>
+            <td id="CBOT_ZN_12">109'22</td>
+            <td id="CBOT_ZN_3">109'53</td>
+            <td id="CBOT_ZN_4">109'17</td>
+            <td id="CBOT_ZN_5" class="color-red">+0.08</td>
+            <td id="CBOT_ZN_6" class="color-red">+0.07%</td>
+            <td id="CBOT_ZN_7">1,318,925</td>
+            <td id="CBOT_ZN_8">5,277,300</td>
+            <td id="CBOT_ZN_9">05:00:00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="third-title title-with-more-2 mb-30 mt-40">
+      <a class="normalA" href="https://www.cmegroup.cn/report/interest-market/">芝商所利率产品最新资讯</a>
+      <a rel="nofollow" class="more" href="https://www.cmegroup.cn/report/interest-market/">查看更多</a>
+    </div>
+    <!-- sp -->
+    <div class="messageCardListContainer swiper-container swiper-container-horizontal">
+      <div class="arrowBoxLeft mc-prev-0 swiper-button-disabled"><i class="fa fa-angle-left" aria-hidden="true"></i></div>
+      <div class="messageCardList swiper-wrapper">
+        <div class="messageCardItem swiper-slide swiper-slide-active" style="margin-right: 30px;">
+          <div class="box">
+            <div class="limit-time">
+              <i class="iconfont ic-liebiao"></i> 预计阅读时间 2分钟
+            </div>
+            <div class="tt"><a href="https://www.cmegroup.cn/report/market/30086.htm" class="insight-title-link">当数据遇上沃什：美联储步入利率政策十字路口</a></div>
+            <div class="dd">
+              全球金融市场步入关键十字路口。
+            </div>
+            <p class="date">利率产品 <br>2026-07-16</p>
+          </div>
+        </div>
+        <div class="messageCardItem swiper-slide swiper-slide-next" style="margin-right: 30px;">
+          <div class="box">
+            <div class="limit-time">
+              <i class="iconfont ic-liebiao"></i> 预计阅读时间 2分钟
+            </div>
+            <div class="tt"><a href="https://www.cmegroup.cn/report/market/30055.htm" class="insight-title-link">地缘风险降温，大宗商品市场迎来重新定价</a></div>
+            <div class="dd">
+              随着美伊及相关调解国推进签署谅解备忘录（MOU）的预期升温，全球大宗商品市场正在对相关资产的风险溢价进行重新评估。
+            </div>
+            <p class="date">利率产品 <br>2026-06-18</p>
+          </div>
+        </div>
+        <div class="messageCardItem swiper-slide" style="margin-right: 30px;">
+          <div class="box">
+            <div class="limit-time">
+              <i class="iconfont ic-liebiao"></i> 预计阅读时间 3分钟
+            </div>
+            <div class="tt"><a href="https://www.cmegroup.cn/report/market/30048.htm" class="insight-title-link">2026三季度大宗商品三大关键词：分化、博弈、重构</a></div>
+            <div class="dd">
+              即将进入2026年下半年，全球大宗商品市场已站在新一轮分化的十字路口。
+            </div>
+            <p class="date">利率产品 <br>2026-06-12</p>
+          </div>
+        </div>
+        <div class="messageCardItem swiper-slide" style="margin-right: 30px;">
+          <div class="box">
+            <div class="limit-time">
+              <i class="iconfont ic-liebiao"></i> 预计阅读时间 3分钟
+            </div>
+            <div class="tt"><a href="https://www.cmegroup.cn/report/market/30031.htm" class="insight-title-link">突破5.20%！国债收益率大幅上行，美联储换帅迎大考</a></div>
+            <div class="dd">
+              当下，通胀压力不断加剧，叠加美联储货币政策或将迎来调整，全球债市正经历新一轮震荡行情。
+            </div>
+            <p class="date">利率产品 <br>2026-05-29</p>
+          </div>
+        </div>
+        <div class="messageCardItem swiper-slide" style="margin-right: 30px;">
+          <div class="box">
+            <div class="limit-time">
+              <i class="iconfont ic-liebiao"></i> 预计阅读时间 3分钟
+            </div>
+            <div class="tt"><a href="https://www.cmegroup.cn/report/market/30006.htm" class="insight-title-link">漫长的等待：美联储“双主席”时代与利率路径的重定价</a></div>
+            <div class="dd">
+              北京时间4月30日，美联储联邦公开市场委员会（FOMC）以8：4的罕见投票结果宣布，将联邦基金利率目标区间维持在3.50%-3.75%不变。
+            </div>
+            <p class="date">利率产品 <br>2026-05-07</p>
+          </div>
+        </div>
+        <div class="messageCardItem swiper-slide" style="margin-right: 30px;">
+          <div class="box">
+            <div class="limit-time">
+              <i class="iconfont ic-liebiao"></i> 预计阅读时间 4分钟
+            </div>
+            <div class="tt"><a href="https://www.cmegroup.cn/report/market/18771.htm" class="insight-title-link">从霍尔木兹到华尔街：14天停火窗口内的全球资产重定价</a></div>
+            <div class="dd">
+              2026年4月8日凌晨，一场为期14天的临时停火协议落地。WTI原油期货价格从117美元/桶的高位直线跳水，盘中暴跌逾19%，亚太股市应声反弹。
+            </div>
+            <p class="date">利率产品 <br>2026-04-10</p>
+          </div>
+        </div>
+        <div class="messageCardItem swiper-slide" style="margin-right: 30px;">
+          <div class="box">
+            <div class="limit-time">
+              <i class="iconfont ic-liebiao"></i> 预计阅读时间 5分钟
+            </div>
+            <div class="tt"><a href="https://www.cmegroup.cn/report/market/18737.htm" class="insight-title-link">大宗商品的超级周期是“中场休息”还是“曲终人散”？</a></div>
+            <div class="dd">
+              曾几何时，市场沉浸在“大宗商品超级周期”的宏大叙事中无法自拔。
+            </div>
+            <p class="date">利率产品 <br>2026-03-27</p>
+          </div>
+        </div>
+        <div class="messageCardItem swiper-slide" style="margin-right: 30px;">
+          <div class="box">
+            <div class="limit-time">
+              <i class="iconfont ic-liebiao"></i> 预计阅读时间 3分钟
+            </div>
+            <div class="tt"><a href="https://www.cmegroup.cn/report/market/18731.htm" class="insight-title-link">超级周第一炸！澳洲联储5:4惊险加息，内部分歧暗藏玄机</a></div>
+            <div class="dd">
+              3月17日，全球央行“超级周”大幕刚刚拉开，澳洲联储便投下一枚重磅炸弹——宣布将现金利率目标上调25个基点至4.10%。
+            </div>
+            <p class="date">利率产品 <br>2026-03-20</p>
+          </div>
+        </div>
+        <div class="messageCardItem swiper-slide" style="margin-right: 30px;">
+          <div class="box">
+            <div class="limit-time">
+              <i class="iconfont ic-arrow-right-filling"></i> 视频长度 2分钟
+            </div>
+            <div class="tt"><a href="https://www.cmegroup.cn/video/17711.htm" class="insight-title-link">日本退出负利率，日经225指数上涨</a></div>
+            <div class="dd">
+              日本17年来首次加息，结束了长达八年的负利率，股市上涨，日元承压。
+            </div>
+            <p class="date">3分钟看经济 <br>2024-04-03</p>
+          </div>
+        </div>
+        <div class="messageCardItem swiper-slide" style="margin-right: 30px;">
+          <div class="box">
+            <div class="limit-time">
+              <i class="iconfont ic-arrow-right-filling"></i> 视频长度 4分钟
+            </div>
+            <div class="tt"><a href="https://www.cmegroup.cn/video/16916.htm" class="insight-title-link">【亚太经济月谈】高利率环境及其对经济的影响</a></div>
+            <div class="dd">
+              高利率环境常对经济带来挑战，然而，九月份的消费者支出和就业市场仍继续保持强劲。不过，最近股市和债券市场的波动应当部分归因于利率的上涨。
+            </div>
+            <p class="date">3分钟看经济 <br>2023-10-25</p>
+          </div>
+        </div>
+      </div>
+      <div class="arrowBox mc-next-0"><i class="fa fa-angle-right" aria-hidden="true"></i></div>
+    </div>
+    <h2 class="third-title  mb-30 mt-60" id="a1">芝商所FedWatch工具介绍</h2>
+
+    <div class="singleVideo">
+      <video class="video-frame" width="100%" id="iframeId" controls="" controlslist="nodownload" preload="metadata" playsinline="" webkit-playsinline="" data-cme-skip-autoplay="1">
+        <source src="http://cme.cdnimage.net/video/fed-watch-tool-intro.mp4" type="video/mp4">
+      </video>
+    </div>
+      <div class="bgGray pt-20 pb-60 mt-60">
+      <div class="nPageContaine r">
+        <div class="third-title mb-30 mt-40">利率产品介绍</div>
+        <!-- sp -->
+        <div class="singleVideo">
+          <video class="video-frame" width="100%" id="fed-watch" controls="" controlslist="nodownload" preload="metadata" playsinline="" webkit-playsinline="" data-cme-skip-autoplay="1">
+            <source src="http://cme.cdnimage.net/video/trading-interest-rates.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+<link rel="stylesheet" href="https://cme.cdnimage.net/templates/1/default/assets/v2022/css/list-scyb-zss.css?v=2026051301">
+<div class="scyb-zss-bottom-cta scyb-zss-bottom-cta--list-layout">
+  <div class="bottom-card-group mt-60 mb-60">
+    <div class="bottom-card bottom-card-left">
+      <span class="bottom-card-label1">查看期货教育</span>
+      <p class="bottom-card-desc">观看网上课程，认识期货和期权市场，掌握交易过程的每个阶段。</p>
+      <div class="bottom-card-link-box">
+        <span class="bottom-card-link-text">了解更多 </span>
+        <span class="bottom-card-link-icon">
+          <a href="https://www.cmegroup.cn/education/" target="_blank" rel="nofollow"><i class="iconfont ic-direction-right"></i></a>
+        </span>
+      </div>
+    </div>
+    <div class="bottom-card bottom-card-right" data-gtag-category="订阅按鈕" data-gtag-label="https://www.cmegroup.cn/" data-gtag-value="bottomSubscribeBannerClick">
+      <span class="bottom-card-label">订阅芝商所报告</span>
+      <p class="bottom-card-desc">了解独家资讯，获得活动邀请及时接受新闻及预警。</p>
+      <a href="https://www.cmegroup.cn/subscription/" rel="nofollow" target="_blank" class="bottom-card-link">立即订阅</a>
+    </div>
+  </div>
+</div>
+  </div>
+
+</div>
+<!-- Main END -->
+<div class="fixed-subscript">
+  <p>
+    了解独家资讯<br>
+    获得活动邀请<br>
+    及时接收新闻及预警<br>
+  </p>
+  <a data-gtag-category="订阅按钮" data-gtag-label="https://www.cmegroup.cn/" data-gtag-value="bottomSubscribeBannerClick" rel="nofollow" target="_blank" href="https://www.cmegroup.cn/subscription/">订阅芝商所报告</a>
+  <i class="iconfont ic-error"></i>
+  <i class="iconfont ic-shousuo"></i>
+</div>
+<div class="fixed-subscript-mini hide">
+  <a data-gtag-category="订阅按钮" data-gtag-label="https://www.cmegroup.cn/" data-gtag-value="bottomSubscribeBannerClick" rel="nofollow" target="_blank" href="https://www.cmegroup.cn/subscription/">订阅芝商所报告</a>
+  <div class="handle">
+    <i class="iconfont ic-zhankai"></i>
+    <i class="iconfont ic-error"></i>
+  </div>
+</div>
+<a class="fixed-subscript-mobile-btn" data-gtag-category="订阅按钮" data-gtag-label="https://www.cmegroup.cn/" data-gtag-value="bottomSubscribeBannerClick" rel="nofollow" target="_blank" href="https://www.cmegroup.cn/subscription/">订阅芝商所报告</a>
+<div class="nfooter-box">
+  <div class="links">
+    <div class="nPageContainer">
+      <ul class="link-list">
+        <li class="link-group">
+          <span class="link-group-title">关于我们</span>
+          <a href="https://www.cmegroup.cn/about/global-offices/" rel="nofollow">全球办事处</a>
+          <a href="https://www.cmegroup.cn/about/" rel="nofollow">公司简介</a>
+          <a href="https://www.cmegroup.com/cn-s/tools-information/contacts-list.html" rel="nofollow" target="_blank">联系我们</a>
+          <a href="https://www.cmegroup.cn/news/" rel="nofollow">新闻中心</a>
+        </li>
+        <li class="link-group">
+          <span class="link-group-title">研报和学习资源</span>
+          <a href="https://www.cmegroup.cn/report/" title="期货市场研究报告">市场研报</a>
+          <a href="https://www.cmegroup.cn/education/" title="期货期权视频课程">期货教育</a>
+          <a href="https://www.cmegroup.cn/how-get-historical-data/" rel="nofollow">历史数据</a>
+        </li>
+        <li class="link-group">
+          <span class="link-group-title">产品</span>
+          <a href="https://www.cmegroup.cn/trading/" title="产品介绍" rel="nofollow">产品介绍</a>
+        </li>
+        <li class="link-group">
+          <span class="link-group-title opt0">其他</span>
+          <a href="https://www.cmegroup.cn/education/regulatory/" rel="nofollow">市场监管建议通告</a>
+          <a href="https://www.cmegroup.cn/disclaimer/" rel="nofollow">免责声明</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="infos">
+    <div class="nPageContainer">
+      <div class="content">
+        <div class="f-con">
+          <h2 class="bgtitle">芝商所<a class="normalA" href="https://www.cmegroup.cn/">CME Group</a>简介</h2>
+          <p class="txt">
+            <a class="normalA" href="https://www.cmegroup.cn/">CME芝商所</a>是全球最多元化的衍生品交易市场龙头，包括四个指定合约市场（Designated Contract Market）。点击<a href="http://www.cmegroup.com/company/cme.html" rel="nofollow">CME</a>，<a href="http://www.cmegroup.com/company/cbot.html" rel="nofollow">CBOT</a>，<a href="http://www.cmegroup.com/company/nymex.html" rel="nofollow">NYMEX</a>，<a href="http://www.cmegroup.com/company/comex.html" rel="nofollow">COMEX</a>的链接,可获取更多有关各交易所交易规则及产品的信息。
+          </p>
+          <p class="address">斯迈易（北京）咨询有限公司</p>
+          <p class="address">北京市西城区武定侯街6号卓著中心 电话：010-59131300</p>
+          <p class="copy">
+            <span>©2026芝商所版权所有。保留所有权利。<a href="https://beian.miit.gov.cn" target="_blank" class="footer-icp-link" rel="nofollow">京ICP备18015631号-2</a></span>
+            <span class="copy-link">
+              <a href="https://www.cmegroup.cn/sitemap/">网站地图</a> |
+              <a href="https://www.cmegroup.cn/fraud-alert/" rel="nofollow">反诈提示</a> |
+              <a href="https://www.cmegroup.cn/privacy_policy/" rel="nofollow">隐私声明</a>
+            </span>
+          </p>
+        </div>
+        <div class="code">
+          <img src="https://cme.cdnimage.net/templates/1/default/assets/img_pc/qrcode.jpg" alt="芝商所CME Group微信公众号">
+          <p>扫描二维码</p>
+          <p>关注芝商所微信公众号</p>
+        </div>
+      </div>
+      <div class="recomment">
+        <span class="hot-key">热门推荐：</span>
+        <div class="hot-handle">
+          <div class="hot-value">
+            <a href="https://www.cmegroup.cn/trading-agricultural/" target="_blank">农产品期货</a>
+            <a href="https://www.cmegroup.cn/trading-energy/" target="_blank">能源期货</a>
+            <a href="https://www.cmegroup.cn/trading-equity-index/" target="_blank">股指期货</a>
+            <a href="https://www.cmegroup.cn/trading-fx/" target="_blank">外汇期货</a>
+            <a href="https://www.cmegroup.cn/trading-interest-rates/" target="_blank">利率期货</a>
+            <a href="https://www.cmegroup.cn/trading-metals/" target="_blank">金属期货</a>
+            <a href="https://www.cmegroup.cn/report/metals/" target="_blank">金属市场周报</a>
+            <a href="https://www.cmegroup.cn/report/nat-gas/" target="_blank">天然气市场月报</a>
+            <a href="https://www.cmegroup.cn/report/crude/" target="_blank">原油市场周报</a>
+            <a href="https://www.cmegroup.cn/report/fx/" target="_blank">外汇交易周报</a>
+            <a href="https://www.cmegroup.cn/report/" target="_blank">期货市场研报</a>
+            <a href="https://www.cmegroup.cn/futures-market/" target="_blank">期货行情数据</a>
+            <a href="https://www.cmegroup.cn/education/" target="_blank">期货教育视频</a>
+          </div>
+          <div class="hot-btn">
+            <a class="hot-more" onclick="showCode()">展开</a>
+            <a class="hot-less" onclick="hideCode()">收起</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="back-to-top" onclick="backToTop()" style="display: none;"></div>
+
+<script src="https://cme.cdnimage.net/templates/1/default/assets/js/jquery-3.5.1.min.js?v=2026051301"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/vendor/jquery-migrate/jquery-migrate.min.js?v=2026051301"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/js/common.js?v=2026051301"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/js/swiper.min.js?v=2026051301"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/js/bootstrap.min.js?v=2026051301"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/pagination/jquery.pagination.js?v=2026051301"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/v2022/js/newCommon.js?v=2026051301"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/swiper/swiper-3.4.2.min.js?v=2026051301"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/v2022/js/qrcode.js?v=2026051301"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/v2022/js/share.js?v=2026051301"></script>
+<script>
+(function () {
+  if (window.__cmeVideoAutoplayInit) return;
+  window.__cmeVideoAutoplayInit = true;
+
+  var CME_ALLOW = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+
+  function appendParams(url, paramStr) {
+    var hashI = url.indexOf('#');
+    var hash = '';
+    if (hashI >= 0) {
+      hash = url.substring(hashI);
+      url = url.substring(0, hashI);
+    }
+    var sep = url.indexOf('?') >= 0 ? '&' : '?';
+    return url + sep + paramStr + hash;
+  }
+
+  function mergeAllow(ifr) {
+    var a = ifr.getAttribute('allow') || '';
+    if (a.indexOf('autoplay') >= 0) return;
+    ifr.setAttribute('allow', (a + ' ' + CME_ALLOW).trim());
+  }
+
+  /** 供 nvideo 列表切换等在外部改 src 后调用，统一补自动播参数 */
+  window.cmeEnhanceIframeVideoSrc = function (ifr) {
+    if (!ifr || ifr.nodeName !== 'IFRAME' || ifr.getAttribute('data-cme-iframe-skip') === '1') return;
+    var src = ifr.getAttribute('src');
+    if (!src) return;
+    var lower = src.toLowerCase();
+    var next = src;
+    if (lower.indexOf('players.brightcove.net') >= 0) {
+      if (lower.indexOf('autoplay') < 0) {
+        next = appendParams(next, 'autoplay=any&playsinline=true');
+      } else if (lower.indexOf('playsinline') < 0) {
+        next = appendParams(next, 'playsinline=true');
+      }
+      if (next !== src) ifr.setAttribute('src', next);
+    } else if (lower.indexOf('youku.com/embed') >= 0 || lower.indexOf('player.youku.com') >= 0) {
+      if (lower.indexOf('autoplay') < 0) {
+        next = appendParams(next, 'autoplay=true');
+        ifr.setAttribute('src', next);
+      }
+    }
+    mergeAllow(ifr);
+  };
+
+  function enhanceAllIframes() {
+    var sel = 'iframe.video-frame, iframe[src*="players.brightcove.net"], iframe[src*="youku.com/embed"], iframe[src*="player.youku.com"]';
+    document.querySelectorAll(sel).forEach(function (ifr) {
+      if (isExcluded(ifr)) return;
+      window.cmeEnhanceIframeVideoSrc(ifr);
+    });
+  }
+
+  function isExcluded(el) {
+    var p = el;
+    while (p && p !== document.body) {
+      if (p.classList && (p.classList.contains('nfooter-box') || p.classList.contains('nImgPreview'))) return true;
+      p = p.parentElement;
+    }
+    return false;
+  }
+
+  var cmeVideos = [];
+  var gestureBound = false;
+
+  function applyAutoplayAttributes(v) {
+    v.autoplay = true;
+    v.setAttribute('autoplay', '');
+    v.playsInline = true;
+    v.setAttribute('playsinline', '');
+    v.setAttribute('webkit-playsinline', '');
+    if (v.volume === 0) v.volume = 1;
+  }
+
+  function tryMutedPlay(v) {
+    applyAutoplayAttributes(v);
+    v.defaultMuted = true;
+    v.muted = true;
+    var p = v.play();
+    if (p && typeof p.then === 'function') p.catch(function () {});
+  }
+
+  function tryPreferredPlay(v) {
+    applyAutoplayAttributes(v);
+    v.defaultMuted = false;
+    v.muted = false;
+    var p = v.play();
+    if (p && typeof p.then === 'function') {
+      p.catch(function () { tryMutedPlay(v); });
+    }
+  }
+
+  function unmuteAndKeepPlaying(v) {
+    v.defaultMuted = false;
+    v.muted = false;
+    v.volume = 1;
+    var p = v.play();
+    if (p && typeof p.then === 'function') p.catch(function () {});
+  }
+
+  function bindGestureOnce() {
+    if (gestureBound) return;
+    gestureBound = true;
+    function onFirstUserGesture() {
+      cmeVideos.forEach(unmuteAndKeepPlaying);
+      document.removeEventListener('pointerdown', onFirstUserGesture, true);
+      document.removeEventListener('touchstart', onFirstUserGesture, true);
+      document.removeEventListener('keydown', onFirstUserGesture, true);
+      var tip = document.getElementById('cme-video-sound-tip');
+      if (tip) tip.style.display = 'none';
+    }
+    document.addEventListener('pointerdown', onFirstUserGesture, true);
+    document.addEventListener('touchstart', onFirstUserGesture, true);
+    document.addEventListener('keydown', onFirstUserGesture, true);
+
+    setTimeout(function () {
+      var needTip = false;
+      cmeVideos.forEach(function (v) {
+        if (!v.paused && v.muted) needTip = true;
+      });
+      if (!needTip) return;
+      if (document.getElementById('cme-video-sound-tip')) return;
+      var tip = document.createElement('div');
+      tip.id = 'cme-video-sound-tip';
+      tip.setAttribute('role', 'status');
+      tip.textContent = '视频已自动播放，点击页面任意位置开启声音';
+      tip.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9998;max-width:90%;padding:10px 16px;background:rgba(0,0,0,.82);color:#fff;font-size:14px;border-radius:8px;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+      document.body.appendChild(tip);
+      setTimeout(function () {
+        if (tip.parentNode) tip.style.display = 'none';
+      }, 5000);
+    }, 800);
+  }
+
+  function initNativeVideos() {
+    document.querySelectorAll('body video').forEach(function (v) {
+      if (isExcluded(v)) return;
+      if (v.getAttribute('data-cme-skip-autoplay') === '1') return;
+      if (v.getAttribute('data-cme-video-inited') === '1') return;
+      v.setAttribute('data-cme-video-inited', '1');
+      cmeVideos.push(v);
+      if (v.readyState >= 2) tryPreferredPlay(v);
+      else v.addEventListener('canplay', function once() { tryPreferredPlay(v); }, { once: true });
+    });
+    if (cmeVideos.length) bindGestureOnce();
+  }
+
+  function run() {
+    enhanceAllIframes();
+    initNativeVideos();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    setTimeout(run, 0);
+  }
+})();
+</script>
+<script>
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?00246667cacba3cda13e96acc5c08d12";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/js/all.js?v=2026051301"></script>
+<script src="https://cme.cdnimage.net/templates/1/default/assets/js/common.js?v=2026051301"></script>
+
+
+
+</body></html>

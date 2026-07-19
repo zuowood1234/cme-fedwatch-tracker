@@ -440,6 +440,7 @@ if has_today_data:
 if df.empty:
     st.warning("No cached data available. Click 'Refresh Data' once CME FedWatch is accessible.")
     st.stop()
+
 # ── Manual refresh button ───────────────────────────────────────────────────
 if show_scrape_button:
     c1, _, c2 = st.columns([1, 4, 1])
