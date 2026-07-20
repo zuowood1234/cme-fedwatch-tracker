@@ -483,8 +483,16 @@ upcoming = latest[latest["meeting_date"] >= today].copy()
 if upcoming.empty:
     upcoming = latest.copy()
 
+def _clean_target_rate(value):
+    """Extract a clean 'XXX-YYY' target rate string from a possibly noisy value."""
+    if pd.isna(value):
+        return ""
+    m = re.search(r"(\d{1,3})-(\d{1,3})", str(value))
+    return f"{m.group(1)}-{m.group(2)}" if m else ""
+
+
 current_target = (
-    upcoming["current_target_rate"].dropna().iloc[0]
+    _clean_target_rate(upcoming["current_target_rate"].dropna().iloc[0])
     if not upcoming.empty and upcoming["current_target_rate"].notna().any()
     else ""
 )
