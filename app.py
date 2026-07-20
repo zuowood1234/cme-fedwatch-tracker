@@ -546,22 +546,60 @@ def show_comparison(curr_df, old_df, meetings):
 # ════════════════════════════════════════════════════════════════════════════
 st.header("① Rate Path Summary")
 st.caption(
-    "Most likely target rate for each upcoming FOMC meeting — market-implied trajectory."
+    "Most likely target rate for each upcoming FOMC meeting. "
+    "Rate is the median-implied range: the highest range whose cumulative probability reaches ≥ 50%."
 )
+
+
+def _range_bounds(rng):
+    """Return (lower_bps, upper_bps) from a '350-375' or '350-375 (Current)' string."""
+    m = re.match(r"(\d+)-(\d+)", str(rng))
+    if not m:
+        return None, None
+    return float(m.group(1)), float(m.group(2))
+
+
+def _range_midpoint(rng):
+    lo, hi = _range_bounds(rng)
+    if lo is None:
+        return 0
+    return (lo + hi) / 200  # bps -> %
+
+
+def _most_likely_range_by_median(sub):
+    """
+    Pick the median-implied rate range: sort ranges from high to low and
+    accumulate probabilities until the cumulative sum reaches ≥ 50%.
+    This naturally adds the probability of all higher ranges to the chosen one.
+    Returns (rate_range, cumulative_probability_at_threshold, rows_used).
+    """
+    if sub.empty:
+        return None, 0, sub
+    dedup = sub.drop_duplicates("rate_range").copy()
+    dedup["_lo"] = dedup["rate_range"].apply(lambda x: _range_bounds(x)[0])
+    dedup = dedup.sort_values("_lo", ascending=False).reset_index(drop=True)  # high -> low
+    cum = 0.0
+    chosen_idx = None
+    chosen_cum = 0.0
+    for i, row in dedup.iterrows():
+        cum += row["prob_now"]
+        if cum >= 50 and chosen_idx is None:
+            chosen_idx = i
+            chosen_cum = cum
+    if chosen_idx is None:
+        chosen_idx = len(dedup) - 1
+        chosen_cum = cum
+    chosen = dedup.iloc[chosen_idx]
+    return chosen["rate_range"], chosen_cum, dedup.iloc[: chosen_idx + 1]
+
 
 path_data = []
 for md in meetings_sorted:
     sub = upcoming[upcoming["meeting_date"] == md]
-    if sub.empty:
+    rng, prob, _ = _most_likely_range_by_median(sub)
+    if rng is None:
         continue
-    # Use the most likely (highest prob_now) rate range for this meeting
-    best = sub.sort_values("prob_now", ascending=False).drop_duplicates("rate_range").head(1)
-    if best.empty:
-        continue
-    rng = best["rate_range"].iloc[0]
-    prob = best["prob_now"].iloc[0]
-    m = re.match(r"(\d+)-(\d+)", str(rng))
-    midpoint = (float(m.group(1)) + float(m.group(2))) / 200 if m else 0
+    midpoint = _range_midpoint(rng)
     path_data.append({
         "meeting_date": md,
         "meeting_label": md.strftime("%b %d, %Y") if hasattr(md, "strftime") else str(md),
@@ -572,6 +610,13 @@ for md in meetings_sorted:
 
 if path_data:
     path_df = pd.DataFrame(path_data)
+
+    # Build y-axis tick labels that show the actual rate ranges
+    tick_vals = sorted(path_df["midpoint"].unique())
+    tick_text = []
+    for v in tick_vals:
+        rows = path_df[path_df["midpoint"] == v]
+        tick_text.append(rows["rate_range"].iloc[0])
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -585,14 +630,18 @@ if path_data:
     ))
 
     if current_target:
-        m = re.match(r"(\d+)-(\d+)", current_target)
-        if m:
-            current_mid = (float(m.group(1)) + float(m.group(2))) / 200
+        current_mid = _range_midpoint(current_target)
+        if current_mid:
             fig.add_hline(y=current_mid, line_dash="dash", line_color="#e74c3c",
                           annotation_text=f"Current: {current_target}", annotation_position="top left")
 
     fig.update_layout(
-        yaxis_title="Target rate midpoint (%)", yaxis_tickformat=".2f",
+        yaxis=dict(
+            title="Target rate range (%)",
+            tickmode="array",
+            tickvals=tick_vals,
+            ticktext=tick_text,
+        ),
         xaxis_title="FOMC meeting", height=400, showlegend=False, hovermode="x unified",
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -675,10 +724,10 @@ if len(meeting_options) > 0:
     sub = sub.sort_values("rate_range", key=lambda col: col.map(_rate_sort_key))
 
     horizons = {
-        "prob_now": "Current",
-        "prob_1d": "1 Day Ago",
-        "prob_1w": "1 Week Ago",
         "prob_1m": "1 Month Ago",
+        "prob_1w": "1 Week Ago",
+        "prob_1d": "1 Day Ago",
+        "prob_now": "Current",
     }
 
     # Only show horizons that actually have data in this snapshot
@@ -707,10 +756,10 @@ if len(meeting_options) > 0:
                 "horizon": "",
             },
             color_discrete_map={
-                "Current": "#534AB7",
-                "1 Day Ago": "#7B68EE",
-                "1 Week Ago": "#00B0B9",
                 "1 Month Ago": "#9E9E9E",
+                "1 Week Ago": "#00B0B9",
+                "1 Day Ago": "#7B68EE",
+                "Current": "#534AB7",
             },
         )
         fig3.update_layout(height=450, hovermode="x unified")
@@ -735,51 +784,126 @@ else:
 # ════════════════════════════════════════════════════════════════════════════
 st.header("④ Change Alerts")
 st.caption(
-    "Significant probability shifts vs yesterday (|Δ| ≥ 5%). Same rate-range comparison."
+    "Significant probability shifts vs 1 day ago and vs 1 week ago (|Δ| ≥ 5%). "
+    "Same rate-range comparison. One row per meeting × rate range."
 )
 
-if len(all_dates) >= 2:
-    prev_date = all_dates[-2]
-    prev_data = df[df["snapshot_date"] == prev_date]
 
-    # Deduplicate to avoid repeated alerts when data has duplicate rows
-    upcoming_dedup = upcoming.drop_duplicates(subset=["meeting_date", "rate_range"])
-    prev_data_dedup = prev_data.drop_duplicates(subset=["meeting_date", "rate_range"])
+def _find_prev_date(dates, target_days_back):
+    """Return the date closest to target_days_back before the latest date."""
+    if not dates or len(dates) < 2:
+        return None
+    latest = dates[-1]
+    candidates = [d for d in dates if (latest - d).days >= target_days_back - 1]
+    return max(candidates) if candidates else None
 
+
+# Deduplicate snapshot data so each meeting × range appears once per day
+upcoming_dedup = upcoming.drop_duplicates(subset=["meeting_date", "rate_range"])
+
+prev_1d = _find_prev_date(all_dates, 1)
+prev_1w = _find_prev_date(all_dates, 7)
+prev_1d_data = df[df["snapshot_date"] == prev_1d].drop_duplicates(subset=["meeting_date", "rate_range"]) if prev_1d else pd.DataFrame()
+prev_1w_data = df[df["snapshot_date"] == prev_1w].drop_duplicates(subset=["meeting_date", "rate_range"]) if prev_1w else pd.DataFrame()
+
+if not upcoming_dedup.empty:
     alerts = []
     for md in meetings_sorted:
         curr_sub = upcoming_dedup[upcoming_dedup["meeting_date"] == md]
-        prev_sub = prev_data_dedup[prev_data_dedup["meeting_date"] == md]
-
-        if curr_sub.empty or prev_sub.empty:
+        if curr_sub.empty:
             continue
 
-        # Merge on rate_range for same-range comparison
-        merged = curr_sub.merge(prev_sub, on="rate_range", suffixes=("_now", "_prev"))
-        for _, row in merged.iterrows():
-            delta = row["prob_now_now"] - row["prob_now_prev"]
-            if abs(delta) >= 5:
+        for _, crow in curr_sub.iterrows():
+            rng = crow["rate_range"]
+            curr_prob = crow["prob_now"]
+            d1 = None
+            w1 = None
+
+            if not prev_1d_data.empty:
+                prow = prev_1d_data[(prev_1d_data["meeting_date"] == md) & (prev_1d_data["rate_range"] == rng)]
+                if not prow.empty:
+                    d1 = curr_prob - prow["prob_now"].iloc[0]
+
+            if not prev_1w_data.empty:
+                prow = prev_1w_data[(prev_1w_data["meeting_date"] == md) & (prev_1w_data["rate_range"] == rng)]
+                if not prow.empty:
+                    w1 = curr_prob - prow["prob_now"].iloc[0]
+
+            if (d1 is not None and abs(d1) >= 5) or (w1 is not None and abs(w1) >= 5):
                 alerts.append({
                     "meeting": md.strftime("%b %d, %Y") if hasattr(md, "strftime") else str(md),
-                    "range": row["rate_range"],
-                    "prev": row["prob_now_prev"],
-                    "now": row["prob_now_now"],
-                    "delta": delta,
+                    "range": rng,
+                    "current": curr_prob,
+                    "1d_delta": d1,
+                    "1w_delta": w1,
                 })
 
     if alerts:
         alert_df = pd.DataFrame(alerts)
-        for _, a in alert_df.iterrows():
-            icon = "🔴" if a["delta"] < 0 else "🟢"
-            dstr = f"+{a['delta']:.1f}%" if a["delta"] > 0 else f"{a['delta']:.1f}%"
-            st.markdown(
-                f"{icon} **{a['meeting']}** | `{a['range']}`  \n"
-                f"{a['prev']:.1f}% → **{a['now']:.1f}%** (**{dstr}**)"
-            )
+        alert_df = alert_df.sort_values(["meeting", "range"])
+
+        # Format deltas with signs and arrows
+        def _fmt_delta(v):
+            if v is None:
+                return "—"
+            sign = "+" if v > 0 else ""
+            return f"{sign}{v:.1f}%"
+
+        def _fmt_delta_color(v):
+            if v is None:
+                return ""
+            return "color: #D85A30" if v > 0 else "color: #27AE60"
+
+        display_df = alert_df.copy()
+        display_df["1 day ago"] = display_df["1d_delta"].apply(_fmt_delta)
+        display_df["1 week ago"] = display_df["1w_delta"].apply(_fmt_delta)
+        display_df["current"] = display_df["current"].apply(lambda x: f"{x:.1f}%")
+        display_df = display_df.rename(columns={"range": "rate range", "current": "now"})
+
+        def _style_alerts(row):
+            """Color the delta cells by using the original alert_df row via the shared index."""
+            styles = [""] * len(row)
+            src = alert_df.loc[row.name]
+            # 1 day ago column
+            if "1 day ago" in row.index:
+                idx = list(row.index).index("1 day ago")
+                styles[idx] = _fmt_delta_color(src["1d_delta"])
+            # 1 week ago column
+            if "1 week ago" in row.index:
+                idx = list(row.index).index("1 week ago")
+                styles[idx] = _fmt_delta_color(src["1w_delta"])
+            return styles
+
+        st.dataframe(
+            display_df[["meeting", "rate range", "now", "1 day ago", "1 week ago"]]
+            .style.apply(_style_alerts, axis=1)
+            .hide(axis="index"),
+            use_container_width=True,
+        )
+
+        # Also show compact per-meeting summary if there are many rows
+        if len(alert_df) > 0:
+            summary_rows = []
+            for md, g in alert_df.groupby("meeting"):
+                d_parts = []
+                w_parts = []
+                for _, r in g.iterrows():
+                    if r["1d_delta"] is not None and abs(r["1d_delta"]) >= 5:
+                        d_parts.append(f"{r['range']} {r['1d_delta']:+.1f}%")
+                    if r["1w_delta"] is not None and abs(r["1w_delta"]) >= 5:
+                        w_parts.append(f"{r['range']} {r['1w_delta']:+.1f}%")
+                summary_rows.append({
+                    "meeting": md,
+                    "1 day ago": "; ".join(d_parts) if d_parts else "—",
+                    "1 week ago": "; ".join(w_parts) if w_parts else "—",
+                })
+            if summary_rows:
+                st.markdown("**Per-meeting summary**")
+                st.dataframe(pd.DataFrame(summary_rows), use_container_width=True, hide_index=True)
     else:
-        st.success("No significant changes (|Δ| < 5%). Market stable.")
+        st.success("No significant changes (|Δ| < 5%) vs 1 day ago or 1 week ago. Market stable.")
 else:
-    st.info("Need ≥2 days of data for change detection.")
+    st.info("No upcoming data available for change detection.")
 
 
 # ── Footer ──────────────────────────────────────────────────────────────────
