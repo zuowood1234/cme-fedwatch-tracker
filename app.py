@@ -554,16 +554,20 @@ for md in meetings_sorted:
     sub = upcoming[upcoming["meeting_date"] == md]
     if sub.empty:
         continue
-    max_row = sub.loc[sub["prob_now"].idxmax()]
-    rng = max_row["rate_range"]
+    # Use the most likely (highest prob_now) rate range for this meeting
+    best = sub.sort_values("prob_now", ascending=False).drop_duplicates("rate_range").head(1)
+    if best.empty:
+        continue
+    rng = best["rate_range"].iloc[0]
+    prob = best["prob_now"].iloc[0]
     m = re.match(r"(\d+)-(\d+)", str(rng))
     midpoint = (float(m.group(1)) + float(m.group(2))) / 200 if m else 0
     path_data.append({
         "meeting_date": md,
-        "meeting_label": md.strftime("%b %d, %Y"),
+        "meeting_label": md.strftime("%b %d, %Y") if hasattr(md, "strftime") else str(md),
         "rate_range": rng,
         "midpoint": midpoint,
-        "probability": max_row["prob_now"],
+        "probability": prob,
     })
 
 if path_data:
@@ -588,7 +592,7 @@ if path_data:
                           annotation_text=f"Current: {current_target}", annotation_position="top left")
 
     fig.update_layout(
-        yaxis_title="Target rate (%)", yaxis_tickformat=".2f",
+        yaxis_title="Target rate midpoint (%)", yaxis_tickformat=".2f",
         xaxis_title="FOMC meeting", height=400, showlegend=False, hovermode="x unified",
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -642,48 +646,88 @@ if not pivot.empty:
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# Panel 3: Past Week Daily Changes
+# Panel 3: Probability Evolution (Current vs 1D / 1W / 1M)
 # ════════════════════════════════════════════════════════════════════════════
-st.header("③ Past Week - Daily Changes")
+st.header("③ Probability Evolution: Current vs 1D / 1W / 1M")
 st.caption(
-    "How the most likely rate for each meeting changed over the past 7 days."
+    "CME's four standard horizons for the selected meeting. "
+    "Compare the probability distribution across Current, 1 Day Ago, 1 Week Ago, and 1 Month Ago."
 )
 
-past_week_dates = [d for d in all_dates if d >= latest_date - timedelta(days=7)]
-past_week = df[df["snapshot_date"].isin(past_week_dates)].copy()
+# Clean up duplicates so the same meeting × range appears only once
+upcoming = upcoming.drop_duplicates(subset=["meeting_date", "rate_range"])
 
-if len(past_week_dates) >= 2:
-    weekly_path = []
-    for d in past_week_dates:
-        day_data = past_week[past_week["snapshot_date"] == d]
-        for md in meetings_sorted:
-            sub = day_data[day_data["meeting_date"] == md]
-            if sub.empty:
-                continue
-            max_row = sub.loc[sub["prob_now"].idxmax()]
-            rng = max_row["rate_range"]
-            rm = re.match(r"(\d+)-(\d+)", str(rng))
-            midpoint = (float(rm.group(1)) + float(rm.group(2))) / 200 if rm else 0
-            weekly_path.append({
-                "date": d, "meeting_date": md,
-                "meeting_label": md.strftime("%b %d, %Y"),
-                "midpoint": midpoint, "rate_range": rng,
-            })
+meeting_options = sorted(upcoming["meeting_date"].unique())
+if len(meeting_options) > 0:
+    selected_meeting = st.selectbox(
+        "Select FOMC meeting",
+        options=meeting_options,
+        format_func=lambda d: d.strftime("%b %d, %Y") if hasattr(d, "strftime") else str(d),
+        index=0,
+    )
 
-    if weekly_path:
-        wp_df = pd.DataFrame(weekly_path)
-        fig3 = px.line(wp_df, x="date", y="midpoint", color="meeting_label",
-                       markers=True, labels={"date": "", "midpoint": "Rate (%)", "meeting_label": "Meeting"})
-        fig3.update_layout(height=400, hovermode="x unified", yaxis_tickformat=".2f")
+    sub = upcoming[upcoming["meeting_date"] == selected_meeting].copy()
+
+    def _rate_sort_key(x):
+        m = re.match(r"(\d+)", str(x))
+        return float(m.group(1)) if m else 0
+
+    sub = sub.sort_values("rate_range", key=lambda col: col.map(_rate_sort_key))
+
+    horizons = {
+        "prob_now": "Current",
+        "prob_1d": "1 Day Ago",
+        "prob_1w": "1 Week Ago",
+        "prob_1m": "1 Month Ago",
+    }
+
+    # Only show horizons that actually have data in this snapshot
+    available_horizons = {k: v for k, v in horizons.items() if sub[k].notna().any()}
+    if len(available_horizons) >= 1:
+        melted = sub.melt(
+            id_vars=["rate_range"],
+            value_vars=list(available_horizons.keys()),
+            var_name="horizon",
+            value_name="probability",
+        )
+        melted["horizon"] = melted["horizon"].map(available_horizons)
+        horizon_order = [v for v in horizons.values() if v in melted["horizon"].values]
+        melted["horizon"] = pd.Categorical(melted["horizon"], categories=horizon_order, ordered=True)
+
+        fig3 = px.bar(
+            melted,
+            x="rate_range",
+            y="probability",
+            color="horizon",
+            barmode="group",
+            category_orders={"horizon": horizon_order},
+            labels={
+                "rate_range": "Target rate range",
+                "probability": "Probability (%)",
+                "horizon": "",
+            },
+            color_discrete_map={
+                "Current": "#534AB7",
+                "1 Day Ago": "#7B68EE",
+                "1 Week Ago": "#00B0B9",
+                "1 Month Ago": "#9E9E9E",
+            },
+        )
+        fig3.update_layout(height=450, hovermode="x unified")
         st.plotly_chart(fig3, use_container_width=True)
 
-        wt = wp_df.pivot_table(index="meeting_label", columns="date", values="rate_range", aggfunc="first").sort_index()
-        wt.columns = [d.strftime("%m/%d") if hasattr(d, "strftime") else str(d) for d in wt.columns]
-        st.dataframe(wt, use_container_width=True)
+        # Summary table
+        table_df = sub[["rate_range"] + list(available_horizons.keys())].rename(
+            columns=available_horizons
+        ).set_index("rate_range")
+        st.dataframe(
+            table_df.style.format("{:.1f}%", na_rep="—"),
+            use_container_width=True,
+        )
     else:
-        st.info("Not enough data for weekly changes.")
+        st.info("No horizon data available for the selected meeting.")
 else:
-    st.info(f"Need ≥2 days of data (have {len(past_week_dates)}). Check back soon.")
+    st.info("No upcoming meeting data available.")
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -698,10 +742,14 @@ if len(all_dates) >= 2:
     prev_date = all_dates[-2]
     prev_data = df[df["snapshot_date"] == prev_date]
 
+    # Deduplicate to avoid repeated alerts when data has duplicate rows
+    upcoming_dedup = upcoming.drop_duplicates(subset=["meeting_date", "rate_range"])
+    prev_data_dedup = prev_data.drop_duplicates(subset=["meeting_date", "rate_range"])
+
     alerts = []
     for md in meetings_sorted:
-        curr_sub = upcoming[upcoming["meeting_date"] == md]
-        prev_sub = prev_data[prev_data["meeting_date"] == md]
+        curr_sub = upcoming_dedup[upcoming_dedup["meeting_date"] == md]
+        prev_sub = prev_data_dedup[prev_data_dedup["meeting_date"] == md]
 
         if curr_sub.empty or prev_sub.empty:
             continue
