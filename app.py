@@ -630,11 +630,12 @@ if path_data:
     fig.add_trace(go.Scatter(
         x=path_df["meeting_label"], y=path_df["midpoint"],
         mode="lines+markers+text",
-        text=[f"{r}<br>{p:.0f}%" for r, p in zip(path_df["rate_range"], path_df["probability"])],
-        textposition="top center", textfont=dict(size=10),
+        text=[f"{p:.0f}%" for p in path_df["probability"]],
+        textposition="top center", textfont=dict(size=11, color="#333333"),
         line=dict(color="#534AB7", width=3),
         marker=dict(size=12, color="#534AB7"), name="Most likely rate",
-        hovertemplate="<b>%{x}</b><br>Rate: %{text}<extra></extra>",
+        hovertemplate="<b>%{x}</b><br>Rate: %{customdata}<br>Probability: %{text}<extra></extra>",
+        customdata=path_df["rate_range"],
     ))
 
     if current_target:
