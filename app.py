@@ -20,6 +20,7 @@ Secrets required (set in Streamlit Cloud > Settings):
 
 import base64
 import concurrent.futures
+import json
 import os
 import re
 import sys
@@ -155,6 +156,57 @@ def _normalize_csv(df):
     # Drop rows where dates couldn't be parsed
     df = df.dropna(subset=["snapshot_date", "meeting_date"])
     return df
+
+
+def _format_scrape_time(iso_str):
+    """Convert ISO scrape time to a friendly CST (UTC+8) string."""
+    if not iso_str:
+        return None
+    try:
+        dt = datetime.fromisoformat(iso_str)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        cst = dt.astimezone(timezone(timedelta(hours=8)))
+        return cst.strftime("%Y-%m-%d %H:%M CST")
+    except Exception:
+        return None
+
+
+def get_scrape_time(snapshot_date):
+    """
+    Get the exact scrape time for a snapshot date.
+    Tries local daily JSON first, then GitHub raw URL.
+    Returns (time_str, source) or (None, None) on failure.
+    """
+    if snapshot_date is None:
+        return None, None
+
+    date_str = snapshot_date.strftime("%Y-%m-%d") if hasattr(snapshot_date, "strftime") else str(snapshot_date)
+    local_json = os.path.join(DAILY_DIR, f"{date_str}.json")
+
+    # Try local file first
+    if os.path.exists(local_json):
+        try:
+            with open(local_json, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            iso = data.get("scrape_time") or data.get("date")
+            return _format_scrape_time(iso), "local"
+        except Exception:
+            pass
+
+    # Fallback: GitHub raw URL
+    github_json_url = f"{GITHUB_RAW_BASE}/data/daily/{date_str}.json"
+    try:
+        import requests
+        resp = requests.get(github_json_url, timeout=10)
+        if resp.status_code == 200:
+            data = resp.json()
+            iso = data.get("scrape_time") or data.get("date")
+            return _format_scrape_time(iso), "GitHub"
+    except Exception:
+        pass
+
+    return None, None
 
 
 def load_csv_from_github(url):
@@ -407,19 +459,20 @@ else:
 today = datetime.now(timezone.utc).date()
 has_today_data = not df.empty and df["snapshot_date"].max() == today
 latest_date = df["snapshot_date"].max() if not df.empty else None
+latest_scrape_time, latest_scrape_source = get_scrape_time(latest_date) if latest_date else (None, None)
 
 # ── Status banner ───────────────────────────────────────────────────────────
 status_container = st.container()
+scrape_time_str = f" (scraped at {latest_scrape_time})" if latest_scrape_time else ""
 if has_today_data:
     status_container.success(
-        f"✅ Data is up to date ({today}). Source: {load_source}. No scrape needed."
+        f"✅ Data is up to date ({today}). Source: {load_source}. "
+        f"Daily scrape runs around 09:50 CST.{scrape_time_str}"
     )
 elif not df.empty:
     status_container.warning(
         f"⚠️ Showing cached data from **{latest_date}** (source: {load_source}). "
-        f"Live CME FedWatch is currently unavailable. "
-        f"QuikStrike reported: Could not find a current FedFund future for the meeting date 7/28/2027. "
-        f"Daily automated scraping is paused until CME fixes the issue."
+        f"Daily automated scrape runs around 09:50 CST.{scrape_time_str}"
     )
     if github_error:
         with st.expander("GitHub load details"):
@@ -467,7 +520,10 @@ if show_scrape_button:
                             st.warning(f"⚠️ Refresh failed. Continuing to show cached data from {latest_date}.")
     with c2:
         last_updated = max(df["snapshot_date"].unique()) if not df.empty else "?"
-        st.caption(f"Last: {last_updated}")
+        if latest_scrape_time:
+            st.caption(f"Last: {last_updated} @ {latest_scrape_time}")
+        else:
+            st.caption(f"Last: {last_updated}")
 
 
 # ════════════════════════════════════════════════════════════════════════════
