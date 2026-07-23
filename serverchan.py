@@ -144,23 +144,16 @@ def build_rate_path_changes(df):
 
 
 def build_prob_alerts(df, threshold=5.0):
-    """Build Panel-4 style per-meeting probability alerts vs 1 day and 1 week ago."""
+    """Build Panel-4 style per-meeting probability alerts using CME's own prob_1d and prob_1w columns."""
     all_dates = sorted(df["snapshot_date"].unique())
-    if len(all_dates) < 2:
+    if not all_dates:
         return []
 
     latest_date = all_dates[-1]
     latest = df[df["snapshot_date"] == latest_date].drop_duplicates(subset=["meeting_date", "rate_range"])
 
-    def find_prev_date(target_days_back):
-        latest = all_dates[-1]
-        candidates = [d for d in all_dates if (latest - d).days >= target_days_back - 1]
-        return max(candidates) if candidates else None
-
-    prev_1d = find_prev_date(1)
-    prev_1w = find_prev_date(7)
-    prev_1d_data = df[df["snapshot_date"] == prev_1d].drop_duplicates(subset=["meeting_date", "rate_range"]) if prev_1d else pd.DataFrame()
-    prev_1w_data = df[df["snapshot_date"] == prev_1w].drop_duplicates(subset=["meeting_date", "rate_range"]) if prev_1w else pd.DataFrame()
+    if "prob_1d" not in latest.columns:
+        return []
 
     meetings_sorted = sorted(latest["meeting_date"].unique())
     alerts = []
@@ -173,14 +166,10 @@ def build_prob_alerts(df, threshold=5.0):
             curr_prob = crow["prob_now"]
             d1 = None
             w1 = None
-            if not prev_1d_data.empty:
-                prow = prev_1d_data[(prev_1d_data["meeting_date"] == md) & (prev_1d_data["rate_range"] == rng)]
-                if not prow.empty:
-                    d1 = curr_prob - prow["prob_now"].iloc[0]
-            if not prev_1w_data.empty:
-                prow = prev_1w_data[(prev_1w_data["meeting_date"] == md) & (prev_1w_data["rate_range"] == rng)]
-                if not prow.empty:
-                    w1 = curr_prob - prow["prob_now"].iloc[0]
+            if pd.notna(crow.get("prob_1d")) and crow["prob_1d"] > 0:
+                d1 = curr_prob - crow["prob_1d"]
+            if pd.notna(crow.get("prob_1w")) and crow["prob_1w"] > 0:
+                w1 = curr_prob - crow["prob_1w"]
             if (d1 is not None and abs(d1) >= threshold) or (w1 is not None and abs(w1) >= threshold):
                 alerts.append({
                     "meeting": md.strftime("%b %d, %Y"),

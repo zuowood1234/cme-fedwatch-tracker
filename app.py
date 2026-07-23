@@ -55,9 +55,9 @@ st.set_page_config(
 # ── Custom CSS for enhanced visual style ────────────────────────────────────
 st.markdown("""
 <style>
-/* Main title — purple gradient background banner */
+/* Main title — deep blue gradient background banner */
 h1 {
-    background: linear-gradient(135deg, #534AB7 0%, #7B68EE 100%);
+    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
     color: white !important;
     font-size: 2.0rem !important;
     font-weight: 800 !important;
@@ -69,48 +69,48 @@ h1 {
 
 /* Caption / subtitle */
 .stCaption p, [data-testid="stCaptionContainer"] {
-    color: #6B7280 !important;
+    color: #607D8B !important;
     font-size: 0.9rem !important;
 }
 
-/* Section headers (① ② ③ ④) — light purple background bar */
+/* Section headers (① ② ③ ④) — light blue background bar */
 h2 {
-    background: linear-gradient(90deg, #EEEDFE 0%, #F5F4FF 100%);
-    color: #3D2DA8 !important;
+    background: linear-gradient(90deg, #E3F2FD 0%, #F0F8FF 100%);
+    color: #0D47A1 !important;
     font-weight: 700 !important;
     font-size: 1.35rem !important;
     padding: 10px 16px !important;
     border-radius: 8px;
-    border-left: 4px solid #534AB7;
+    border-left: 4px solid #1565C0;
     margin-top: 0.8rem !important;
 }
 
-/* Sub-headers (####) — orange left border accent */
+/* Sub-headers (####) — blue accent */
 h4 {
-    color: #D85A30 !important;
+    color: #1565C0 !important;
     font-weight: 600 !important;
-    border-left: 3px solid #D85A30;
+    border-left: 3px solid #1565C0;
     padding-left: 10px !important;
 }
 
-/* Metric cards — subtle background, rounded, bordered */
+/* Metric cards — subtle blue tint */
 [data-testid="stMetric"], div[data-testid="stMetric"] {
-    background: #FAFAFE;
+    background: #F0F7FF;
     border-radius: 10px;
     padding: 12px 16px !important;
-    border: 1px solid #EFEEFB;
+    border: 1px solid #BBDEFB;
 }
 
-/* Buttons — purple theme */
+/* Buttons — blue theme */
 .stButton > button, button[kind="primary"] {
-    background-color: #534AB7 !important;
+    background-color: #1565C0 !important;
     color: white !important;
     border-radius: 8px !important;
     border: none !important;
     font-weight: 600 !important;
 }
 .stButton > button:hover, button[kind="primary"]:hover {
-    background-color: #3D2DA8 !important;
+    background-color: #0D47A1 !important;
     color: white !important;
 }
 
@@ -129,7 +129,7 @@ h4 {
 [data-testid="stSidebar"] h2 {
     background: none;
     border-left: none;
-    color: #534AB7 !important;
+    color: #1565C0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -818,11 +818,11 @@ if not path_df.empty:
     for _, row in path_df.iterrows():
         prev_rng = row.get("rate_range_prev")
         if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
-            marker_colors.append("#D85A30")  #醒目橙色/红色
+            marker_colors.append("#D85A30")  # 醒目橙色/红色
             marker_sizes.append(18)
             text_colors.append("#D85A30")
         else:
-            marker_colors.append("#534AB7")
+            marker_colors.append("#1565C0")
             marker_sizes.append(12)
             text_colors.append("#333333")
 
@@ -832,7 +832,7 @@ if not path_df.empty:
         mode="lines+markers+text",
         text=[f"{p:.0f}%" for p in path_df["probability"]],
         textposition="top center", textfont=dict(size=11, color=text_colors),
-        line=dict(color="#534AB7", width=3),
+        line=dict(color="#1565C0", width=3),
         marker=dict(size=marker_sizes, color=marker_colors), name="Most likely rate",
         hovertemplate="<b>%{x}</b><br>Rate: %{customdata}<br>Probability: %{text}<extra></extra>",
         customdata=path_df["rate_range"],
@@ -914,7 +914,7 @@ if not pivot.empty:
             if pd.isna(val):
                 continue
             if str(col) == str(current_target):
-                styles[i] = "background-color: #EEEDFE; font-weight: bold; color: #534AB7"
+                styles[i] = "background-color: #E3F2FD; font-weight: bold; color: #0D47A1"
             elif val == row.max():
                 styles[i] = "font-weight: bold; color: #D85A30"
         return styles
@@ -990,10 +990,10 @@ if len(meeting_options) > 0:
                 "horizon": "",
             },
             color_discrete_map={
-                "1 Month Ago": "#9E9E9E",
-                "1 Week Ago": "#00B0B9",
-                "1 Day Ago": "#7B68EE",
-                "Current": "#534AB7",
+                "1 Month Ago": "#90A4AE",
+                "1 Week Ago": "#42A5F5",
+                "1 Day Ago": "#1565C0",
+                "Current": "#0D47A1",
             },
         )
         fig3.update_layout(height=450, hovermode="x unified")
@@ -1019,26 +1019,12 @@ else:
 st.header("④ Change Alerts")
 st.caption(
     "Significant probability shifts vs 1 day ago and vs 1 week ago (|Δ| ≥ 5%). "
-    "Same rate-range comparison. One row per meeting × rate range."
+    "Uses CME's own prob_1d and prob_1w columns. One row per meeting × rate range."
 )
 
 
-def _find_prev_date(dates, target_days_back):
-    """Return the date closest to target_days_back before the latest date."""
-    if not dates or len(dates) < 2:
-        return None
-    latest = dates[-1]
-    candidates = [d for d in dates if (latest - d).days >= target_days_back - 1]
-    return max(candidates) if candidates else None
-
-
-# Deduplicate snapshot data so each meeting × range appears once per day
+# Deduplicate snapshot data so each meeting × range appears once
 upcoming_dedup = upcoming.drop_duplicates(subset=["meeting_date", "rate_range"])
-
-prev_1d = _find_prev_date(all_dates, 1)
-prev_1w = _find_prev_date(all_dates, 7)
-prev_1d_data = df[df["snapshot_date"] == prev_1d].drop_duplicates(subset=["meeting_date", "rate_range"]) if prev_1d else pd.DataFrame()
-prev_1w_data = df[df["snapshot_date"] == prev_1w].drop_duplicates(subset=["meeting_date", "rate_range"]) if prev_1w else pd.DataFrame()
 
 if not upcoming_dedup.empty:
     alerts = []
@@ -1053,15 +1039,11 @@ if not upcoming_dedup.empty:
             d1 = None
             w1 = None
 
-            if not prev_1d_data.empty:
-                prow = prev_1d_data[(prev_1d_data["meeting_date"] == md) & (prev_1d_data["rate_range"] == rng)]
-                if not prow.empty:
-                    d1 = curr_prob - prow["prob_now"].iloc[0]
-
-            if not prev_1w_data.empty:
-                prow = prev_1w_data[(prev_1w_data["meeting_date"] == md) & (prev_1w_data["rate_range"] == rng)]
-                if not prow.empty:
-                    w1 = curr_prob - prow["prob_now"].iloc[0]
+            # Use CME's own prob_1d and prob_1w columns (consistent with Panel 1 & 3)
+            if "prob_1d" in crow.index and pd.notna(crow["prob_1d"]) and crow["prob_1d"] > 0:
+                d1 = curr_prob - crow["prob_1d"]
+            if "prob_1w" in crow.index and pd.notna(crow["prob_1w"]) and crow["prob_1w"] > 0:
+                w1 = curr_prob - crow["prob_1w"]
 
             if (d1 is not None and abs(d1) >= 5) or (w1 is not None and abs(w1) >= 5):
                 alerts.append({
