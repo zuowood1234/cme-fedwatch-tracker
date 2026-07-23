@@ -88,8 +88,24 @@ def compute_rate_path(df_snapshot, prob_col="prob_now"):
     return pd.DataFrame(rows)
 
 
+def _cumulative_prob_for_range(sub, target_rng, prob_col):
+    """Calculate cumulative probability for target_rng and above (high to low)."""
+    if sub.empty:
+        return None
+    dedup = sub.drop_duplicates("rate_range").copy()
+    dedup["_lo"] = dedup["rate_range"].apply(lambda x: _range_bounds(x)[0])
+    dedup = dedup.sort_values("_lo", ascending=False).reset_index(drop=True)
+    cum = 0.0
+    for _, row in dedup.iterrows():
+        cum += row[prob_col]
+        if row["rate_range"] == target_rng:
+            return cum
+    return cum
+
+
 def build_rate_path_changes(df):
-    """Compare median-implied rate path: prob_now vs prob_1d (CME's own 1 Day Ago column)."""
+    """Compare median-implied rate path: prob_now vs prob_1d (CME's own 1 Day Ago column).
+    For each changed meeting, report the cumulative probability (>= chosen range) today vs yesterday."""
     all_dates = sorted(df["snapshot_date"].unique())
     if not all_dates:
         return []
@@ -112,19 +128,17 @@ def build_rate_path_changes(df):
         prev_rng = row.get("rate_range_prev")
         if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
             curr_rng = row["rate_range"]
-            # Look up prob_1d for the current chosen range
             sub = latest[latest["meeting_date"] == row["meeting_date"]].drop_duplicates("rate_range")
-            curr_row = sub[sub["rate_range"] == curr_rng]
-            prob_1d_val = curr_row["prob_1d"].iloc[0] if not curr_row.empty and "prob_1d" in curr_row.columns else None
-            # Get the actual prob_now for the current chosen range (not cumulative)
-            prob_now_val = curr_row["prob_now"].iloc[0] if not curr_row.empty else row["probability"]
+            # Cumulative probability for curr_rng: prob_now (today) and prob_1d (yesterday)
+            cum_now = _cumulative_prob_for_range(sub, curr_rng, "prob_now")
+            cum_1d = _cumulative_prob_for_range(sub, curr_rng, "prob_1d")
             changes.append({
                 "meeting_date": row["meeting_date"],
                 "meeting_label": row["meeting_date"].strftime("%b %d, %Y"),
                 "prev_rate": prev_rng,
                 "curr_rate": curr_rng,
-                "curr_prob": prob_now_val,              # prob_now of current range (not cumulative)
-                "prob_1d_val": prob_1d_val,              # prob_1d of same range (yesterday)
+                "cum_now": cum_now,      # cumulative prob_now (today)
+                "cum_1d": cum_1d,        # cumulative prob_1d (yesterday)
             })
     return changes
 
@@ -221,21 +235,22 @@ def build_daily_summary(data_dir):
     path_changes = build_rate_path_changes(df)
     if path_changes:
         lines.append("#### 🔴 利率预期路径变化 (vs 1 Day Ago)")
+        lines.append("*累积概率 = 该区间及以上所有区间的概率之和，≥50% 即为 median-implied 最可能利率*")
         for ch in path_changes:
             curr_rng = ch["curr_rate"]
-            curr_prob = ch["curr_prob"]
-            p1d = ch.get("prob_1d_val")
-            if p1d is not None and p1d > 0:
-                delta = curr_prob - p1d
+            cum_now = ch["cum_now"]
+            cum_1d = ch["cum_1d"]
+            if cum_1d is not None and cum_now is not None:
+                delta = cum_now - cum_1d
                 delta_str = f"+{delta:.1f}%" if delta > 0 else f"{delta:.1f}%"
                 lines.append(
                     f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{curr_rng}` "
-                    f"| `{curr_rng}`: {p1d:.1f}% → **{curr_prob:.1f}%** ({delta_str})"
+                    f"| `{curr_rng}` 累积概率: {cum_1d:.1f}% → **{cum_now:.1f}%** ({delta_str})"
                 )
             else:
                 lines.append(
                     f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{curr_rng}` "
-                    f"| `{curr_rng}`: **{curr_prob:.1f}%**"
+                    f"| `{curr_rng}` 累积概率: **{cum_now:.1f}%**"
                 )
     else:
         lines.append("#### ✅ 利率预期路径稳定")
