@@ -111,13 +111,20 @@ def build_rate_path_changes(df):
     for _, row in merged.iterrows():
         prev_rng = row.get("rate_range_prev")
         if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
+            curr_rng = row["rate_range"]
+            # Look up prob_1d for the current chosen range
+            sub = latest[latest["meeting_date"] == row["meeting_date"]].drop_duplicates("rate_range")
+            curr_row = sub[sub["rate_range"] == curr_rng]
+            prob_1d_val = curr_row["prob_1d"].iloc[0] if not curr_row.empty and "prob_1d" in curr_row.columns else None
+            # Get the actual prob_now for the current chosen range (not cumulative)
+            prob_now_val = curr_row["prob_now"].iloc[0] if not curr_row.empty else row["probability"]
             changes.append({
                 "meeting_date": row["meeting_date"],
                 "meeting_label": row["meeting_date"].strftime("%b %d, %Y"),
                 "prev_rate": prev_rng,
-                "curr_rate": row["rate_range"],
-                "prev_prob": row.get("probability_prev", 0),
-                "curr_prob": row["probability"],
+                "curr_rate": curr_rng,
+                "curr_prob": prob_now_val,              # prob_now of current range (not cumulative)
+                "prob_1d_val": prob_1d_val,              # prob_1d of same range (yesterday)
             })
     return changes
 
@@ -215,10 +222,21 @@ def build_daily_summary(data_dir):
     if path_changes:
         lines.append("#### 🔴 利率预期路径变化 (vs 1 Day Ago)")
         for ch in path_changes:
-            lines.append(
-                f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{ch['curr_rate']}` "
-                f"(累积概率 {ch['prev_prob']:.1f}% → {ch['curr_prob']:.1f}%)"
-            )
+            curr_rng = ch["curr_rate"]
+            curr_prob = ch["curr_prob"]
+            p1d = ch.get("prob_1d_val")
+            if p1d is not None and p1d > 0:
+                delta = curr_prob - p1d
+                delta_str = f"+{delta:.1f}%" if delta > 0 else f"{delta:.1f}%"
+                lines.append(
+                    f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{curr_rng}` "
+                    f"| `{curr_rng}`: {p1d:.1f}% → **{curr_prob:.1f}%** ({delta_str})"
+                )
+            else:
+                lines.append(
+                    f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{curr_rng}` "
+                    f"| `{curr_rng}`: **{curr_prob:.1f}%**"
+                )
     else:
         lines.append("#### ✅ 利率预期路径稳定")
         lines.append("所有会议的 median-implied 目标利率区间与 CME 1 Day Ago 相比无变化。")

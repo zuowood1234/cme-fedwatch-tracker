@@ -779,13 +779,17 @@ if not path_df.empty and not prev_path_df.empty:
     for _, row in merged_path.iterrows():
         prev_rng = row.get("rate_range_prev")
         if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
+            # Get actual prob_now for this range (not cumulative)
+            md_sub = upcoming[upcoming["meeting_date"] == row["meeting_date"]].drop_duplicates("rate_range")
+            curr_row = md_sub[md_sub["rate_range"] == row["rate_range"]]
+            actual_prob_now = curr_row["prob_now"].iloc[0] if not curr_row.empty else row["probability"]
             path_changes.append({
                 "meeting_date": row["meeting_date"],
                 "meeting_label": row["meeting_label"],
                 "prev_rate": prev_rng,
                 "curr_rate": row["rate_range"],
                 "prev_prob": row.get("probability_prev", 0),
-                "curr_prob": row["probability"],
+                "curr_prob": actual_prob_now,
             })
     path_df = merged_path  # keep merged data for plotting
 
@@ -845,10 +849,27 @@ if not path_df.empty:
     if path_changes:
         st.markdown("#### ⚠️ Rate path changed vs 1 Day Ago (CME)")
         for ch in sorted(path_changes, key=lambda x: x["meeting_date"]):
-            st.markdown(
-                f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{ch['curr_rate']}` "
-                f"(cumulative prob {ch['prev_prob']:.1f}% → {ch['curr_prob']:.1f}%)"
-            )
+            # Show the current most-likely range and its probability today vs yesterday
+            curr_rng = ch["curr_rate"]
+            curr_prob = ch["curr_prob"]      # prob_now of the current chosen range
+            prev_prob = ch["prev_prob"]      # prob_1d of the same range (if available)
+            # Look up prob_1d for the current range from the snapshot
+            md = ch["meeting_date"]
+            sub_now = upcoming[upcoming["meeting_date"] == md].drop_duplicates("rate_range")
+            curr_row = sub_now[sub_now["rate_range"] == curr_rng]
+            prob_1d_val = curr_row["prob_1d"].iloc[0] if not curr_row.empty and "prob_1d" in curr_row.columns else None
+            if prob_1d_val is not None and prob_1d_val > 0:
+                delta = curr_prob - prob_1d_val
+                delta_str = f"+{delta:.1f}%" if delta > 0 else f"{delta:.1f}%"
+                st.markdown(
+                    f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{curr_rng}` "
+                    f"| `{curr_rng}`: {prob_1d_val:.1f}% → **{curr_prob:.1f}%** ({delta_str})"
+                )
+            else:
+                st.markdown(
+                    f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{curr_rng}` "
+                    f"| `{curr_rng}`: **{curr_prob:.1f}%**"
+                )
     else:
         st.info("No rate-path changes vs 1 Day Ago. The median-implied target rate is stable across all meetings.")
 
