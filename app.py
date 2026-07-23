@@ -55,7 +55,8 @@ st.set_page_config(
 st.title("📊 CME FedWatch Tracker")
 st.caption(
     "Official CME FedWatch probabilities for every upcoming FOMC meeting. "
-    "Data scraped directly from CME. Auto-refreshed."
+    "Data scraped directly from CME. Auto-refreshed. "
+    "Source: [cmegroup.cn/fed-watch/](https://www.cmegroup.cn/fed-watch/)"
 )
 
 
@@ -657,24 +658,55 @@ def _most_likely_range_by_median(sub):
     return chosen["rate_range"], chosen_cum, dedup.iloc[: chosen_idx + 1]
 
 
-path_data = []
-for md in meetings_sorted:
-    sub = upcoming[upcoming["meeting_date"] == md]
-    rng, prob, _ = _most_likely_range_by_median(sub)
-    if rng is None:
-        continue
-    midpoint = _range_midpoint(rng)
-    path_data.append({
-        "meeting_date": md,
-        "meeting_label": md.strftime("%b %d, %Y") if hasattr(md, "strftime") else str(md),
-        "rate_range": rng,
-        "midpoint": midpoint,
-        "probability": prob,
-    })
+def compute_rate_path(df_snapshot, meetings_sorted):
+    """Compute the median-implied rate path for a given snapshot."""
+    path_data = []
+    for md in meetings_sorted:
+        sub = df_snapshot[df_snapshot["meeting_date"] == md]
+        rng, prob, _ = _most_likely_range_by_median(sub)
+        if rng is None:
+            continue
+        midpoint = _range_midpoint(rng)
+        path_data.append({
+            "meeting_date": md,
+            "meeting_label": md.strftime("%b %d, %Y") if hasattr(md, "strftime") else str(md),
+            "rate_range": rng,
+            "midpoint": midpoint,
+            "probability": prob,
+        })
+    return pd.DataFrame(path_data) if path_data else pd.DataFrame()
 
-if path_data:
-    path_df = pd.DataFrame(path_data)
 
+path_df = compute_rate_path(upcoming, meetings_sorted)
+
+# Compute previous day path for comparison
+prev_path_df = pd.DataFrame()
+if len(all_dates) >= 2:
+    prev_date = all_dates[-2]
+    prev_snapshot = df[df["snapshot_date"] == prev_date].drop_duplicates(subset=["meeting_date", "rate_range"])
+    prev_path_df = compute_rate_path(prev_snapshot, meetings_sorted)
+
+# Identify meetings where the most-likely rate range changed vs previous day
+path_changes = []
+if not path_df.empty and not prev_path_df.empty:
+    merged_path = path_df.merge(
+        prev_path_df[["meeting_date", "rate_range", "probability"]],
+        on="meeting_date", how="left", suffixes=("", "_prev")
+    )
+    for _, row in merged_path.iterrows():
+        prev_rng = row.get("rate_range_prev")
+        if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
+            path_changes.append({
+                "meeting_date": row["meeting_date"],
+                "meeting_label": row["meeting_label"],
+                "prev_rate": prev_rng,
+                "curr_rate": row["rate_range"],
+                "prev_prob": row.get("probability_prev", 0),
+                "curr_prob": row["probability"],
+            })
+    path_df = merged_path  # keep merged data for plotting
+
+if not path_df.empty:
     # Build y-axis tick labels that show the actual rate ranges
     tick_vals = sorted(path_df["midpoint"].unique())
     tick_text = []
@@ -682,14 +714,29 @@ if path_data:
         rows = path_df[path_df["midpoint"] == v]
         tick_text.append(rows["rate_range"].iloc[0])
 
+    # Color markers: highlight meetings where rate path changed
+    marker_colors = []
+    marker_sizes = []
+    text_colors = []
+    for _, row in path_df.iterrows():
+        prev_rng = row.get("rate_range_prev")
+        if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
+            marker_colors.append("#D85A30")  #醒目橙色/红色
+            marker_sizes.append(18)
+            text_colors.append("#D85A30")
+        else:
+            marker_colors.append("#534AB7")
+            marker_sizes.append(12)
+            text_colors.append("#333333")
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=path_df["meeting_label"], y=path_df["midpoint"],
         mode="lines+markers+text",
         text=[f"{p:.0f}%" for p in path_df["probability"]],
-        textposition="top center", textfont=dict(size=11, color="#333333"),
+        textposition="top center", textfont=dict(size=11, color=text_colors),
         line=dict(color="#534AB7", width=3),
-        marker=dict(size=12, color="#534AB7"), name="Most likely rate",
+        marker=dict(size=marker_sizes, color=marker_colors), name="Most likely rate",
         hovertemplate="<b>%{x}</b><br>Rate: %{customdata}<br>Probability: %{text}<extra></extra>",
         customdata=path_df["rate_range"],
     ))
@@ -711,11 +758,30 @@ if path_data:
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    cols = st.columns(min(len(path_data), 6))
-    for i, row in enumerate(path_data):
+    # Show textual summary of rate-path changes
+    if path_changes:
+        st.markdown("#### ⚠️ Rate path changed vs previous day")
+        for ch in sorted(path_changes, key=lambda x: x["meeting_date"]):
+            st.markdown(
+                f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{ch['curr_rate']}` "
+                f"(probability {ch['prev_prob']:.1f}% → {ch['curr_prob']:.1f}%)"
+            )
+    else:
+        st.info("No rate-path changes vs previous day. The median-implied target rate is stable across all meetings.")
+
+    cols = st.columns(min(len(path_df), 6))
+    for i, row in path_df.iterrows():
         with cols[i % len(cols)]:
-            st.metric(label=row["meeting_label"], value=row["rate_range"],
-                      delta=f"{row['probability']:.1f}%")
+            delta_color = "normal"
+            prev_rng = row.get("rate_range_prev")
+            if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
+                delta_color = "off"  # Streamlit uses "off" for red-ish, "normal" for default
+            st.metric(
+                label=row["meeting_label"],
+                value=row["rate_range"],
+                delta=f"{row['probability']:.1f}%",
+                delta_color=delta_color,
+            )
 
 
 # ════════════════════════════════════════════════════════════════════════════
