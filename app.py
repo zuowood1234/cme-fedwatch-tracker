@@ -1125,7 +1125,16 @@ if not upcoming_dedup.empty:
                 })
             if summary_rows:
                 st.markdown("**Per-meeting summary**")
-                st.dataframe(pd.DataFrame(summary_rows), use_container_width=True, hide_index=True)
+                st.dataframe(
+                    pd.DataFrame(summary_rows),
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "meeting": st.column_config.TextColumn("meeting", width="small"),
+                        "1 day ago": st.column_config.TextColumn("1 day ago", width="large"),
+                        "1 week ago": st.column_config.TextColumn("1 week ago", width="large"),
+                    },
+                )
     else:
         st.success("No significant changes (|Δ| < 5%) vs 1 day ago or 1 week ago. Market stable.")
 else:
