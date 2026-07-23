@@ -30,12 +30,19 @@ def _range_midpoint(rng):
 
 def _most_likely_range_by_median(sub, prob_col="prob_now"):
     """Pick the median-implied rate range (cumulative probability >= 50%).
-    Returns (None, 0) if the probability column has no valid data."""
+    Returns (None, 0) if the probability column has no valid data.
+    Special case: with only 2 ranges, pick the higher-prob one directly (no cumulative)."""
     if sub.empty:
         return None, 0
     dedup = sub.drop_duplicates("rate_range").copy()
     if prob_col not in dedup.columns or dedup[prob_col].fillna(0).sum() == 0:
         return None, 0
+
+    # Special case: only 2 rate ranges → pick higher-prob range directly
+    if len(dedup) == 2:
+        best = dedup.loc[dedup[prob_col].idxmax()]
+        return best["rate_range"], best[prob_col]
+
     dedup["_lo"] = dedup["rate_range"].apply(lambda x: _range_bounds(x)[0])
     dedup = dedup.sort_values("_lo", ascending=False).reset_index(drop=True)
     cum = 0.0

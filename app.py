@@ -720,13 +720,22 @@ def _most_likely_range_by_median(sub, prob_col="prob_now"):
     prob_col: which probability column to use ('prob_now', 'prob_1d', etc.)
     Returns (rate_range, cumulative_probability_at_threshold, rows_used).
     Returns (None, 0, sub) if the probability column has no valid data.
+
+    Special case: if there are only 2 rate ranges, return the higher-prob range
+    with its own prob (not cumulative — cumulative is meaningless when there
+    are only 2 options).
     """
     if sub.empty:
         return None, 0, sub
     dedup = sub.drop_duplicates("rate_range").copy()
-    # Skip if prob_col is all zero or NaN (e.g. CME has no 1D data for far-out meetings)
     if prob_col not in dedup.columns or dedup[prob_col].fillna(0).sum() == 0:
         return None, 0, sub
+
+    # Special case: only 2 rate ranges → pick higher-prob range directly
+    if len(dedup) == 2:
+        best = dedup.loc[dedup[prob_col].idxmax()]
+        return best["rate_range"], best[prob_col], dedup
+
     dedup["_lo"] = dedup["rate_range"].apply(lambda x: _range_bounds(x)[0])
     dedup = dedup.sort_values("_lo", ascending=False).reset_index(drop=True)  # high -> low
     cum = 0.0
@@ -841,8 +850,7 @@ if not path_df.empty:
     if current_target:
         current_mid = _range_midpoint(current_target)
         if current_mid:
-            fig.add_hline(y=current_mid, line_dash="dash", line_color="#e74c3c",
-                          annotation_text=f"Current: {current_target}", annotation_position="top left")
+            fig.add_hline(y=current_mid, line_dash="dash", line_color="#e74c3c")
 
     fig.update_layout(
         yaxis=dict(
@@ -1047,6 +1055,7 @@ if not upcoming_dedup.empty:
 
             if (d1 is not None and abs(d1) >= 5) or (w1 is not None and abs(w1) >= 5):
                 alerts.append({
+                    "meeting_date": md,
                     "meeting": md.strftime("%b %d, %Y") if hasattr(md, "strftime") else str(md),
                     "range": rng,
                     "current": curr_prob,
@@ -1056,7 +1065,8 @@ if not upcoming_dedup.empty:
 
     if alerts:
         alert_df = pd.DataFrame(alerts)
-        alert_df = alert_df.sort_values(["meeting", "range"])
+        # Sort by meeting date (chronological) then by rate range
+        alert_df = alert_df.sort_values(["meeting_date", "range"])
 
         # Format deltas with signs and arrows
         def _fmt_delta(v):
