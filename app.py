@@ -55,22 +55,22 @@ st.set_page_config(
 # ── Custom CSS for enhanced visual style ────────────────────────────────────
 st.markdown("""
 <style>
-/* Main title — purple, bold, larger */
-[data-testid="stTitle"] {
+/* Main title — deep purple, bold, larger */
+h1 {
     color: #3D2DA8 !important;
     font-size: 2.2rem !important;
     font-weight: 800 !important;
     letter-spacing: -0.5px;
 }
 
-/* Caption under title */
-[data-testid="stCaptionContainer"] {
+/* Caption / subtitle — muted gray */
+.stCaption p, [data-testid="stCaptionContainer"] {
     color: #6B7280 !important;
     font-size: 0.9rem !important;
 }
 
-/* Section headers (① ② ③ ④) — purple gradient text */
-[data-testid="stHeaderContainer"] h2 {
+/* Section headers (① ② ③ ④) — purple with bottom border */
+h2 {
     color: #534AB7 !important;
     font-weight: 700 !important;
     font-size: 1.4rem !important;
@@ -79,48 +79,48 @@ st.markdown("""
     border-bottom: 2px solid #EEEDFE;
 }
 
-/* Sub-headers (####) */
-[data-testid="stMarkdownContainer"] h4 {
+/* Sub-headers (####) — orange accent */
+h4 {
     color: #D85A30 !important;
     font-weight: 600 !important;
 }
 
-/* Metric cards — add subtle shadow and rounded corners */
-[data-testid="stMetric"] {
+/* Metric cards — subtle background, rounded, bordered */
+[data-testid="stMetric"], div[data-testid="stMetric"] {
     background: #FAFAFE;
     border-radius: 10px;
     padding: 12px 16px !important;
     border: 1px solid #EFEEFB;
 }
 
-/* Dataframe — rounded corners and clean header */
-[data-testid="stDataFrame"] {
-    border-radius: 8px;
-    overflow: hidden;
-}
-
 /* Buttons — purple theme */
-.stButton > button {
-    background-color: #534AB7;
-    color: white;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
+.stButton > button, button[kind="primary"] {
+    background-color: #534AB7 !important;
+    color: white !important;
+    border-radius: 8px !important;
+    border: none !important;
+    font-weight: 600 !important;
 }
-.stButton > button:hover {
-    background-color: #3D2DA8;
-    color: white;
+.stButton > button:hover, button[kind="primary"]:hover {
+    background-color: #3D2DA8 !important;
+    color: white !important;
 }
 
-/* Status banners — slightly more rounded */
+/* Status banners — rounded */
 [data-testid="stAlert"] {
-    border-radius: 8px;
+    border-radius: 8px !important;
 }
 
-/* Top spacing */
-.block-container {
+/* Main content — max width and top spacing */
+.block-container, [data-testid="stAppViewBlockContainer"] {
     padding-top: 1.5rem !important;
     max-width: 1200px;
+}
+
+/* Sidebar header accent */
+[data-testid="stSidebar"] h2 {
+    border-bottom: none;
+    color: #534AB7 !important;
 }
 </style>
 """, unsafe_allow_html=True)
