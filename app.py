@@ -55,34 +55,42 @@ st.set_page_config(
 # ── Custom CSS for enhanced visual style ────────────────────────────────────
 st.markdown("""
 <style>
-/* Main title — deep purple, bold, larger */
+/* Main title — purple gradient background banner */
 h1 {
-    color: #3D2DA8 !important;
-    font-size: 2.2rem !important;
+    background: linear-gradient(135deg, #534AB7 0%, #7B68EE 100%);
+    color: white !important;
+    font-size: 2.0rem !important;
     font-weight: 800 !important;
     letter-spacing: -0.5px;
+    padding: 16px 20px !important;
+    border-radius: 12px;
+    margin-bottom: 0.3rem !important;
 }
 
-/* Caption / subtitle — muted gray */
+/* Caption / subtitle */
 .stCaption p, [data-testid="stCaptionContainer"] {
     color: #6B7280 !important;
     font-size: 0.9rem !important;
 }
 
-/* Section headers (① ② ③ ④) — purple with bottom border */
+/* Section headers (① ② ③ ④) — light purple background bar */
 h2 {
-    color: #534AB7 !important;
+    background: linear-gradient(90deg, #EEEDFE 0%, #F5F4FF 100%);
+    color: #3D2DA8 !important;
     font-weight: 700 !important;
-    font-size: 1.4rem !important;
-    padding-top: 0.6rem;
-    padding-bottom: 0.3rem;
-    border-bottom: 2px solid #EEEDFE;
+    font-size: 1.35rem !important;
+    padding: 10px 16px !important;
+    border-radius: 8px;
+    border-left: 4px solid #534AB7;
+    margin-top: 0.8rem !important;
 }
 
-/* Sub-headers (####) — orange accent */
+/* Sub-headers (####) — orange left border accent */
 h4 {
     color: #D85A30 !important;
     font-weight: 600 !important;
+    border-left: 3px solid #D85A30;
+    padding-left: 10px !important;
 }
 
 /* Metric cards — subtle background, rounded, bordered */
@@ -117,9 +125,10 @@ h4 {
     max-width: 1200px;
 }
 
-/* Sidebar header accent */
+/* Sidebar header — no background */
 [data-testid="stSidebar"] h2 {
-    border-bottom: none;
+    background: none;
+    border-left: none;
     color: #534AB7 !important;
 }
 </style>
@@ -704,23 +713,27 @@ def _range_midpoint(rng):
     return (lo + hi) / 200  # bps -> %
 
 
-def _most_likely_range_by_median(sub):
+def _most_likely_range_by_median(sub, prob_col="prob_now"):
     """
     Pick the median-implied rate range: sort ranges from high to low and
     accumulate probabilities until the cumulative sum reaches ≥ 50%.
-    This naturally adds the probability of all higher ranges to the chosen one.
+    prob_col: which probability column to use ('prob_now', 'prob_1d', etc.)
     Returns (rate_range, cumulative_probability_at_threshold, rows_used).
+    Returns (None, 0, sub) if the probability column has no valid data.
     """
     if sub.empty:
         return None, 0, sub
     dedup = sub.drop_duplicates("rate_range").copy()
+    # Skip if prob_col is all zero or NaN (e.g. CME has no 1D data for far-out meetings)
+    if prob_col not in dedup.columns or dedup[prob_col].fillna(0).sum() == 0:
+        return None, 0, sub
     dedup["_lo"] = dedup["rate_range"].apply(lambda x: _range_bounds(x)[0])
     dedup = dedup.sort_values("_lo", ascending=False).reset_index(drop=True)  # high -> low
     cum = 0.0
     chosen_idx = None
     chosen_cum = 0.0
     for i, row in dedup.iterrows():
-        cum += row["prob_now"]
+        cum += row[prob_col]
         if cum >= 50 and chosen_idx is None:
             chosen_idx = i
             chosen_cum = cum
@@ -731,12 +744,12 @@ def _most_likely_range_by_median(sub):
     return chosen["rate_range"], chosen_cum, dedup.iloc[: chosen_idx + 1]
 
 
-def compute_rate_path(df_snapshot, meetings_sorted):
-    """Compute the median-implied rate path for a given snapshot."""
+def compute_rate_path(df_snapshot, meetings_sorted, prob_col="prob_now"):
+    """Compute the median-implied rate path for a given snapshot using the specified probability column."""
     path_data = []
     for md in meetings_sorted:
         sub = df_snapshot[df_snapshot["meeting_date"] == md]
-        rng, prob, _ = _most_likely_range_by_median(sub)
+        rng, prob, _ = _most_likely_range_by_median(sub, prob_col=prob_col)
         if rng is None:
             continue
         midpoint = _range_midpoint(rng)
@@ -750,16 +763,13 @@ def compute_rate_path(df_snapshot, meetings_sorted):
     return pd.DataFrame(path_data) if path_data else pd.DataFrame()
 
 
-path_df = compute_rate_path(upcoming, meetings_sorted)
+# Current rate path (using prob_now)
+path_df = compute_rate_path(upcoming, meetings_sorted, prob_col="prob_now")
 
-# Compute previous day path for comparison
-prev_path_df = pd.DataFrame()
-if len(all_dates) >= 2:
-    prev_date = all_dates[-2]
-    prev_snapshot = df[df["snapshot_date"] == prev_date].drop_duplicates(subset=["meeting_date", "rate_range"])
-    prev_path_df = compute_rate_path(prev_snapshot, meetings_sorted)
+# 1-day-ago rate path (using prob_1d from the same snapshot — matches CME's "1 Day Ago" column)
+prev_path_df = compute_rate_path(upcoming, meetings_sorted, prob_col="prob_1d")
 
-# Identify meetings where the most-likely rate range changed vs previous day
+# Identify meetings where the most-likely rate range changed vs 1 day ago (CME's own 1D column)
 path_changes = []
 if not path_df.empty and not prev_path_df.empty:
     merged_path = path_df.merge(
@@ -833,14 +843,14 @@ if not path_df.empty:
 
     # Show textual summary of rate-path changes
     if path_changes:
-        st.markdown("#### ⚠️ Rate path changed vs previous day")
+        st.markdown("#### ⚠️ Rate path changed vs 1 Day Ago (CME)")
         for ch in sorted(path_changes, key=lambda x: x["meeting_date"]):
             st.markdown(
                 f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{ch['curr_rate']}` "
-                f"(probability {ch['prev_prob']:.1f}% → {ch['curr_prob']:.1f}%)"
+                f"(cumulative prob {ch['prev_prob']:.1f}% → {ch['curr_prob']:.1f}%)"
             )
     else:
-        st.info("No rate-path changes vs previous day. The median-implied target rate is stable across all meetings.")
+        st.info("No rate-path changes vs 1 Day Ago. The median-implied target rate is stable across all meetings.")
 
     cols = st.columns(min(len(path_df), 6))
     for i, row in path_df.iterrows():

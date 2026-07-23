@@ -28,18 +28,21 @@ def _range_midpoint(rng):
     return (lo + hi) / 200
 
 
-def _most_likely_range_by_median(sub):
-    """Pick the median-implied rate range (cumulative probability >= 50%)."""
+def _most_likely_range_by_median(sub, prob_col="prob_now"):
+    """Pick the median-implied rate range (cumulative probability >= 50%).
+    Returns (None, 0) if the probability column has no valid data."""
     if sub.empty:
         return None, 0
     dedup = sub.drop_duplicates("rate_range").copy()
+    if prob_col not in dedup.columns or dedup[prob_col].fillna(0).sum() == 0:
+        return None, 0
     dedup["_lo"] = dedup["rate_range"].apply(lambda x: _range_bounds(x)[0])
     dedup = dedup.sort_values("_lo", ascending=False).reset_index(drop=True)
     cum = 0.0
     chosen_idx = None
     chosen_cum = 0.0
     for i, row in dedup.iterrows():
-        cum += row["prob_now"]
+        cum += row[prob_col]
         if cum >= 50 and chosen_idx is None:
             chosen_idx = i
             chosen_cum = cum
@@ -62,17 +65,19 @@ def load_history(csv_path):
     df["snapshot_date"] = pd.to_datetime(df["snapshot_date"], errors="coerce").dt.date
     df["meeting_date"] = pd.to_datetime(df["meeting_date"], errors="coerce").dt.date
     df["prob_now"] = pd.to_numeric(df["prob_now"], errors="coerce")
+    if "prob_1d" in df.columns:
+        df["prob_1d"] = pd.to_numeric(df["prob_1d"], errors="coerce")
     df = df.dropna(subset=["snapshot_date", "meeting_date"])
     return df
 
 
-def compute_rate_path(df_snapshot):
-    """Compute median-implied rate path for a snapshot."""
+def compute_rate_path(df_snapshot, prob_col="prob_now"):
+    """Compute median-implied rate path for a snapshot using the specified probability column."""
     meetings_sorted = sorted(df_snapshot["meeting_date"].unique())
     rows = []
     for md in meetings_sorted:
         sub = df_snapshot[df_snapshot["meeting_date"] == md]
-        rng, prob = _most_likely_range_by_median(sub)
+        rng, prob = _most_likely_range_by_median(sub, prob_col=prob_col)
         if rng is None:
             continue
         rows.append({
@@ -84,17 +89,24 @@ def compute_rate_path(df_snapshot):
 
 
 def build_rate_path_changes(df):
-    """Compare today's vs previous snapshot's median-implied rate path."""
+    """Compare median-implied rate path: prob_now vs prob_1d (CME's own 1 Day Ago column)."""
     all_dates = sorted(df["snapshot_date"].unique())
-    if len(all_dates) < 2:
+    if not all_dates:
         return []
 
     curr_date = all_dates[-1]
-    prev_date = all_dates[-2]
-    curr = compute_rate_path(df[df["snapshot_date"] == curr_date].drop_duplicates(subset=["meeting_date", "rate_range"]))
-    prev = compute_rate_path(df[df["snapshot_date"] == prev_date].drop_duplicates(subset=["meeting_date", "rate_range"]))
+    latest = df[df["snapshot_date"] == curr_date].drop_duplicates(subset=["meeting_date", "rate_range"])
 
-    merged = curr.merge(prev, on="meeting_date", suffixes=("", "_prev"), how="left")
+    if "prob_1d" not in latest.columns:
+        return []
+
+    curr_path = compute_rate_path(latest, prob_col="prob_now")
+    prev_path = compute_rate_path(latest, prob_col="prob_1d")
+
+    if curr_path.empty or prev_path.empty:
+        return []
+
+    merged = curr_path.merge(prev_path, on="meeting_date", suffixes=("", "_prev"), how="left")
     changes = []
     for _, row in merged.iterrows():
         prev_rng = row.get("rate_range_prev")
@@ -198,18 +210,18 @@ def build_daily_summary(data_dir):
         lines.append(f"**抓取时间**: {scrape_time_str}")
     lines.append("")
 
-    # Rate path changes
+    # Rate path changes (using CME's own prob_1d column)
     path_changes = build_rate_path_changes(df)
     if path_changes:
-        lines.append("#### 🔴 利率预期路径变化")
+        lines.append("#### 🔴 利率预期路径变化 (vs 1 Day Ago)")
         for ch in path_changes:
             lines.append(
                 f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{ch['curr_rate']}` "
-                f"({ch['prev_prob']:.1f}% → {ch['curr_prob']:.1f}%)"
+                f"(累积概率 {ch['prev_prob']:.1f}% → {ch['curr_prob']:.1f}%)"
             )
     else:
         lines.append("#### ✅ 利率预期路径稳定")
-        lines.append("所有会议的 median-implied 目标利率区间与昨日相比无变化。")
+        lines.append("所有会议的 median-implied 目标利率区间与 CME 1 Day Ago 相比无变化。")
     lines.append("")
 
     # Probability alerts
