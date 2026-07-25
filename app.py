@@ -131,6 +131,92 @@ h4 {
     border-left: none;
     color: #1565C0 !important;
 }
+
+/* ── Per-meeting summary cards ──────────────────────────────────────── */
+.pm-card {
+    background: #FFFFFF;
+    border: 1px solid #E0E8F0;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-left: 3px solid #1565C0;
+    transition: all 0.2s ease;
+}
+.pm-card:hover {
+    border-left-color: #0D47A1;
+    box-shadow: 0 2px 10px rgba(21, 101, 192, 0.10);
+}
+.pm-meeting {
+    font-weight: 700;
+    color: #0D47A1;
+    font-size: 1rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pm-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #546E7A;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 6px;
+    margin-bottom: 3px;
+}
+.pm-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.pm-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    white-space: nowrap;
+}
+.pm-chip-up {
+    background: #E8F5E9;
+    color: #1B7A3E;
+    border: 1px solid #A5D6A7;
+}
+.pm-chip-down {
+    background: #FFEBEE;
+    color: #C0392B;
+    border: 1px solid #EF9A9A;
+}
+.pm-chip-hot {
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+    color: #E65100 !important;
+    border: 1px solid #FFB74D;
+    font-weight: 700;
+    box-shadow: 0 1px 4px rgba(230, 81, 0, 0.12);
+}
+.pm-chip-hot::after {
+    content: ' 🔥';
+    font-size: 0.75rem;
+}
+.pm-badge-hot {
+    display: inline-block;
+    background: linear-gradient(135deg, #E65100, #FF6F00);
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 1px 7px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: auto;
+}
+.pm-empty {
+    color: #B0BEC5;
+    font-size: 0.82rem;
+    font-style: italic;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -1107,23 +1193,68 @@ if not upcoming_dedup.empty:
             use_container_width=True,
         )
 
-        # Also show compact per-meeting summary if there are many rows
+        # Per-meeting summary cards (sorted by meeting date, colored chips, hot >=15%)
         if len(alert_df) > 0:
-            summary_rows = []
-            for md, g in alert_df.groupby("meeting"):
-                d_parts = []
-                w_parts = []
+            st.markdown("#### Per-meeting summary")
+            st.caption("Green = positive change (probability up). Red = negative change (probability down). 🔥 = change >= 15%.")
+
+            def _chip_html(range_name, delta_value):
+                if delta_value is None:
+                    return ""
+                direction = "up" if delta_value >= 0 else "down"
+                is_hot = abs(delta_value) >= 15
+                sign = "+" if delta_value >= 0 else ""
+                label = f"{range_name} {sign}{delta_value:.1f}%"
+                dir_class = f"pm-chip-{direction}"
+                hot_class = " pm-chip-hot" if is_hot else ""
+                return f'<span class="pm-chip {dir_class}{hot_class}">{label}</span>'
+
+            sorted_dates = sorted(alert_df["meeting_date"].unique())
+
+            for md in sorted_dates:
+                g = alert_df[alert_df["meeting_date"] == md]
+                if g.empty:
+                    continue
+                meeting_label = g["meeting"].iloc[0]
+
+                d_chips = []
+                w_chips = []
+                has_hot = False
                 for _, r in g.iterrows():
                     if r["1d_delta"] is not None and abs(r["1d_delta"]) >= 5:
-                        d_parts.append(f"{r['range']} {r['1d_delta']:+.1f}%")
+                        d_chips.append(_chip_html(r["range"], r["1d_delta"]))
+                        if abs(r["1d_delta"]) >= 15:
+                            has_hot = True
                     if r["1w_delta"] is not None and abs(r["1w_delta"]) >= 5:
-                        w_parts.append(f"{r['range']} {r['1w_delta']:+.1f}%")
-                summary_rows.append({
-                    "meeting": md,
-                    "1 day ago": "; ".join(d_parts) if d_parts else "—",
-                    "1 week ago": "; ".join(w_parts) if w_parts else "—",
-                })
-            if summary_rows:
+                        w_chips.append(_chip_html(r["range"], r["1w_delta"]))
+                        if abs(r["1w_delta"]) >= 15:
+                            has_hot = True
+
+                hot_badge = '<span class="pm-badge-hot">🔥 HOT</span>' if has_hot else ''
+
+                d_html = (
+                    '<div class="pm-chips">' + "".join(d_chips) + '</div>'
+                    if d_chips else '<span class="pm-empty">\u2014</span>'
+                )
+                w_html = (
+                    '<div class="pm-chips">' + "".join(w_chips) + '</div>'
+                    if w_chips else '<span class="pm-empty">\u2014</span>'
+                )
+
+                card_html = (
+                    '\n                <div class="pm-card">\n'
+                    '                  <div class="pm-meeting">\n'
+                    f'                    {meeting_label}\n'
+                    f'                    {hot_badge}\n'
+                    '                  </div>\n'
+                    '                  <div class="pm-label">vs 1 Day Ago</div>\n'
+                    f'                  {d_html}\n'
+                    '                  <div class="pm-label">vs 1 Week Ago</div>\n'
+                    f'                  {w_html}\n'
+                    '                </div>'
+                )
+                st.markdown(card_html, unsafe_allow_html=True)
+
                 st.markdown("**Per-meeting summary**")
                 for row in summary_rows:
                     d_txt = row["1 day ago"]
