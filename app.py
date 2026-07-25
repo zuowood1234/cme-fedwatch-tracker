@@ -996,63 +996,81 @@ if not path_df.empty:
     for _, row in path_df.iterrows():
         prev_rng = row.get("rate_range_prev")
         if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
-            marker_colors.append("#D85A30")  # 醒目橙色/红色
-            marker_sizes.append(18)
-            text_colors.append("#D85A30")
+            marker_colors.append("#E65100")
+            marker_sizes.append(16)
+            text_colors.append("#E65100")
         else:
             marker_colors.append("#1565C0")
-            marker_sizes.append(12)
-            text_colors.append("#333333")
+            marker_sizes.append(13)
+            text_colors.append("#0A1628")
 
     fig = go.Figure()
+
+    # Subtle gradient area under the line for depth
+    fig.add_trace(go.Scatter(
+        x=path_df["meeting_label"], y=path_df["midpoint"],
+        mode="lines",
+        line=dict(color="rgba(21, 101, 192, 0)", width=0),
+        fill="tozeroy",
+        fillcolor="rgba(21, 101, 192, 0.07)",
+        showlegend=False,
+        hoverinfo="skip",
+    ))
+
+    # Main line + markers + text
     fig.add_trace(go.Scatter(
         x=path_df["meeting_label"], y=path_df["midpoint"],
         mode="lines+markers+text",
         text=[f"{p:.0f}%" for p in path_df["probability"]],
-        textposition="top center", textfont=dict(size=11, color=text_colors, family="ui-monospace, 'SF Mono', Menlo, monospace"),
-        line=dict(color="#1565C0", width=3.5, shape="spline", smoothing=0.3),
-        marker=dict(size=marker_sizes, color=marker_colors, line=dict(color="white", width=2)), name="Most likely rate",
+        textposition="top center",
+        textfont=dict(size=12, color=text_colors, family="ui-monospace, 'SF Mono', Menlo, monospace"),
+        line=dict(color="#1565C0", width=3, shape="spline", smoothing=0.4),
+        marker=dict(size=marker_sizes, color=marker_colors, line=dict(color="white", width=2.5), opacity=0.9),
+        name="Most likely rate",
         hovertemplate="<b>%{x}</b><br>Rate: %{customdata}<br>Probability: %{text}<extra></extra>",
         customdata=path_df["rate_range"],
     ))
 
+    # Current target reference line — subtle dotted gray with annotation
     if current_target:
         current_mid = _range_midpoint(current_target)
         if current_mid:
-            fig.add_hline(y=current_mid, line_dash="dash", line_color="#e74c3c")
+            fig.add_hline(
+                y=current_mid,
+                line_dash="dot",
+                line_color="#78909C",
+                line_width=1.5,
+                annotation_text=f"Current: {current_target}",
+                annotation_position="top left",
+                annotation_font=dict(size=10, color="#78909C"),
+            )
 
     fig.update_layout(
         yaxis=dict(
-            title=dict(
-                text="Target rate range (%)",
-                font=dict(size=13, color="#546E7A"),
-            ),
+            title=dict(text="Target rate range (%)", font=dict(size=12, color="#546E7A")),
             tickmode="array",
             tickvals=tick_vals,
             ticktext=tick_text,
-            tickfont=dict(size=12, color="#37474F"),
-            gridcolor="#ECEFF1",
+            tickfont=dict(size=11, color="#546E7A", family="ui-monospace, Menlo, monospace"),
+            gridcolor="rgba(120, 144, 156, 0.12)",
             gridwidth=1,
             zeroline=False,
         ),
         xaxis=dict(
-            title=dict(
-                text="FOMC meeting",
-                font=dict(size=13, color="#546E7A"),
-            ),
-            tickfont=dict(size=12, color="#37474F"),
-            gridcolor="#ECEFF1",
+            title=dict(text="FOMC meeting", font=dict(size=12, color="#546E7A")),
+            tickfont=dict(size=11, color="#546E7A"),
+            gridcolor="rgba(120, 144, 156, 0.06)",
             gridwidth=1,
         ),
-        height=440,
+        height=460,
         showlegend=False,
         hovermode="x unified",
         plot_bgcolor="white",
         paper_bgcolor="white",
-        margin=dict(l=20, r=20, t=20, b=20),
+        margin=dict(l=20, r=20, t=30, b=20),
         hoverlabel=dict(
             bgcolor="#0A1628",
-            font_size=13,
+            font_size=12,
             font_color="white",
             bordercolor="#1565C0",
         ),
