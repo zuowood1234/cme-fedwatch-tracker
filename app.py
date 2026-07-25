@@ -1255,15 +1255,6 @@ if not upcoming_dedup.empty:
                 )
                 st.markdown(card_html, unsafe_allow_html=True)
 
-                st.markdown("**Per-meeting summary**")
-                for row in summary_rows:
-                    d_txt = row["1 day ago"]
-                    w_txt = row["1 week ago"]
-                    st.markdown(
-                        f"- **{row['meeting']}**  \n"
-                        f"&nbsp;&nbsp;&nbsp;&nbsp;1 day: {d_txt}  \n"
-                        f"&nbsp;&nbsp;&nbsp;&nbsp;1 week: {w_txt}"
-                    )
     else:
         st.success("No significant changes (|Δ| < 5%) vs 1 day ago or 1 week ago. Market stable.")
 else:
