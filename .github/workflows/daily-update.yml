@@ -2,8 +2,8 @@ name: Daily CME FedWatch Update
 
 on:
   schedule:
-    # Run at 22:50 UTC = 06:50 CST prev day → compensates for observed ~3h GitHub scheduling offset → actual run ~09:50 CST
-    - cron: "50 22 * * *"
+    # Run at 01:50 UTC = 09:50 AM China time (CME EOD updates at 01:45 UTC)
+    - cron: "50 1 * * *"
   workflow_dispatch:  # Allow manual trigger
 
 permissions:

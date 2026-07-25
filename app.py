@@ -55,212 +55,81 @@ st.set_page_config(
 # ── Custom CSS for enhanced visual style ────────────────────────────────────
 st.markdown("""
 <style>
-/* ── Financial Editorial Aesthetic ──────────────────────────────────── */
-/* Deep ink-blue primary, warm amber accents, editorial typography      */
-
-:root {
-  --ink-900: #0A1628;
-  --ink-800: #0F2847;
-  --ink-700: #1565C0;
-  --ink-600: #1976D2;
-  --ink-50: #F5F8FC;
-  --ink-100: #E8EEF7;
-  --amber: #E8A93B;
-  --amber-light: #F5D78A;
-  --green: #1B7A3E;
-  --green-light: #2E9B52;
-  --red: #C0392B;
-  --red-light: #E74C3C;
-  --slate: #546E7A;
-  --slate-light: #78909C;
-}
-
-/* Main title — ink-deep gradient banner with subtle texture */
+/* Main title — deep blue gradient background banner */
 h1 {
-  background: linear-gradient(135deg, #0A1628 0%, #1565C0 100%);
-  color: white !important;
-  font-size: 2.0rem !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.3px;
-  padding: 20px 24px !important;
-  border-radius: 14px;
-  margin-bottom: 0.5rem !important;
-  box-shadow: 0 4px 24px rgba(21, 101, 192, 0.18), 0 1px 3px rgba(0,0,0,0.08);
-  position: relative;
-  overflow: hidden;
-}
-h1::after {
-  content: '';
-  position: absolute;
-  top: 0; right: 0;
-  width: 180px; height: 100%;
-  background: linear-gradient(135deg, transparent, rgba(232, 169, 59, 0.12));
-  pointer-events: none;
+    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+    color: white !important;
+    font-size: 2.0rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.5px;
+    padding: 16px 20px !important;
+    border-radius: 12px;
+    margin-bottom: 0.3rem !important;
 }
 
 /* Caption / subtitle */
 .stCaption p, [data-testid="stCaptionContainer"] {
-  color: #546E7A !important;
-  font-size: 0.9rem !important;
-  line-height: 1.5;
+    color: #607D8B !important;
+    font-size: 0.9rem !important;
 }
 
-/* Section headers (① ② ③ ④) — refined bar with amber left accent */
+/* Section headers (① ② ③ ④) — light blue background bar */
 h2 {
-  background: linear-gradient(90deg, #F0F5FB 0%, #FAFCFE 100%);
-  color: #0A1628 !important;
-  font-weight: 700 !important;
-  font-size: 1.3rem !important;
-  padding: 12px 18px !important;
-  border-radius: 10px;
-  border-left: 4px solid #E8A93B;
-  margin-top: 1.2rem !important;
-  margin-bottom: 0.8rem !important;
-  letter-spacing: -0.2px;
+    background: linear-gradient(90deg, #E3F2FD 0%, #F0F8FF 100%);
+    color: #0D47A1 !important;
+    font-weight: 700 !important;
+    font-size: 1.35rem !important;
+    padding: 10px 16px !important;
+    border-radius: 8px;
+    border-left: 4px solid #1565C0;
+    margin-top: 0.8rem !important;
 }
 
-/* Sub-headers (####) */
+/* Sub-headers (####) — blue accent */
 h4 {
-  color: #0F2847 !important;
-  font-weight: 600 !important;
-  border-left: 3px solid #1565C0;
-  padding-left: 12px !important;
-  margin-top: 1rem !important;
+    color: #1565C0 !important;
+    font-weight: 600 !important;
+    border-left: 3px solid #1565C0;
+    padding-left: 10px !important;
 }
 
-/* Metric cards — subtle with refined shadow and hover lift */
+/* Metric cards — subtle blue tint */
 [data-testid="stMetric"], div[data-testid="stMetric"] {
-  background: #FFFFFF;
-  border-radius: 12px;
-  padding: 14px 18px !important;
-  border: 1px solid #E0E8F0;
-  box-shadow: 0 1px 3px rgba(10, 22, 40, 0.04);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-[data-testid="stMetric"]:hover, div[data-testid="stMetric"]:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(21, 101, 192, 0.12), 0 2px 6px rgba(10, 22, 40, 0.06);
-  border-color: #1565C0;
+    background: #F0F7FF;
+    border-radius: 10px;
+    padding: 12px 16px !important;
+    border: 1px solid #BBDEFB;
 }
 
-/* Buttons — deep ink with amber accent border */
+/* Buttons — blue theme */
 .stButton > button, button[kind="primary"] {
-  background: linear-gradient(135deg, #0F2847 0%, #1565C0 100%) !important;
-  color: white !important;
-  border-radius: 10px !important;
-  border: none !important;
-  font-weight: 600 !important;
-  padding: 8px 20px !important;
-  transition: all 0.2s ease !important;
-  box-shadow: 0 2px 8px rgba(21, 101, 192, 0.2) !important;
+    background-color: #1565C0 !important;
+    color: white !important;
+    border-radius: 8px !important;
+    border: none !important;
+    font-weight: 600 !important;
 }
 .stButton > button:hover, button[kind="primary"]:hover {
-  background: linear-gradient(135deg, #0A1628 0%, #0F2847 100%) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 14px rgba(21, 101, 192, 0.28) !important;
+    background-color: #0D47A1 !important;
+    color: white !important;
 }
 
-/* Status banners */
+/* Status banners — rounded */
 [data-testid="stAlert"] {
-  border-radius: 10px !important;
-  border: none !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-radius: 8px !important;
 }
 
 /* Main content — max width and top spacing */
 .block-container, [data-testid="stAppViewBlockContainer"] {
-  padding-top: 1.5rem !important;
-  max-width: 1280px;
+    padding-top: 1.5rem !important;
+    max-width: 1200px;
 }
 
 /* Sidebar header — no background */
 [data-testid="stSidebar"] h2 {
-  background: none;
-  border-left: none;
-  color: #0F2847 !important;
-}
-
-/* ── Per-meeting summary cards ──────────────────────────────────────── */
-.pm-card {
-  background: #FFFFFF;
-  border: 1px solid #E0E8F0;
-  border-radius: 12px;
-  padding: 14px 18px;
-  margin-bottom: 10px;
-  box-shadow: 0 1px 3px rgba(10, 22, 40, 0.04);
-  transition: all 0.2s ease;
-}
-.pm-card:hover {
-  border-color: #1565C0;
-  box-shadow: 0 4px 14px rgba(21, 101, 192, 0.1);
-}
-.pm-meeting {
-  font-weight: 700;
-  color: #0A1628;
-  font-size: 1.05rem;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.pm-label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #546E7A;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 8px;
-  margin-bottom: 4px;
-}
-.pm-changes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.pm-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-}
-.pm-chip-up {
-  background: #E8F5E9;
-  color: #1B7A3E;
-  border: 1px solid #A5D6A7;
-}
-.pm-chip-down {
-  background: #FFEBEE;
-  color: #C0392B;
-  border: 1px solid #EF9A9A;
-}
-.pm-chip-hot {
-  background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
-  color: #E65100 !important;
-  border: 1px solid #FFB74D;
-  font-weight: 700;
-  box-shadow: 0 1px 4px rgba(230, 81, 0, 0.15);
-  animation: pulse-hot 2s ease-in-out infinite;
-}
-@keyframes pulse-hot {
-  0%, 100% { box-shadow: 0 1px 4px rgba(230, 81, 0, 0.15); }
-  50% { box-shadow: 0 2px 10px rgba(230, 81, 0, 0.3); }
-}
-.pm-hot-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  background: linear-gradient(135deg, #E65100, #FF6F00);
-  color: white;
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 1px 7px;
-  border-radius: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+    background: none;
+    border-left: none;
+    color: #1565C0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -696,86 +565,48 @@ else:
     if github_error:
         st.error(f"GitHub load error: {github_error}")
 
-# ── Manual refresh button (always available for force refresh) ────────────
+# ── Auto-scrape check (disabled on page load; use scheduled automation) ─────
+show_scrape_button = True
+auto_scrape_needed = False  # Do not auto-scrape when the page loads
+
+if has_today_data:
+    show_scrape_button = True  # Still allow manual refresh
+
+# No automatic on-load scraping; keep the UI responsive when CME is down.
 if df.empty:
     st.warning("No cached data available. Click 'Refresh Data' once CME FedWatch is accessible.")
     st.stop()
 
-# ── Auto-refresh safety net (when data is stale) ─────────────────────────
-# If the latest snapshot is older than STALE_HOURS, auto-trigger a scrape
-# so the dashboard never shows completely stale data when GitHub Actions
-# daily workflow misses its schedule.
-STALE_HOURS = 12
-auto_scrape_triggered = False
-if (
-    not df.empty
-    and latest_date is not None
-    and latest_date < today
-):
-    if latest_scrape_time:
-        try:
-            from datetime import datetime as _dt
-            scrape_dt = _dt.fromisoformat(
-                latest_scrape_time.replace("CST", "+08:00")
-                .replace(" ", "T")
-            )
-            age_hours = (datetime.now(timezone.utc) - scrape_dt).total_seconds() / 3600
-            if age_hours > STALE_HOURS:
-                auto_scrape_triggered = True
-        except Exception:
-            age_days = (today - latest_date).days
-            if age_days >= 1:
-                auto_scrape_triggered = True
-    else:
-        age_days = (today - latest_date).days
-        if age_days >= 1:
-            auto_scrape_triggered = True
-
-if auto_scrape_triggered:
-    st.warning(
-        f"⚠️ Data is stale (last update: {latest_date}). "
-        f"GitHub Actions daily workflow may not have run. "
-        f"Auto-refreshing now..."
-    )
-    with st.spinner("Auto-refreshing CME FedWatch (up to 4 min)..."):
-        auto_status = st.empty()
-        auto_logs = st.empty()
-        success, msg, count = run_scraper_with_timeout(timeout=240, log_container=auto_logs)
-        if success:
-            auto_status.success(msg)
-            time.sleep(1)
-            st.rerun()
-        else:
-            auto_status.error(f"Auto-refresh failed: {msg}")
-            st.warning("Continuing to show cached data. Use Force Refresh button to retry.")
-
-c1, _, c2 = st.columns([1, 4, 1])
-with c1:
-    button_label = "🔄 Force Refresh" if has_today_data else "🔄 Refresh Data"
-    button_help = (
-        f"Today's data ({today}) exists but you can force a re-scrape."
-        if has_today_data else "Re-scrape CME FedWatch now"
-    )
-    if st.button(button_label, help=button_help):
-        manual_status = st.empty()
-        manual_logs = st.empty()
-
-        with st.spinner("Scraping CME FedWatch (up to 4 min)..."):
-            success, msg, count = run_scraper_with_timeout(timeout=240, log_container=manual_logs)
-            if success:
-                manual_status.success(msg)
-                time.sleep(1)
-                st.rerun()
+# ── Manual refresh button ───────────────────────────────────────────────────
+if show_scrape_button:
+    c1, _, c2 = st.columns([1, 4, 1])
+    with c1:
+        if has_today_data:
+            st.button("🔄 Refresh Data", disabled=True, help=f"Today's data ({today}) already exists. No need to refresh.")
+        elif st.button("🔄 Refresh Data", help="Re-scrape CME FedWatch now"):
+            if has_today_data:
+                st.success(f"✅ Today's data ({today}) already exists. Skipping scrape.")
             else:
-                manual_status.error(msg)
-                if not df.empty:
-                    st.warning(f"⚠️ Refresh failed. Continuing to show cached data from {latest_date}.")
-with c2:
-    last_updated = max(df["snapshot_date"].unique()) if not df.empty else "?"
-    if latest_scrape_time:
-        st.caption(f"Last: {last_updated} @ {latest_scrape_time}")
-    else:
-        st.caption(f"Last: {last_updated}")
+                manual_status = st.empty()
+                manual_logs = st.empty()
+
+                with st.spinner("Scraping CME FedWatch (up to 4 min)..."):
+                    success, msg, count = run_scraper_with_timeout(timeout=240, log_container=manual_logs)
+                    if success:
+                        manual_status.success(msg)
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        manual_status.error(msg)
+                        # If scraping fails, keep showing cached data instead of blank page
+                        if not df.empty:
+                            st.warning(f"⚠️ Refresh failed. Continuing to show cached data from {latest_date}.")
+    with c2:
+        last_updated = max(df["snapshot_date"].unique()) if not df.empty else "?"
+        if latest_scrape_time:
+            st.caption(f"Last: {last_updated} @ {latest_scrape_time}")
+        else:
+            st.caption(f"Last: {last_updated}")
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -996,84 +827,39 @@ if not path_df.empty:
     for _, row in path_df.iterrows():
         prev_rng = row.get("rate_range_prev")
         if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
-            marker_colors.append("#E65100")
-            marker_sizes.append(16)
-            text_colors.append("#E65100")
+            marker_colors.append("#D85A30")  # 醒目橙色/红色
+            marker_sizes.append(18)
+            text_colors.append("#D85A30")
         else:
             marker_colors.append("#1565C0")
-            marker_sizes.append(13)
-            text_colors.append("#0A1628")
+            marker_sizes.append(12)
+            text_colors.append("#333333")
 
     fig = go.Figure()
-
-    # Subtle gradient area under the line for depth
-    fig.add_trace(go.Scatter(
-        x=path_df["meeting_label"], y=path_df["midpoint"],
-        mode="lines",
-        line=dict(color="rgba(21, 101, 192, 0)", width=0),
-        fill="tozeroy",
-        fillcolor="rgba(21, 101, 192, 0.07)",
-        showlegend=False,
-        hoverinfo="skip",
-    ))
-
-    # Main line + markers + text
     fig.add_trace(go.Scatter(
         x=path_df["meeting_label"], y=path_df["midpoint"],
         mode="lines+markers+text",
         text=[f"{p:.0f}%" for p in path_df["probability"]],
-        textposition="top center",
-        textfont=dict(size=12, color=text_colors, family="ui-monospace, 'SF Mono', Menlo, monospace"),
-        line=dict(color="#1565C0", width=3, shape="spline", smoothing=0.4),
-        marker=dict(size=marker_sizes, color=marker_colors, line=dict(color="white", width=2.5), opacity=0.9),
-        name="Most likely rate",
+        textposition="top center", textfont=dict(size=11, color=text_colors),
+        line=dict(color="#1565C0", width=3),
+        marker=dict(size=marker_sizes, color=marker_colors), name="Most likely rate",
         hovertemplate="<b>%{x}</b><br>Rate: %{customdata}<br>Probability: %{text}<extra></extra>",
         customdata=path_df["rate_range"],
     ))
 
-    # Current target reference line — subtle dotted gray with annotation
     if current_target:
         current_mid = _range_midpoint(current_target)
         if current_mid:
-            fig.add_hline(
-                y=current_mid,
-                line_dash="dot",
-                line_color="#78909C",
-                line_width=1.5,
-                annotation_text=f"Current: {current_target}",
-                annotation_position="top left",
-                annotation_font=dict(size=10, color="#78909C"),
-            )
+            fig.add_hline(y=current_mid, line_dash="dash", line_color="#e74c3c")
 
     fig.update_layout(
         yaxis=dict(
-            title=dict(text="Target rate range (%)", font=dict(size=12, color="#546E7A")),
+            title="Target rate range (%)",
             tickmode="array",
             tickvals=tick_vals,
             ticktext=tick_text,
-            tickfont=dict(size=11, color="#546E7A", family="ui-monospace, Menlo, monospace"),
-            gridcolor="rgba(120, 144, 156, 0.12)",
-            gridwidth=1,
-            zeroline=False,
         ),
-        xaxis=dict(
-            title=dict(text="FOMC meeting", font=dict(size=12, color="#546E7A")),
-            tickfont=dict(size=11, color="#546E7A"),
-            gridcolor="rgba(120, 144, 156, 0.06)",
-            gridwidth=1,
-        ),
-        height=460,
-        showlegend=False,
-        hovermode="x unified",
-        plot_bgcolor="white",
-        paper_bgcolor="white",
-        margin=dict(l=20, r=20, t=30, b=20),
-        hoverlabel=dict(
-            bgcolor="#0A1628",
-            font_size=12,
-            font_color="white",
-            bordercolor="#1565C0",
-        ),
+        xaxis_title="FOMC meeting", height=400, showlegend=False, hovermode="x unified",
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -1212,57 +998,13 @@ if len(meeting_options) > 0:
                 "horizon": "",
             },
             color_discrete_map={
-                "1 Month Ago": "#B0BEC5",
-                "1 Week Ago": "#64B5F6",
-                "1 Day Ago": "#1976D2",
-                "Current": "#0A1628",
+                "1 Month Ago": "#90A4AE",
+                "1 Week Ago": "#42A5F5",
+                "1 Day Ago": "#1565C0",
+                "Current": "#0D47A1",
             },
         )
-        fig3.update_layout(
-            height=460,
-            hovermode="x unified",
-            plot_bgcolor="white",
-            paper_bgcolor="white",
-            bargap=0.25,
-            bargroupgap=0.08,
-            margin=dict(l=20, r=20, t=20, b=20),
-            xaxis=dict(
-                title=dict(
-                    text="Target rate range",
-                    font=dict(size=13, color="#546E7A"),
-                ),
-                tickfont=dict(size=12, color="#37474F"),
-                gridcolor="#ECEFF1",
-                gridwidth=1,
-            ),
-            yaxis=dict(
-                title=dict(
-                    text="Probability (%)",
-                    font=dict(size=13, color="#546E7A"),
-                ),
-                tickfont=dict(size=12, color="#37474F"),
-                gridcolor="#ECEFF1",
-                gridwidth=1,
-                zeroline=False,
-            ),
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1,
-                font=dict(size=12, color="#37474F"),
-                bgcolor="rgba(255,255,255,0.9)",
-                bordercolor="#E0E8F0",
-                borderwidth=1,
-            ),
-            hoverlabel=dict(
-                bgcolor="#0A1628",
-                font_size=13,
-                font_color="white",
-                bordercolor="#1565C0",
-            ),
-        )
+        fig3.update_layout(height=450, hovermode="x unified")
         st.plotly_chart(fig3, use_container_width=True)
 
         # Summary table
@@ -1365,72 +1107,32 @@ if not upcoming_dedup.empty:
             use_container_width=True,
         )
 
-        # Per-meeting summary cards (sorted chronologically, colored by direction, hot badge for >=15%)
+        # Also show compact per-meeting summary if there are many rows
         if len(alert_df) > 0:
-            st.markdown("#### Per-meeting summary")
-            st.caption("Colored chips show each significant change. Green = up, red = down. 🔥 = change ≥ 15%.")
-
-            def _chip_html(range_name, delta_value):
-                """Render a single change chip with appropriate color and hot badge."""
-                if delta_value is None:
-                    return ""
-                direction = "up" if delta_value >= 0 else "down"
-                is_hot = abs(delta_value) >= 15
-                sign = "+" if delta_value >= 0 else ""
-                label = f"{range_name} {sign}{delta_value:.1f}%"
-                hot_class = " pm-chip-hot" if is_hot else ""
-                dir_class = f"pm-chip-{direction}"
-                hot_badge = '<span class="pm-hot-badge">🔥 15%+</span>' if is_hot else ''
-                return f'<span class="pm-chip {dir_class}{hot_class}">{label} {hot_badge}</span>'
-
-            # Sort meetings chronologically by meeting_date
-            sorted_meetings = sorted(
-                alert_df["meeting_date"].unique()
-            )
-
-            for md in sorted_meetings:
-                g = alert_df[alert_df["meeting_date"] == md]
-                if g.empty:
-                    continue
-                meeting_label = g["meeting"].iloc[0]
-
-                d_chips = []
-                w_chips = []
-                has_hot = False
+            summary_rows = []
+            for md, g in alert_df.groupby("meeting"):
+                d_parts = []
+                w_parts = []
                 for _, r in g.iterrows():
                     if r["1d_delta"] is not None and abs(r["1d_delta"]) >= 5:
-                        d_chips.append(_chip_html(r["range"], r["1d_delta"]))
-                        if abs(r["1d_delta"]) >= 15:
-                            has_hot = True
+                        d_parts.append(f"{r['range']} {r['1d_delta']:+.1f}%")
                     if r["1w_delta"] is not None and abs(r["1w_delta"]) >= 5:
-                        w_chips.append(_chip_html(r["range"], r["1w_delta"]))
-                        if abs(r["1w_delta"]) >= 15:
-                            has_hot = True
-
-                hot_notice = '<span class="pm-hot-badge">🔥 SIGNIFICANT</span>' if has_hot else ''
-
-                d_html = (
-                    '<div class="pm-changes">' + "".join(d_chips) + '</div>'
-                    if d_chips else '<span style="color:#90A4AE; font-size:0.85rem;">—</span>'
-                )
-                w_html = (
-                    '<div class="pm-changes">' + "".join(w_chips) + '</div>'
-                    if w_chips else '<span style="color:#90A4AE; font-size:0.85rem;">—</span>'
-                )
-
-                card_html = f"""
-                <div class="pm-card">
-                  <div class="pm-meeting">
-                    {meeting_label}
-                    {hot_notice}
-                  </div>
-                  <div class="pm-label">vs 1 Day Ago</div>
-                  {d_html}
-                  <div class="pm-label">vs 1 Week Ago</div>
-                  {w_html}
-                </div>
-                """
-                st.markdown(card_html, unsafe_allow_html=True)
+                        w_parts.append(f"{r['range']} {r['1w_delta']:+.1f}%")
+                summary_rows.append({
+                    "meeting": md,
+                    "1 day ago": "; ".join(d_parts) if d_parts else "—",
+                    "1 week ago": "; ".join(w_parts) if w_parts else "—",
+                })
+            if summary_rows:
+                st.markdown("**Per-meeting summary**")
+                for row in summary_rows:
+                    d_txt = row["1 day ago"]
+                    w_txt = row["1 week ago"]
+                    st.markdown(
+                        f"- **{row['meeting']}**  \n"
+                        f"&nbsp;&nbsp;&nbsp;&nbsp;1 day: {d_txt}  \n"
+                        f"&nbsp;&nbsp;&nbsp;&nbsp;1 week: {w_txt}"
+                    )
     else:
         st.success("No significant changes (|Δ| < 5%) vs 1 day ago or 1 week ago. Market stable.")
 else:
