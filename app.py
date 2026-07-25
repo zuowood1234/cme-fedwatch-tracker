@@ -565,48 +565,86 @@ else:
     if github_error:
         st.error(f"GitHub load error: {github_error}")
 
-# ── Auto-scrape check (disabled on page load; use scheduled automation) ─────
-show_scrape_button = True
-auto_scrape_needed = False  # Do not auto-scrape when the page loads
-
-if has_today_data:
-    show_scrape_button = True  # Still allow manual refresh
-
-# No automatic on-load scraping; keep the UI responsive when CME is down.
+# ── Manual refresh button (always available for force refresh) ────────────
 if df.empty:
     st.warning("No cached data available. Click 'Refresh Data' once CME FedWatch is accessible.")
     st.stop()
 
-# ── Manual refresh button ───────────────────────────────────────────────────
-if show_scrape_button:
-    c1, _, c2 = st.columns([1, 4, 1])
-    with c1:
-        if has_today_data:
-            st.button("🔄 Refresh Data", disabled=True, help=f"Today's data ({today}) already exists. No need to refresh.")
-        elif st.button("🔄 Refresh Data", help="Re-scrape CME FedWatch now"):
-            if has_today_data:
-                st.success(f"✅ Today's data ({today}) already exists. Skipping scrape.")
-            else:
-                manual_status = st.empty()
-                manual_logs = st.empty()
+# ── Auto-refresh safety net (when data is stale) ─────────────────────────
+# If the latest snapshot is older than STALE_HOURS, auto-trigger a scrape
+# so the dashboard never shows completely stale data when GitHub Actions
+# daily workflow misses its schedule.
+STALE_HOURS = 12
+auto_scrape_triggered = False
+if (
+    not df.empty
+    and latest_date is not None
+    and latest_date < today
+):
+    if latest_scrape_time:
+        try:
+            from datetime import datetime as _dt
+            scrape_dt = _dt.fromisoformat(
+                latest_scrape_time.replace("CST", "+08:00")
+                .replace(" ", "T")
+            )
+            age_hours = (datetime.now(timezone.utc) - scrape_dt).total_seconds() / 3600
+            if age_hours > STALE_HOURS:
+                auto_scrape_triggered = True
+        except Exception:
+            age_days = (today - latest_date).days
+            if age_days >= 1:
+                auto_scrape_triggered = True
+    else:
+        age_days = (today - latest_date).days
+        if age_days >= 1:
+            auto_scrape_triggered = True
 
-                with st.spinner("Scraping CME FedWatch (up to 4 min)..."):
-                    success, msg, count = run_scraper_with_timeout(timeout=240, log_container=manual_logs)
-                    if success:
-                        manual_status.success(msg)
-                        time.sleep(1)
-                        st.rerun()
-                    else:
-                        manual_status.error(msg)
-                        # If scraping fails, keep showing cached data instead of blank page
-                        if not df.empty:
-                            st.warning(f"⚠️ Refresh failed. Continuing to show cached data from {latest_date}.")
-    with c2:
-        last_updated = max(df["snapshot_date"].unique()) if not df.empty else "?"
-        if latest_scrape_time:
-            st.caption(f"Last: {last_updated} @ {latest_scrape_time}")
+if auto_scrape_triggered:
+    st.warning(
+        f"⚠️ Data is stale (last update: {latest_date}). "
+        f"GitHub Actions daily workflow may not have run. "
+        f"Auto-refreshing now..."
+    )
+    with st.spinner("Auto-refreshing CME FedWatch (up to 4 min)..."):
+        auto_status = st.empty()
+        auto_logs = st.empty()
+        success, msg, count = run_scraper_with_timeout(timeout=240, log_container=auto_logs)
+        if success:
+            auto_status.success(msg)
+            time.sleep(1)
+            st.rerun()
         else:
-            st.caption(f"Last: {last_updated}")
+            auto_status.error(f"Auto-refresh failed: {msg}")
+            st.warning("Continuing to show cached data. Use Force Refresh button to retry.")
+
+c1, _, c2 = st.columns([1, 4, 1])
+with c1:
+    button_label = "🔄 Force Refresh" if has_today_data else "🔄 Refresh Data"
+    button_help = (
+        f"Today's data ({today}) exists but you can force a re-scrape."
+        if has_today_data else "Re-scrape CME FedWatch now"
+    )
+    if st.button(button_label, help=button_help):
+        manual_status = st.empty()
+        manual_logs = st.empty()
+
+        with st.spinner("Scraping CME FedWatch (up to 4 min)..."):
+            success, msg, count = run_scraper_with_timeout(timeout=240, log_container=manual_logs)
+            if success:
+                manual_status.success(msg)
+                time.sleep(1)
+                st.rerun()
+            else:
+                manual_status.error(msg)
+                if not df.empty:
+                    st.warning(f"⚠️ Refresh failed. Continuing to show cached data from {latest_date}.")
+with c2:
+    last_updated = max(df["snapshot_date"].unique()) if not df.empty else "?"
+    if latest_scrape_time:
+        st.caption(f"Last: {last_updated} @ {latest_scrape_time}")
+    else:
+        st.caption(f"Last: {last_updated}")
 
 
 # ════════════════════════════════════════════════════════════════════════════
