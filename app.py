@@ -55,81 +55,212 @@ st.set_page_config(
 # ── Custom CSS for enhanced visual style ────────────────────────────────────
 st.markdown("""
 <style>
-/* Main title — deep blue gradient background banner */
+/* ── Financial Editorial Aesthetic ──────────────────────────────────── */
+/* Deep ink-blue primary, warm amber accents, editorial typography      */
+
+:root {
+  --ink-900: #0A1628;
+  --ink-800: #0F2847;
+  --ink-700: #1565C0;
+  --ink-600: #1976D2;
+  --ink-50: #F5F8FC;
+  --ink-100: #E8EEF7;
+  --amber: #E8A93B;
+  --amber-light: #F5D78A;
+  --green: #1B7A3E;
+  --green-light: #2E9B52;
+  --red: #C0392B;
+  --red-light: #E74C3C;
+  --slate: #546E7A;
+  --slate-light: #78909C;
+}
+
+/* Main title — ink-deep gradient banner with subtle texture */
 h1 {
-    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
-    color: white !important;
-    font-size: 2.0rem !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.5px;
-    padding: 16px 20px !important;
-    border-radius: 12px;
-    margin-bottom: 0.3rem !important;
+  background: linear-gradient(135deg, #0A1628 0%, #1565C0 100%);
+  color: white !important;
+  font-size: 2.0rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.3px;
+  padding: 20px 24px !important;
+  border-radius: 14px;
+  margin-bottom: 0.5rem !important;
+  box-shadow: 0 4px 24px rgba(21, 101, 192, 0.18), 0 1px 3px rgba(0,0,0,0.08);
+  position: relative;
+  overflow: hidden;
+}
+h1::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 180px; height: 100%;
+  background: linear-gradient(135deg, transparent, rgba(232, 169, 59, 0.12));
+  pointer-events: none;
 }
 
 /* Caption / subtitle */
 .stCaption p, [data-testid="stCaptionContainer"] {
-    color: #607D8B !important;
-    font-size: 0.9rem !important;
+  color: #546E7A !important;
+  font-size: 0.9rem !important;
+  line-height: 1.5;
 }
 
-/* Section headers (① ② ③ ④) — light blue background bar */
+/* Section headers (① ② ③ ④) — refined bar with amber left accent */
 h2 {
-    background: linear-gradient(90deg, #E3F2FD 0%, #F0F8FF 100%);
-    color: #0D47A1 !important;
-    font-weight: 700 !important;
-    font-size: 1.35rem !important;
-    padding: 10px 16px !important;
-    border-radius: 8px;
-    border-left: 4px solid #1565C0;
-    margin-top: 0.8rem !important;
+  background: linear-gradient(90deg, #F0F5FB 0%, #FAFCFE 100%);
+  color: #0A1628 !important;
+  font-weight: 700 !important;
+  font-size: 1.3rem !important;
+  padding: 12px 18px !important;
+  border-radius: 10px;
+  border-left: 4px solid #E8A93B;
+  margin-top: 1.2rem !important;
+  margin-bottom: 0.8rem !important;
+  letter-spacing: -0.2px;
 }
 
-/* Sub-headers (####) — blue accent */
+/* Sub-headers (####) */
 h4 {
-    color: #1565C0 !important;
-    font-weight: 600 !important;
-    border-left: 3px solid #1565C0;
-    padding-left: 10px !important;
+  color: #0F2847 !important;
+  font-weight: 600 !important;
+  border-left: 3px solid #1565C0;
+  padding-left: 12px !important;
+  margin-top: 1rem !important;
 }
 
-/* Metric cards — subtle blue tint */
+/* Metric cards — subtle with refined shadow and hover lift */
 [data-testid="stMetric"], div[data-testid="stMetric"] {
-    background: #F0F7FF;
-    border-radius: 10px;
-    padding: 12px 16px !important;
-    border: 1px solid #BBDEFB;
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 14px 18px !important;
+  border: 1px solid #E0E8F0;
+  box-shadow: 0 1px 3px rgba(10, 22, 40, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-testid="stMetric"]:hover, div[data-testid="stMetric"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(21, 101, 192, 0.12), 0 2px 6px rgba(10, 22, 40, 0.06);
+  border-color: #1565C0;
 }
 
-/* Buttons — blue theme */
+/* Buttons — deep ink with amber accent border */
 .stButton > button, button[kind="primary"] {
-    background-color: #1565C0 !important;
-    color: white !important;
-    border-radius: 8px !important;
-    border: none !important;
-    font-weight: 600 !important;
+  background: linear-gradient(135deg, #0F2847 0%, #1565C0 100%) !important;
+  color: white !important;
+  border-radius: 10px !important;
+  border: none !important;
+  font-weight: 600 !important;
+  padding: 8px 20px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px rgba(21, 101, 192, 0.2) !important;
 }
 .stButton > button:hover, button[kind="primary"]:hover {
-    background-color: #0D47A1 !important;
-    color: white !important;
+  background: linear-gradient(135deg, #0A1628 0%, #0F2847 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(21, 101, 192, 0.28) !important;
 }
 
-/* Status banners — rounded */
+/* Status banners */
 [data-testid="stAlert"] {
-    border-radius: 8px !important;
+  border-radius: 10px !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* Main content — max width and top spacing */
 .block-container, [data-testid="stAppViewBlockContainer"] {
-    padding-top: 1.5rem !important;
-    max-width: 1200px;
+  padding-top: 1.5rem !important;
+  max-width: 1280px;
 }
 
 /* Sidebar header — no background */
 [data-testid="stSidebar"] h2 {
-    background: none;
-    border-left: none;
-    color: #1565C0 !important;
+  background: none;
+  border-left: none;
+  color: #0F2847 !important;
+}
+
+/* ── Per-meeting summary cards ──────────────────────────────────────── */
+.pm-card {
+  background: #FFFFFF;
+  border: 1px solid #E0E8F0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(10, 22, 40, 0.04);
+  transition: all 0.2s ease;
+}
+.pm-card:hover {
+  border-color: #1565C0;
+  box-shadow: 0 4px 14px rgba(21, 101, 192, 0.1);
+}
+.pm-meeting {
+  font-weight: 700;
+  color: #0A1628;
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pm-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #546E7A;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+.pm-changes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.pm-chip-up {
+  background: #E8F5E9;
+  color: #1B7A3E;
+  border: 1px solid #A5D6A7;
+}
+.pm-chip-down {
+  background: #FFEBEE;
+  color: #C0392B;
+  border: 1px solid #EF9A9A;
+}
+.pm-chip-hot {
+  background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+  color: #E65100 !important;
+  border: 1px solid #FFB74D;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(230, 81, 0, 0.15);
+  animation: pulse-hot 2s ease-in-out infinite;
+}
+@keyframes pulse-hot {
+  0%, 100% { box-shadow: 0 1px 4px rgba(230, 81, 0, 0.15); }
+  50% { box-shadow: 0 2px 10px rgba(230, 81, 0, 0.3); }
+}
+.pm-hot-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: linear-gradient(135deg, #E65100, #FF6F00);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -878,9 +1009,9 @@ if not path_df.empty:
         x=path_df["meeting_label"], y=path_df["midpoint"],
         mode="lines+markers+text",
         text=[f"{p:.0f}%" for p in path_df["probability"]],
-        textposition="top center", textfont=dict(size=11, color=text_colors),
-        line=dict(color="#1565C0", width=3),
-        marker=dict(size=marker_sizes, color=marker_colors), name="Most likely rate",
+        textposition="top center", textfont=dict(size=11, color=text_colors, family="ui-monospace, 'SF Mono', Menlo, monospace"),
+        line=dict(color="#1565C0", width=3.5, shape="spline", smoothing=0.3),
+        marker=dict(size=marker_sizes, color=marker_colors, line=dict(color="white", width=2)), name="Most likely rate",
         hovertemplate="<b>%{x}</b><br>Rate: %{customdata}<br>Probability: %{text}<extra></extra>",
         customdata=path_df["rate_range"],
     ))
@@ -893,11 +1024,35 @@ if not path_df.empty:
     fig.update_layout(
         yaxis=dict(
             title="Target rate range (%)",
+            title_font=dict(size=13, color="#546E7A"),
             tickmode="array",
             tickvals=tick_vals,
             ticktext=tick_text,
+            tickfont=dict(size=12, color="#37474F"),
+            gridcolor="#ECEFF1",
+            gridwidth=1,
+            zeroline=False,
         ),
-        xaxis_title="FOMC meeting", height=400, showlegend=False, hovermode="x unified",
+        xaxis=dict(
+            title="FOMC meeting",
+            title_font=dict(size=13, color="#546E7A"),
+            tickfont=dict(size=12, color="#37474F"),
+            gridcolor="#ECEFF1",
+            gridwidth=1,
+        ),
+        height=440,
+        showlegend=False,
+        hovermode="x unified",
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        margin=dict(l=20, r=20, t=20, b=20),
+        hoverlabel=dict(
+            bgcolor="#0A1628",
+            font_size=13,
+            font_color="white",
+            bordercolor="#1565C0",
+            borderwidth=1,
+        ),
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -1036,13 +1191,54 @@ if len(meeting_options) > 0:
                 "horizon": "",
             },
             color_discrete_map={
-                "1 Month Ago": "#90A4AE",
-                "1 Week Ago": "#42A5F5",
-                "1 Day Ago": "#1565C0",
-                "Current": "#0D47A1",
+                "1 Month Ago": "#B0BEC5",
+                "1 Week Ago": "#64B5F6",
+                "1 Day Ago": "#1976D2",
+                "Current": "#0A1628",
             },
         )
-        fig3.update_layout(height=450, hovermode="x unified")
+        fig3.update_layout(
+            height=460,
+            hovermode="x unified",
+            plot_bgcolor="white",
+            paper_bgcolor="white",
+            bargap=0.25,
+            bargroupgap=0.08,
+            margin=dict(l=20, r=20, t=20, b=20),
+            xaxis=dict(
+                title="Target rate range",
+                title_font=dict(size=13, color="#546E7A"),
+                tickfont=dict(size=12, color="#37474F"),
+                gridcolor="#ECEFF1",
+                gridwidth=1,
+            ),
+            yaxis=dict(
+                title="Probability (%)",
+                title_font=dict(size=13, color="#546E7A"),
+                tickfont=dict(size=12, color="#37474F"),
+                gridcolor="#ECEFF1",
+                gridwidth=1,
+                zeroline=False,
+            ),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1,
+                font=dict(size=12, color="#37474F"),
+                bgcolor="rgba(255,255,255,0.9)",
+                bordercolor="#E0E8F0",
+                borderwidth=1,
+            ),
+            hoverlabel=dict(
+                bgcolor="#0A1628",
+                font_size=13,
+                font_color="white",
+                bordercolor="#1565C0",
+                borderwidth=1,
+            ),
+        )
         st.plotly_chart(fig3, use_container_width=True)
 
         # Summary table
@@ -1145,32 +1341,72 @@ if not upcoming_dedup.empty:
             use_container_width=True,
         )
 
-        # Also show compact per-meeting summary if there are many rows
+        # Per-meeting summary cards (sorted chronologically, colored by direction, hot badge for >=15%)
         if len(alert_df) > 0:
-            summary_rows = []
-            for md, g in alert_df.groupby("meeting"):
-                d_parts = []
-                w_parts = []
+            st.markdown("#### Per-meeting summary")
+            st.caption("Colored chips show each significant change. Green = up, red = down. 🔥 = change ≥ 15%.")
+
+            def _chip_html(range_name, delta_value):
+                """Render a single change chip with appropriate color and hot badge."""
+                if delta_value is None:
+                    return ""
+                direction = "up" if delta_value >= 0 else "down"
+                is_hot = abs(delta_value) >= 15
+                sign = "+" if delta_value >= 0 else ""
+                label = f"{range_name} {sign}{delta_value:.1f}%"
+                hot_class = " pm-chip-hot" if is_hot else ""
+                dir_class = f"pm-chip-{direction}"
+                hot_badge = '<span class="pm-hot-badge">🔥 15%+</span>' if is_hot else ''
+                return f'<span class="pm-chip {dir_class}{hot_class}">{label} {hot_badge}</span>'
+
+            # Sort meetings chronologically by meeting_date
+            sorted_meetings = sorted(
+                alert_df["meeting_date"].unique()
+            )
+
+            for md in sorted_meetings:
+                g = alert_df[alert_df["meeting_date"] == md]
+                if g.empty:
+                    continue
+                meeting_label = g["meeting"].iloc[0]
+
+                d_chips = []
+                w_chips = []
+                has_hot = False
                 for _, r in g.iterrows():
                     if r["1d_delta"] is not None and abs(r["1d_delta"]) >= 5:
-                        d_parts.append(f"{r['range']} {r['1d_delta']:+.1f}%")
+                        d_chips.append(_chip_html(r["range"], r["1d_delta"]))
+                        if abs(r["1d_delta"]) >= 15:
+                            has_hot = True
                     if r["1w_delta"] is not None and abs(r["1w_delta"]) >= 5:
-                        w_parts.append(f"{r['range']} {r['1w_delta']:+.1f}%")
-                summary_rows.append({
-                    "meeting": md,
-                    "1 day ago": "; ".join(d_parts) if d_parts else "—",
-                    "1 week ago": "; ".join(w_parts) if w_parts else "—",
-                })
-            if summary_rows:
-                st.markdown("**Per-meeting summary**")
-                for row in summary_rows:
-                    d_txt = row["1 day ago"]
-                    w_txt = row["1 week ago"]
-                    st.markdown(
-                        f"- **{row['meeting']}**  \n"
-                        f"&nbsp;&nbsp;&nbsp;&nbsp;1 day: {d_txt}  \n"
-                        f"&nbsp;&nbsp;&nbsp;&nbsp;1 week: {w_txt}"
-                    )
+                        w_chips.append(_chip_html(r["range"], r["1w_delta"]))
+                        if abs(r["1w_delta"]) >= 15:
+                            has_hot = True
+
+                hot_notice = '<span class="pm-hot-badge">🔥 SIGNIFICANT</span>' if has_hot else ''
+
+                d_html = (
+                    '<div class="pm-changes">' + "".join(d_chips) + '</div>'
+                    if d_chips else '<span style="color:#90A4AE; font-size:0.85rem;">—</span>'
+                )
+                w_html = (
+                    '<div class="pm-changes">' + "".join(w_chips) + '</div>'
+                    if w_chips else '<span style="color:#90A4AE; font-size:0.85rem;">—</span>'
+                )
+
+                card_html = f"""
+                <div class="pm-card">
+                  <div class="pm-meeting">
+                    {meeting_label}
+                    {hot_notice}
+                  </div>
+                  <div class="pm-label">vs 1 Day Ago</div>
+                  {d_html}
+                  <div class="pm-label">vs 1 Week Ago</div>
+                  {w_html}
+                </div>
+                """
+                st.markdown(card_html, unsafe_allow_html=True)
     else:
         st.success("No significant changes (|Δ| < 5%) vs 1 day ago or 1 week ago. Market stable.")
 else:
