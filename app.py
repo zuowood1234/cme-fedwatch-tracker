@@ -1055,7 +1055,6 @@ if not path_df.empty:
             font_size=13,
             font_color="white",
             bordercolor="#1565C0",
-            borderwidth=1,
         ),
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -1244,7 +1243,6 @@ if len(meeting_options) > 0:
                 font_size=13,
                 font_color="white",
                 bordercolor="#1565C0",
-                borderwidth=1,
             ),
         )
         st.plotly_chart(fig3, use_container_width=True)
