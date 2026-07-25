@@ -1232,14 +1232,14 @@ if not upcoming_dedup.empty:
 
                 hot_badge = '<span class="pm-badge-hot">🔥 HOT</span>' if has_hot else ''
 
-                d_html = (
-                    '<div class="pm-chips">' + "".join(d_chips) + '</div>'
-                    if d_chips else '<span class="pm-empty">\u2014</span>'
-                )
-                w_html = (
-                    '<div class="pm-chips">' + "".join(w_chips) + '</div>'
-                    if w_chips else '<span class="pm-empty">\u2014</span>'
-                )
+                # Only show sections that have alerts
+                sections = ""
+                if d_chips:
+                    sections += '                  <div class="pm-label">vs 1 Day Ago</div>\n'
+                    sections += '                  <div class="pm-chips">' + "".join(d_chips) + '</div>\n'
+                if w_chips:
+                    sections += '                  <div class="pm-label">vs 1 Week Ago</div>\n'
+                    sections += '                  <div class="pm-chips">' + "".join(w_chips) + '</div>\n'
 
                 card_html = (
                     '\n                <div class="pm-card">\n'
@@ -1247,10 +1247,7 @@ if not upcoming_dedup.empty:
                     f'                    {meeting_label}\n'
                     f'                    {hot_badge}\n'
                     '                  </div>\n'
-                    '                  <div class="pm-label">vs 1 Day Ago</div>\n'
-                    f'                  {d_html}\n'
-                    '                  <div class="pm-label">vs 1 Week Ago</div>\n'
-                    f'                  {w_html}\n'
+                    f'{sections}'
                     '                </div>'
                 )
                 st.markdown(card_html, unsafe_allow_html=True)
