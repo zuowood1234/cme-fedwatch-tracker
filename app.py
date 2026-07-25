@@ -1023,8 +1023,10 @@ if not path_df.empty:
 
     fig.update_layout(
         yaxis=dict(
-            title="Target rate range (%)",
-            title_font=dict(size=13, color="#546E7A"),
+            title=dict(
+                text="Target rate range (%)",
+                font=dict(size=13, color="#546E7A"),
+            ),
             tickmode="array",
             tickvals=tick_vals,
             ticktext=tick_text,
@@ -1034,8 +1036,10 @@ if not path_df.empty:
             zeroline=False,
         ),
         xaxis=dict(
-            title="FOMC meeting",
-            title_font=dict(size=13, color="#546E7A"),
+            title=dict(
+                text="FOMC meeting",
+                font=dict(size=13, color="#546E7A"),
+            ),
             tickfont=dict(size=12, color="#37474F"),
             gridcolor="#ECEFF1",
             gridwidth=1,
@@ -1206,15 +1210,19 @@ if len(meeting_options) > 0:
             bargroupgap=0.08,
             margin=dict(l=20, r=20, t=20, b=20),
             xaxis=dict(
-                title="Target rate range",
-                title_font=dict(size=13, color="#546E7A"),
+                title=dict(
+                    text="Target rate range",
+                    font=dict(size=13, color="#546E7A"),
+                ),
                 tickfont=dict(size=12, color="#37474F"),
                 gridcolor="#ECEFF1",
                 gridwidth=1,
             ),
             yaxis=dict(
-                title="Probability (%)",
-                title_font=dict(size=13, color="#546E7A"),
+                title=dict(
+                    text="Probability (%)",
+                    font=dict(size=13, color="#546E7A"),
+                ),
                 tickfont=dict(size=12, color="#37474F"),
                 gridcolor="#ECEFF1",
                 gridwidth=1,
