@@ -253,27 +253,46 @@ def build_daily_summary(data_dir):
         lines.append("No rate-path changes vs 1 Day Ago. The median-implied target rate is stable across all meetings.")
     lines.append("")
 
-    # Probability alerts
+    # Per-meeting summary (matching the dashboard's per-meeting summary format)
     alerts = build_prob_alerts(df)
     if alerts:
-        lines.append("#### ⚠️ 概率显著变动 (|Δ| ≥ 5%)")
-        # Group alerts by meeting for per-meeting summary
+        lines.append("#### Per-meeting summary")
+        # Group alerts by meeting
         by_meeting = {}
         for a in alerts:
             by_meeting.setdefault(a["meeting"], []).append(a)
-        for meeting, items in by_meeting.items():
+        for meeting in sorted(by_meeting.keys()):
+            items = by_meeting[meeting]
+            d1_items = [a for a in items if a["d1"] is not None and abs(a["d1"]) >= 5]
+            w1_items = [a for a in items if a["w1"] is not None and abs(a["w1"]) >= 5]
+
+            has_hot = any(
+                (a["d1"] is not None and abs(a["d1"]) >= 15) or
+                (a["w1"] is not None and abs(a["w1"]) >= 15)
+                for a in items
+            )
+            hot_label = " 🔥 HOT" if has_hot else ""
+
             lines.append("")
-            lines.append(f"**{meeting}**")
-            for a in items:
-                parts = [f"- `{a['range']}`: 现在 {a['now']:.1f}%"]
-                if a["d1"] is not None:
-                    parts.append(f"vs 1天前 {a['d1']:+.1f}%")
-                if a["w1"] is not None:
-                    parts.append(f"vs 1周前 {a['w1']:+.1f}%")
-                lines.append(" | ".join(parts))
+            lines.append(f"**{meeting}**{hot_label}")
+
+            def _chip_text(range_name, delta_value):
+                sign = "+" if delta_value >= 0 else ""
+                emoji = "🟢" if delta_value >= 0 else "🔴"
+                hot = " 🔥" if abs(delta_value) >= 15 else ""
+                return f"{emoji} {range_name} {sign}{delta_value:.1f}%{hot}"
+
+            if d1_items:
+                lines.append("  vs 1 Day Ago:")
+                for a in d1_items:
+                    lines.append(f"    • {_chip_text(a['range'], a['d1'])}")
+            if w1_items:
+                lines.append("  vs 1 Week Ago:")
+                for a in w1_items:
+                    lines.append(f"    • {_chip_text(a['range'], a['w1'])}")
     else:
         lines.append("#### ✅ 概率变动平稳")
-        lines.append("没有利率区间的概率出现 ≥ 5% 的显著变化。")
+        lines.append("No significant changes (|Δ| < 5%) vs 1 day ago or 1 week ago. Market stable.")
     lines.append("")
 
     lines.append(f"[查看完整仪表盘](https://zuowood1234-cme-fedwatch-tracker.streamlit.app)")
