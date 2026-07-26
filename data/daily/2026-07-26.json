@@ -1,6 +1,6 @@
 {
   "snapshot_date": "2026-07-26",
-  "scrape_time": "2026-07-26T04:50:00.842629+00:00",
+  "scrape_time": "2026-07-26T05:10:56.455850+00:00",
   "source_url": "https://www.cmegroup.cn/fed-watch/",
   "num_meetings": 10,
   "meetings": [
@@ -22,14 +22,14 @@
           "now": 65.8,
           "day1": 62.6,
           "week1": 87.2,
-          "month1": 67.9
+          "month1": 70.1
         },
         {
           "range": "375-400",
           "now": 34.2,
           "day1": 37.4,
           "week1": 12.8,
-          "month1": 32.1
+          "month1": 29.9
         }
       ]
     },
@@ -51,21 +51,21 @@
           "now": 17.8,
           "day1": 18,
           "week1": 42.2,
-          "month1": 36.8
+          "month1": 40.6
         },
         {
           "range": "375-400",
           "now": 57.3,
           "day1": 55.3,
           "week1": 51.2,
-          "month1": 48.5
+          "month1": 46.8
         },
         {
           "range": "400-425",
           "now": 25,
           "day1": 26.6,
           "week1": 6.6,
-          "month1": 14.7
+          "month1": 12.6
         }
       ]
     },
@@ -87,28 +87,28 @@
           "now": 12.3,
           "day1": 12.8,
           "week1": 31.9,
-          "month1": 28.6
+          "month1": 32.5
         },
         {
           "range": "375-400",
           "now": 45,
           "day1": 44.6,
           "week1": 49,
-          "month1": 45.9
+          "month1": 45.6
         },
         {
           "range": "400-425",
           "now": 35,
           "day1": 34.9,
           "week1": 17.5,
-          "month1": 22.2
+          "month1": 19.4
         },
         {
           "range": "425-450",
           "now": 7.7,
           "day1": 7.7,
           "week1": 1.6,
-          "month1": 3.3
+          "month1": 2.5
         }
       ]
     },
@@ -130,35 +130,35 @@
           "now": 7.2,
           "day1": 7.7,
           "week1": 21.1,
-          "month1": 19.2
+          "month1": 23
         },
         {
           "range": "375-400",
           "now": 31.5,
           "day1": 32,
           "week1": 43.2,
-          "month1": 40.2
+          "month1": 41.8
         },
         {
           "range": "400-425",
           "now": 39.1,
           "day1": 38.7,
           "week1": 28.2,
-          "month1": 30
+          "month1": 27
         },
         {
           "range": "425-450",
           "now": 19,
           "day1": 18.5,
           "week1": 7,
-          "month1": 9.5
+          "month1": 7.4
         },
         {
           "range": "450-475",
           "now": 3.2,
           "day1": 3,
           "week1": 0.5,
-          "month1": 1.1
+          "month1": 0.7
         }
       ]
     },
@@ -180,35 +180,35 @@
           "now": 5.7,
           "day1": 6.3,
           "week1": 17.7,
-          "month1": 17.5
+          "month1": 21.5
         },
         {
           "range": "375-400",
           "now": 26.5,
           "day1": 27.6,
           "week1": 39.6,
-          "month1": 38.3
+          "month1": 40.5
         },
         {
           "range": "400-425",
           "now": 37.5,
           "day1": 37.5,
           "week1": 30.6,
-          "month1": 30.9
+          "month1": 28
         },
         {
           "range": "425-450",
           "now": 23.2,
           "day1": 22.2,
           "week1": 10.4,
-          "month1": 11.4
+          "month1": 8.8
         },
         {
           "range": "450-475",
           "now": 6.5,
           "day1": 5.9,
           "week1": 1.6,
-          "month1": 1.8
+          "month1": 1.2
         },
         {
           "range": "475-500",
@@ -237,42 +237,42 @@
           "now": 4.2,
           "day1": 4.7,
           "week1": 14.2,
-          "month1": 15.4
+          "month1": 18.8
         },
         {
           "range": "375-400",
           "now": 20.8,
           "day1": 22.2,
           "week1": 35.3,
-          "month1": 35.8
+          "month1": 38.2
         },
         {
           "range": "400-425",
           "now": 34.5,
           "day1": 35,
           "week1": 32.4,
-          "month1": 31.8
+          "month1": 29.6
         },
         {
           "range": "425-450",
           "now": 27.1,
           "day1": 26.1,
           "week1": 14.4,
-          "month1": 13.7
+          "month1": 11.1
         },
         {
           "range": "450-475",
           "now": 11,
           "day1": 10,
           "week1": 3.3,
-          "month1": 3
+          "month1": 2.1
         },
         {
           "range": "475-500",
           "now": 2.2,
           "day1": 1.9,
           "week1": 0.4,
-          "month1": 0.3
+          "month1": 0.2
         },
         {
           "range": "500-525",
@@ -301,49 +301,49 @@
           "now": 0,
           "day1": 0,
           "week1": 0,
-          "month1": 0.3
+          "month1": 0.4
         },
         {
           "range": "350-375 (Current)",
           "now": 3.6,
           "day1": 4.2,
           "week1": 13.3,
-          "month1": 15.8
+          "month1": 19.3
         },
         {
           "range": "375-400",
           "now": 18.7,
           "day1": 20.3,
           "week1": 34,
-          "month1": 35.7
+          "month1": 38
         },
         {
           "range": "400-425",
           "now": 32.8,
           "day1": 33.6,
           "week1": 32.6,
-          "month1": 31.4
+          "month1": 29.2
         },
         {
           "range": "425-450",
           "now": 28,
           "day1": 27,
           "week1": 15.5,
-          "month1": 13.5
+          "month1": 10.9
         },
         {
           "range": "450-475",
           "now": 13.1,
           "day1": 11.7,
           "week1": 4,
-          "month1": 2.9
+          "month1": 2.1
         },
         {
           "range": "475-500",
           "now": 3.4,
           "day1": 2.8,
           "week1": 0.6,
-          "month1": 0.3
+          "month1": 0.2
         },
         {
           "range": "500-525",
@@ -372,49 +372,49 @@
           "now": 0,
           "day1": 0.1,
           "week1": 0.2,
-          "month1": 2
+          "month1": 2.5
         },
         {
           "range": "350-375 (Current)",
           "now": 3.5,
           "day1": 4.5,
           "week1": 13.6,
-          "month1": 18
+          "month1": 21.3
         },
         {
           "range": "375-400",
           "now": 18.3,
           "day1": 20.5,
           "week1": 34,
-          "month1": 35.2
+          "month1": 37
         },
         {
           "range": "400-425",
           "now": 32.5,
           "day1": 33.5,
           "week1": 32.3,
-          "month1": 29.5
+          "month1": 27.2
         },
         {
           "range": "425-450",
           "now": 28.1,
           "day1": 26.8,
           "week1": 15.4,
-          "month1": 12.3
+          "month1": 10
         },
         {
           "range": "450-475",
           "now": 13.4,
           "day1": 11.6,
           "week1": 4,
-          "month1": 2.6
+          "month1": 1.9
         },
         {
           "range": "475-500",
           "now": 3.6,
           "day1": 2.7,
           "week1": 0.6,
-          "month1": 0.3
+          "month1": 0.2
         },
         {
           "range": "500-525",
@@ -450,49 +450,49 @@
           "now": 0.1,
           "day1": 0.3,
           "week1": 1.1,
-          "month1": 3.8
+          "month1": 4.6
         },
         {
           "range": "350-375 (Current)",
           "now": 3.9,
           "day1": 5.2,
           "week1": 14.9,
-          "month1": 19.9
+          "month1": 23
         },
         {
           "range": "375-400",
           "now": 18.7,
           "day1": 21.1,
           "week1": 33.9,
-          "month1": 34.6
+          "month1": 35.9
         },
         {
           "range": "400-425",
           "now": 32.4,
           "day1": 33.2,
           "week1": 31.2,
-          "month1": 27.6
+          "month1": 25.3
         },
         {
           "range": "425-450",
           "now": 27.8,
           "day1": 26.1,
           "week1": 14.6,
-          "month1": 11.3
+          "month1": 9.1
         },
         {
           "range": "450-475",
           "now": 13.2,
           "day1": 11.2,
           "week1": 3.7,
-          "month1": 2.4
+          "month1": 1.7
         },
         {
           "range": "475-500",
           "now": 3.5,
           "day1": 2.6,
           "week1": 0.5,
-          "month1": 0.2
+          "month1": 0.1
         },
         {
           "range": "500-525",
