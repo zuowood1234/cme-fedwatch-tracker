@@ -257,11 +257,23 @@ def build_daily_summary(data_dir):
     alerts = build_prob_alerts(df)
     if alerts:
         lines.append("#### Per-meeting summary")
-        # Group alerts by meeting
+        # Group alerts by meeting label, sort by actual meeting date
         by_meeting = {}
         for a in alerts:
             by_meeting.setdefault(a["meeting"], []).append(a)
-        for meeting in sorted(by_meeting.keys()):
+
+        def _parse_meeting_date(label):
+            return datetime.strptime(label, "%b %d, %Y").date()
+
+        sorted_meetings = sorted(by_meeting.keys(), key=_parse_meeting_date)
+
+        def _chip_text(range_name, delta_value):
+            sign = "+" if delta_value >= 0 else ""
+            emoji = "🟢" if delta_value >= 0 else "🔴"
+            hot = " 🔥" if abs(delta_value) >= 15 else ""
+            return f"{emoji} {range_name} {sign}{delta_value:.1f}%{hot}"
+
+        for meeting in sorted_meetings:
             items = by_meeting[meeting]
             d1_items = [a for a in items if a["d1"] is not None and abs(a["d1"]) >= 5]
             w1_items = [a for a in items if a["w1"] is not None and abs(a["w1"]) >= 5]
@@ -275,21 +287,19 @@ def build_daily_summary(data_dir):
 
             lines.append("")
             lines.append(f"**{meeting}**{hot_label}")
-
-            def _chip_text(range_name, delta_value):
-                sign = "+" if delta_value >= 0 else ""
-                emoji = "🟢" if delta_value >= 0 else "🔴"
-                hot = " 🔥" if abs(delta_value) >= 15 else ""
-                return f"{emoji} {range_name} {sign}{delta_value:.1f}%{hot}"
+            lines.append("")
 
             if d1_items:
-                lines.append("  vs 1 Day Ago:")
+                lines.append("*vs 1 Day Ago*")
                 for a in d1_items:
-                    lines.append(f"    • {_chip_text(a['range'], a['d1'])}")
+                    lines.append(f"- {_chip_text(a['range'], a['d1'])}")
+                lines.append("")
+
             if w1_items:
-                lines.append("  vs 1 Week Ago:")
+                lines.append("*vs 1 Week Ago*")
                 for a in w1_items:
-                    lines.append(f"    • {_chip_text(a['range'], a['w1'])}")
+                    lines.append(f"- {_chip_text(a['range'], a['w1'])}")
+                lines.append("")
     else:
         lines.append("#### ✅ 概率变动平稳")
         lines.append("No significant changes (|Δ| < 5%) vs 1 day ago or 1 week ago. Market stable.")
