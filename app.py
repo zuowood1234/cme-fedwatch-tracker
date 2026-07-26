@@ -966,19 +966,6 @@ if not path_df.empty:
     else:
         st.info("No rate-path changes vs 1 Day Ago. The median-implied target rate is stable across all meetings.")
 
-    cols = st.columns(min(len(path_df), 6))
-    for i, row in path_df.iterrows():
-        with cols[i % len(cols)]:
-            delta_color = "normal"
-            prev_rng = row.get("rate_range_prev")
-            if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
-                delta_color = "off"  # Streamlit uses "off" for red-ish, "normal" for default
-            st.metric(
-                label=row["meeting_label"],
-                value=row["rate_range"],
-                delta=f"{row['probability']:.1f}%",
-                delta_color=delta_color,
-            )
 
 
 # ════════════════════════════════════════════════════════════════════════════
