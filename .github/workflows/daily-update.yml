@@ -52,3 +52,14 @@ jobs:
             git commit -m "chore: auto-update FedWatch data $(date -u +'%Y-%m-%d')"
             git push
           fi
+
+      - name: Push daily summary via ServerChan
+        if: always()
+        env:
+          SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+        run: |
+          if [ -n "$SERVERCHAN_SENDKEY" ]; then
+            python serverchan.py ./data
+          else
+            echo "SERVERCHAN_SENDKEY not configured — skipping push."
+          fi
