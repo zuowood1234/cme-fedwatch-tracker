@@ -250,19 +250,27 @@ def build_daily_summary(data_dir):
                 )
     else:
         lines.append("#### ✅ 利率预期路径稳定")
-        lines.append("所有会议的 median-implied 目标利率区间与 CME 1 Day Ago 相比无变化。")
+        lines.append("No rate-path changes vs 1 Day Ago. The median-implied target rate is stable across all meetings.")
     lines.append("")
 
     # Probability alerts
     alerts = build_prob_alerts(df)
     if alerts:
         lines.append("#### ⚠️ 概率显著变动 (|Δ| ≥ 5%)")
-        lines.append("| 会议 | 区间 | 当前 | 1天前 | 1周前 |")
-        lines.append("| --- | --- | --- | --- | --- |")
+        # Group alerts by meeting for per-meeting summary
+        by_meeting = {}
         for a in alerts:
-            d1 = f"{a['d1']:+.1f}%" if a["d1"] is not None else "—"
-            w1 = f"{a['w1']:+.1f}%" if a["w1"] is not None else "—"
-            lines.append(f"| {a['meeting']} | {a['range']} | {a['now']:.1f}% | {d1} | {w1} |")
+            by_meeting.setdefault(a["meeting"], []).append(a)
+        for meeting, items in by_meeting.items():
+            lines.append("")
+            lines.append(f"**{meeting}**")
+            for a in items:
+                parts = [f"- `{a['range']}`: 现在 {a['now']:.1f}%"]
+                if a["d1"] is not None:
+                    parts.append(f"vs 1天前 {a['d1']:+.1f}%")
+                if a["w1"] is not None:
+                    parts.append(f"vs 1周前 {a['w1']:+.1f}%")
+                lines.append(" | ".join(parts))
     else:
         lines.append("#### ✅ 概率变动平稳")
         lines.append("没有利率区间的概率出现 ≥ 5% 的显著变化。")
