@@ -2,8 +2,8 @@ name: Daily CME FedWatch Update
 
 on:
   schedule:
-    # Run at 22:50 UTC = 06:50 CST next day; with GitHub Actions ~3h delay → ~09:50 CST
-    - cron: "50 22 * * *"
+    # Run at 00:50 UTC = 08:50 CST; with GitHub Actions 1-3h delay → ~09:50-11:50 CST
+    - cron: "50 0 * * *"
   workflow_dispatch:  # Allow manual trigger
 
 permissions:
