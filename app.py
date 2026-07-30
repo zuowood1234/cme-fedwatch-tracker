@@ -801,42 +801,18 @@ def _range_midpoint(rng):
 
 def _most_likely_range_by_median(sub, prob_col="prob_now"):
     """
-    Pick the median-implied rate range: sort ranges from high to low and
-    accumulate probabilities until the cumulative sum reaches ≥ 50%.
-    prob_col: which probability column to use ('prob_now', 'prob_1d', etc.)
-    Returns (rate_range, cumulative_probability_at_threshold, rows_used).
+    Pick the most-likely rate range: the range with the highest probability
+    in the given column. Simple and intuitive — matches the tallest bar on
+    CME FedWatch. Returns (rate_range, probability, rows_used).
     Returns (None, 0, sub) if the probability column has no valid data.
-
-    Special case: if there are only 2 rate ranges, return the higher-prob range
-    with its own prob (not cumulative — cumulative is meaningless when there
-    are only 2 options).
     """
     if sub.empty:
         return None, 0, sub
     dedup = sub.drop_duplicates("rate_range").copy()
     if prob_col not in dedup.columns or dedup[prob_col].fillna(0).sum() == 0:
         return None, 0, sub
-
-    # Special case: only 2 rate ranges → pick higher-prob range directly
-    if len(dedup) == 2:
-        best = dedup.loc[dedup[prob_col].idxmax()]
-        return best["rate_range"], best[prob_col], dedup
-
-    dedup["_lo"] = dedup["rate_range"].apply(lambda x: _range_bounds(x)[0])
-    dedup = dedup.sort_values("_lo", ascending=False).reset_index(drop=True)  # high -> low
-    cum = 0.0
-    chosen_idx = None
-    chosen_cum = 0.0
-    for i, row in dedup.iterrows():
-        cum += row[prob_col]
-        if cum >= 50 and chosen_idx is None:
-            chosen_idx = i
-            chosen_cum = cum
-    if chosen_idx is None:
-        chosen_idx = len(dedup) - 1
-        chosen_cum = cum
-    chosen = dedup.iloc[chosen_idx]
-    return chosen["rate_range"], chosen_cum, dedup.iloc[: chosen_idx + 1]
+    best = dedup.loc[dedup[prob_col].idxmax()]
+    return best["rate_range"], best[prob_col], dedup
 
 
 def compute_rate_path(df_snapshot, meetings_sorted, prob_col="prob_now"):
@@ -876,25 +852,18 @@ if not path_df.empty and not prev_path_df.empty:
         if pd.notna(prev_rng) and prev_rng != row["rate_range"]:
             curr_rng = row["rate_range"]
             md_sub = upcoming[upcoming["meeting_date"] == row["meeting_date"]].drop_duplicates("rate_range")
-            # Cumulative prob_now (today) and prob_1d (yesterday) for curr_rng and above
-            md_sub_sorted = md_sub.copy()
-            md_sub_sorted["_lo"] = md_sub_sorted["rate_range"].apply(lambda x: _range_bounds(x)[0])
-            md_sub_sorted = md_sub_sorted.sort_values("_lo", ascending=False)
-            cum_now = 0.0
-            cum_1d = 0.0
-            for _, r in md_sub_sorted.iterrows():
-                cum_now += r["prob_now"]
-                if "prob_1d" in md_sub_sorted.columns:
-                    cum_1d += r["prob_1d"] if pd.notna(r["prob_1d"]) else 0
-                if r["rate_range"] == curr_rng:
-                    break
+            curr_row = md_sub[md_sub["rate_range"] == curr_rng]
+            prob_now = float(curr_row["prob_now"].iloc[0]) if not curr_row.empty else 0.0
+            prob_1d = 0.0
+            if "prob_1d" in curr_row.columns and not curr_row.empty and pd.notna(curr_row["prob_1d"].iloc[0]):
+                prob_1d = float(curr_row["prob_1d"].iloc[0])
             path_changes.append({
                 "meeting_date": row["meeting_date"],
                 "meeting_label": row["meeting_label"],
                 "prev_rate": prev_rng,
                 "curr_rate": curr_rng,
-                "cum_now": cum_now,
-                "cum_1d": cum_1d,
+                "cum_now": prob_now,
+                "cum_1d": prob_1d,
             })
     path_df = merged_path  # keep merged data for plotting
 
@@ -952,7 +921,7 @@ if not path_df.empty:
     # Show textual summary of rate-path changes
     if path_changes:
         st.markdown("#### ⚠️ Rate path changed vs 1 Day Ago (CME)")
-        st.caption("*Cumulative probability = sum of this range and all higher ranges. ≥50% = median-implied most likely rate.*")
+        st.caption("*Most-likely rate = the range with the highest probability. Probability shown is that range's own probability.*")
         for ch in sorted(path_changes, key=lambda x: x["meeting_date"]):
             curr_rng = ch["curr_rate"]
             cum_now = ch["cum_now"]
@@ -961,7 +930,7 @@ if not path_df.empty:
             delta_str = f"+{delta:.1f}%" if delta > 0 else f"{delta:.1f}%"
             st.markdown(
                 f"- **{ch['meeting_label']}**: `{ch['prev_rate']}` → `{curr_rng}` "
-                f"| `{curr_rng}` cumulative: {cum_1d:.1f}% → **{cum_now:.1f}%** ({delta_str})"
+                f"| `{curr_rng}` probability: {cum_1d:.1f}% → **{cum_now:.1f}%** ({delta_str})"
             )
     else:
         st.info("No rate-path changes vs 1 Day Ago. The median-implied target rate is stable across all meetings.")

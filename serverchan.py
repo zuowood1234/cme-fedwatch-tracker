@@ -29,35 +29,15 @@ def _range_midpoint(rng):
 
 
 def _most_likely_range_by_median(sub, prob_col="prob_now"):
-    """Pick the median-implied rate range (cumulative probability >= 50%).
-    Returns (None, 0) if the probability column has no valid data.
-    Special case: with only 2 ranges, pick the higher-prob one directly (no cumulative)."""
+    """Pick the most-likely rate range: the range with the highest probability.
+    Returns (None, 0) if the probability column has no valid data."""
     if sub.empty:
         return None, 0
     dedup = sub.drop_duplicates("rate_range").copy()
     if prob_col not in dedup.columns or dedup[prob_col].fillna(0).sum() == 0:
         return None, 0
-
-    # Special case: only 2 rate ranges → pick higher-prob range directly
-    if len(dedup) == 2:
-        best = dedup.loc[dedup[prob_col].idxmax()]
-        return best["rate_range"], best[prob_col]
-
-    dedup["_lo"] = dedup["rate_range"].apply(lambda x: _range_bounds(x)[0])
-    dedup = dedup.sort_values("_lo", ascending=False).reset_index(drop=True)
-    cum = 0.0
-    chosen_idx = None
-    chosen_cum = 0.0
-    for i, row in dedup.iterrows():
-        cum += row[prob_col]
-        if cum >= 50 and chosen_idx is None:
-            chosen_idx = i
-            chosen_cum = cum
-    if chosen_idx is None:
-        chosen_idx = len(dedup) - 1
-        chosen_cum = cum
-    chosen = dedup.iloc[chosen_idx]
-    return chosen["rate_range"], chosen_cum
+    best = dedup.loc[dedup[prob_col].idxmax()]
+    return best["rate_range"], best[prob_col]
 
 
 def load_history(csv_path):
@@ -95,19 +75,15 @@ def compute_rate_path(df_snapshot, prob_col="prob_now"):
     return pd.DataFrame(rows)
 
 
-def _cumulative_prob_for_range(sub, target_rng, prob_col):
-    """Calculate cumulative probability for target_rng and above (high to low)."""
+def _prob_for_range(sub, target_rng, prob_col):
+    """Return the single probability for target_rng."""
     if sub.empty:
         return None
-    dedup = sub.drop_duplicates("rate_range").copy()
-    dedup["_lo"] = dedup["rate_range"].apply(lambda x: _range_bounds(x)[0])
-    dedup = dedup.sort_values("_lo", ascending=False).reset_index(drop=True)
-    cum = 0.0
-    for _, row in dedup.iterrows():
-        cum += row[prob_col]
-        if row["rate_range"] == target_rng:
-            return cum
-    return cum
+    row = sub[sub["rate_range"] == target_rng]
+    if row.empty:
+        return None
+    val = row[prob_col].iloc[0]
+    return float(val) if pd.notna(val) else None
 
 
 def build_rate_path_changes(df):
@@ -137,8 +113,8 @@ def build_rate_path_changes(df):
             curr_rng = row["rate_range"]
             sub = latest[latest["meeting_date"] == row["meeting_date"]].drop_duplicates("rate_range")
             # Cumulative probability for curr_rng: prob_now (today) and prob_1d (yesterday)
-            cum_now = _cumulative_prob_for_range(sub, curr_rng, "prob_now")
-            cum_1d = _cumulative_prob_for_range(sub, curr_rng, "prob_1d")
+            cum_now = _prob_for_range(sub, curr_rng, "prob_now")
+            cum_1d = _prob_for_range(sub, curr_rng, "prob_1d")
             changes.append({
                 "meeting_date": row["meeting_date"],
                 "meeting_label": row["meeting_date"].strftime("%b %d, %Y"),
@@ -231,7 +207,7 @@ def build_daily_summary(data_dir):
     path_changes = build_rate_path_changes(df)
     if path_changes:
         lines.append("#### 🔴 利率预期路径变化 (vs 1 Day Ago)")
-        lines.append("*累积概率 = 该区间及以上所有区间的概率之和，≥50% 即为 median-implied 最可能利率*")
+        lines.append("*最可能利率 = 概率最高的区间。显示的概率为该区间自身的概率。*")
         for ch in path_changes:
             curr_rng = ch["curr_rate"]
             cum_now = ch["cum_now"]
