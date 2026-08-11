@@ -1,0 +1,17 @@
+{
+  "name": "cme-fedwatch-cloudflare-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "dev": "wrangler dev --remote --test-scheduled",
+    "deploy": "wrangler deploy",
+    "logs": "wrangler tail"
+  },
+  "devDependencies": {
+    "@cloudflare/playwright": "^1.3.5",
+    "@cloudflare/workers-types": "^5.20260811.1",
+    "typescript": "^5.9.2",
+    "wrangler": "^4.120.1"
+  }
+}
