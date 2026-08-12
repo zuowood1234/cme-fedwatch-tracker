@@ -1,8 +1,9 @@
 name: Daily CME FedWatch Update
 
 on:
-  # Cloudflare Worker owns the daily 08:50 CST schedule.
-  # Keep this workflow only as a manual fallback.
+  # Cloudflare dispatches this workflow daily at 08:50 CST.
+  repository_dispatch:
+    types: [cloudflare-fedwatch-update]
   workflow_dispatch:
 
 permissions:
@@ -50,4 +51,15 @@ jobs:
           else
             git commit -m "chore: auto-update FedWatch data $(date -u +'%Y-%m-%d')"
             git push
+          fi
+
+      - name: Push daily summary via ServerChan
+        if: success()
+        env:
+          SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+        run: |
+          if [ -n "$SERVERCHAN_SENDKEY" ]; then
+            python serverchan.py ./data
+          else
+            echo "SERVERCHAN_SENDKEY not configured — skipping push."
           fi

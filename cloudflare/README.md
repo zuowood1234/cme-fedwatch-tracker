@@ -1,9 +1,9 @@
 # Cloudflare 08:50 FedWatch push
 
-This Worker runs every day at `00:50 UTC` (`08:50 Asia/Shanghai`), scrapes the
-CME FedWatch QuikStrike iframe with Cloudflare Browser Run, writes the daily JSON
-and history CSV to GitHub, and sends the result through ServerChan. A failed scrape is retried up to three times inside the same
-scheduled invocation, so successful runs produce only one notification.
+This Worker runs every day at `00:50 UTC` (`08:50 Asia/Shanghai`) and dispatches
+the repository's GitHub Actions scraper. GitHub Actions renders CME, writes the
+daily JSON and history CSV, and sends the result through ServerChan. Cloudflare
+provides the reliable schedule without consuming Browser Run time.
 
 ## Deploy
 

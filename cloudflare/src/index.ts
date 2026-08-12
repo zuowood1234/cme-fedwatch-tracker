@@ -225,6 +225,29 @@ async function githubRequest(env: Env, path: string, init: RequestInit = {}): Pr
   });
 }
 
+async function dispatchGitHubWorkflow(env: Env): Promise<void> {
+  if (!env.GITHUB_TOKEN) throw new Error("GITHUB_TOKEN is not configured");
+  const repository = env.GITHUB_REPOSITORY || "zuowood1234/cme-fedwatch-tracker";
+  const response = await fetch(`https://api.github.com/repos/${repository}/dispatches`, {
+    method: "POST",
+    headers: {
+      accept: "application/vnd.github+json",
+      authorization: `Bearer ${env.GITHUB_TOKEN}`,
+      "content-type": "application/json",
+      "user-agent": "cme-fedwatch-cloudflare-worker",
+      "x-github-api-version": "2022-11-28",
+    },
+    body: JSON.stringify({
+      event_type: "cloudflare-fedwatch-update",
+      client_payload: { triggered_at: new Date().toISOString() },
+    }),
+  });
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`GitHub dispatch failed: HTTP ${response.status} ${detail.slice(0, 300)}`);
+  }
+}
+
 async function getGitHubContent(env: Env, path: string): Promise<GitHubContent | null> {
   const response = await githubRequest(env, `${path}?ref=main`);
   if (response.status === 404) return null;
@@ -372,7 +395,7 @@ async function run(
 
 export default {
   async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
-    ctx.waitUntil(run(env, true, true).then(console.log));
+    ctx.waitUntil(dispatchGitHubWorkflow(env).then(() => console.log("GitHub workflow dispatched")));
   },
 
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -385,6 +408,10 @@ export default {
     }
 
     try {
+      if (url.searchParams.get("dispatch") === "1") {
+        await dispatchGitHubWorkflow(env);
+        return Response.json({ ok: true, dispatched: true });
+      }
       const shouldPush = url.searchParams.get("push") === "1";
       const shouldPersist = url.searchParams.get("persist") === "1";
       return Response.json(await run(env, shouldPush, shouldPersist, 1));
