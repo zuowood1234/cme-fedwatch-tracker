@@ -6,6 +6,7 @@ Used by the daily automation and can be run manually.
 import argparse
 import base64
 import os
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -53,37 +54,62 @@ def push_file(repo: str, token: str, git_path: str, local_path: str) -> bool:
     return True
 
 
+def git_push_data(data_dir: Path, today_str: str) -> bool:
+    """Fallback: push data files via git (uses locally configured git credentials)."""
+    try:
+        repo_root = Path(__file__).resolve().parent
+        cmds = [
+            ["git", "-C", str(repo_root), "add", "data/"],
+            ["git", "-C", str(repo_root), "commit", "-m",
+             f"Daily CME FedWatch update ({today_str}) [git fallback]"],
+            ["git", "-C", str(repo_root), "push"],
+        ]
+        for c in cmds:
+            r = subprocess.run(c, capture_output=True, text=True, timeout=60)
+            if r.returncode != 0:
+                print(f"git step failed: {' '.join(c)}\n{r.stderr.strip()}")
+                return False
+        print("Pushed data via git.")
+        return True
+    except Exception as e:
+        print(f"git fallback error: {e}")
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser(description="Push CME FedWatch data to GitHub")
     parser.add_argument("--repo", default="zuowood1234/cme-fedwatch-tracker", help="GitHub repo slug")
-    parser.add_argument("--token", default=os.environ.get("GITHUB_TOKEN"), help="GitHub PAT")
+    parser.add_argument("--token", default=os.environ.get("GITHUB_TOKEN"), help="GitHub PAT (optional)")
     parser.add_argument("--data-dir", default="./data", help="Local data directory")
     args = parser.parse_args()
 
-    if not args.token:
-        print("ERROR: GITHUB_TOKEN not provided")
-        sys.exit(1)
-
     data_dir = Path(args.data_dir)
-    files_to_push = []
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
+    files_to_push = []
     history_csv = data_dir / "fedwatch_history.csv"
     if history_csv.exists():
         files_to_push.append(("data/fedwatch_history.csv", history_csv))
-
-    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     daily_json = data_dir / "daily" / f"{today_str}.json"
     if daily_json.exists():
         files_to_push.append((f"data/daily/{today_str}.json", daily_json))
 
     if not files_to_push:
         print("No data files to push.")
-        sys.exit(0)
 
+    # Try GitHub Contents API first (needs a valid PAT)...
     ok = True
-    for git_path, local_path in files_to_push:
-        if not push_file(args.repo, args.token, git_path, local_path):
-            ok = False
+    if args.token:
+        for git_path, local_path in files_to_push:
+            if not push_file(args.repo, args.token, git_path, local_path):
+                ok = False
+    else:
+        ok = False
+
+    # ...fall back to git push if the API failed (e.g. expired PAT).
+    if not ok:
+        print("GitHub API push failed/unavailable; falling back to git push...")
+        ok = git_push_data(data_dir, today_str)
 
     # Send WeChat summary via ServerChan — independent of GitHub push result,
     # so a GitHub failure (e.g. expired PAT) does NOT block the WeChat alert.
