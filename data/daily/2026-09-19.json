@@ -1,11 +1,11 @@
 {
   "snapshot_date": "2026-09-19",
-  "scrape_time": "2026-09-19T06:16:44.120813+00:00",
+  "scrape_time": "2026-09-19T07:13:10.838784+00:00",
   "source_url": "https://www.cmegroup.cn/fed-watch/",
   "num_meetings": 10,
   "meetings": [
     {
-      "tab_label": "28 10月26",
+      "tab_label": "28 Oct26",
       "meeting_date": "2026-10-28",
       "contract": "ZQV6",
       "mid_price": "96.1050",
@@ -41,7 +41,7 @@
       ]
     },
     {
-      "tab_label": "9 12月26",
+      "tab_label": "9 Dec26",
       "meeting_date": "2026-12-09",
       "contract": "ZQZ6",
       "mid_price": "95.8350",
@@ -84,7 +84,7 @@
       ]
     },
     {
-      "tab_label": "27 1月27",
+      "tab_label": "27 Jan27",
       "meeting_date": "2027-01-27",
       "contract": "ZQF7",
       "mid_price": "95.7700",
@@ -134,7 +134,7 @@
       ]
     },
     {
-      "tab_label": "17 3月27",
+      "tab_label": "17 Mar27",
       "meeting_date": "2027-03-17",
       "contract": "ZQH7",
       "mid_price": "95.6000",
@@ -191,7 +191,7 @@
       ]
     },
     {
-      "tab_label": "28 4月27",
+      "tab_label": "28 Apr27",
       "meeting_date": "2027-04-28",
       "contract": "ZQJ7",
       "mid_price": "95.5100",
@@ -255,7 +255,7 @@
       ]
     },
     {
-      "tab_label": "9 6月27",
+      "tab_label": "9 Jun27",
       "meeting_date": "2027-06-09",
       "contract": "ZQM7",
       "mid_price": "95.3850",
@@ -326,7 +326,7 @@
       ]
     },
     {
-      "tab_label": "28 7月27",
+      "tab_label": "28 Jul27",
       "meeting_date": "2027-07-28",
       "contract": "ZQN7",
       "mid_price": "95.3550",
@@ -404,7 +404,7 @@
       ]
     },
     {
-      "tab_label": "15 9月27",
+      "tab_label": "15 Sep27",
       "meeting_date": "2027-09-15",
       "contract": "ZQU7",
       "mid_price": "95.3250",
@@ -482,7 +482,7 @@
       ]
     },
     {
-      "tab_label": "27 10月27",
+      "tab_label": "27 Oct27",
       "meeting_date": "2027-10-27",
       "contract": "ZQV7",
       "mid_price": "95.3200",
@@ -560,7 +560,7 @@
       ]
     },
     {
-      "tab_label": "8 12月27",
+      "tab_label": "8 Dec27",
       "meeting_date": "2027-12-08",
       "contract": "ZQZ7",
       "mid_price": "95.3500",
