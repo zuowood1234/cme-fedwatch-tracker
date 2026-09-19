@@ -1,7 +1,12 @@
 name: Daily CME FedWatch Update
 
 on:
-  # Cloudflare dispatches this workflow daily at 08:50 CST.
+  # Self-scheduled daily run at 09:50 CST (UTC 01:50).
+  # Added so the daily update no longer depends on the Cloudflare dispatch,
+  # which stopped firing after 2026-09-10 and broke updates 9/11 onward.
+  schedule:
+    - cron: "50 1 * * *"
+  # Cloudflare can still trigger this if its schedule is restored.
   repository_dispatch:
     types: [cloudflare-fedwatch-update]
   workflow_dispatch:
