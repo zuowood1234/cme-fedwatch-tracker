@@ -85,15 +85,16 @@ def main():
         if not push_file(args.repo, args.token, git_path, local_path):
             ok = False
 
-    # Send WeChat summary via ServerChan after successful push
-    if ok and os.environ.get("SERVERCHAN_SENDKEY"):
+    # Send WeChat summary via ServerChan — independent of GitHub push result,
+    # so a GitHub failure (e.g. expired PAT) does NOT block the WeChat alert.
+    if os.environ.get("SERVERCHAN_SENDKEY"):
         print("Sending ServerChan daily summary...")
         sc_ok, sc_msg = push_daily_summary(args.data_dir)
         if sc_ok:
             print("ServerChan summary sent.")
         else:
             print(f"ServerChan summary failed: {sc_msg}")
-    elif ok:
+    else:
         print("SERVERCHAN_SENDKEY not set; skipping WeChat push.")
 
     sys.exit(0 if ok else 1)
