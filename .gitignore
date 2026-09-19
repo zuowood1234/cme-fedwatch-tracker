@@ -1,0 +1,4 @@
+.workbuddy/
+__pycache__/
+*.pyc
+.venv/
