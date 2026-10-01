@@ -636,12 +636,12 @@ scrape_time_str = f" (scraped at {latest_scrape_time})" if latest_scrape_time el
 if has_today_data:
     status_container.success(
         f"✅ Data is up to date ({today}). Source: {load_source}. "
-        f"Daily scrape runs around 09:50 CST.{scrape_time_str}"
+        f"Daily scrape runs around 08:50 CST.{scrape_time_str}"
     )
 elif not df.empty:
     status_container.warning(
         f"⚠️ Showing cached data from **{latest_date}** (source: {load_source}). "
-        f"Daily automated scrape runs around 09:50 CST.{scrape_time_str}"
+        f"Daily automated scrape runs around 08:50 CST.{scrape_time_str}"
     )
     if github_error:
         with st.expander("GitHub load details"):
