@@ -24,14 +24,31 @@ An open-source dashboard that archives official CME FedWatch probabilities and m
 
 ## What you can see
 
-| Panel | What it answers |
-|---|---|
-| **Rate Path Summary** | What target-rate range is most likely at each upcoming FOMC meeting? |
-| **Current Probability Distribution** | How is probability distributed across every rate range and meeting? |
-| **Probability Evolution** | How did the current distribution change versus 1 day, 1 week, and 1 month ago? |
-| **Change Alerts** | Which probabilities moved by at least 5 percentage points? |
+### 1. Rate Path Summary
 
-The current target range is highlighted throughout the dashboard. Tables can be searched, viewed full screen, and downloaded as CSV.
+See the most likely target-rate range for every upcoming FOMC meeting at a glance. The percentage above each point is the probability of that meeting's most likely range.
+
+![Rate Path Summary](docs/feature-1-rate-path.png)
+
+### 2. Current Probability Distribution
+
+Review the complete meeting-by-meeting probability matrix. The current target range is labeled, while the highest probability in each row is emphasized.
+
+![Current Probability Distribution](docs/feature-2-distribution.png)
+
+### 3. Probability Evolution
+
+Select an FOMC meeting and compare today's distribution with CME's values from 1 day, 1 week, and 1 month ago.
+
+![Probability Evolution](docs/feature-3-evolution.png)
+
+### 4. Change Alerts
+
+Spot meaningful shifts quickly. The alert table shows rate ranges that moved by at least 5 percentage points versus 1 day or 1 week ago.
+
+![Change Alerts](docs/feature-4-alerts.png)
+
+Tables can be searched, viewed full screen, and downloaded as CSV.
 
 ## How it works
 
